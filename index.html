@@ -13,7 +13,7 @@
     --primary-dark: #e04f80;
     --accent: #ffb347;
     --text: #5a3e4d;
-    --card: rgba(255, 255, 255, 0.88);
+    --card: rgba(255, 255, 255, 0.92);
     --shadow: 0 8px 24px rgba(255, 107, 157, 0.22);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -58,9 +58,8 @@
   /* HUD */
   .hud {
     background: var(--card); border-radius: 20px;
-    padding: 10px 14px; margin-bottom: 10px;
+    padding: 10px 14px; margin-bottom: 8px;
     box-shadow: var(--shadow);
-    backdrop-filter: blur(6px);
   }
   .hud-row {
     display: flex; justify-content: space-between; align-items: center;
@@ -83,29 +82,42 @@
   .goal-icon { width: 34px; height: 34px; flex-shrink: 0; }
   .goal-text { font-size: 13px; font-weight: 800; color: #8c5a2b; line-height: 1.2; }
 
-  /* Progress & Stars */
-  .progress-wrap { margin-top: 8px; }
+  /* Goal Progress Bar + Score Stars Row */
+  .progress-wrap {
+    margin-top: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .progress-col { flex: 1; }
+  .progress-label-row {
+    display: flex; justify-content: space-between;
+    font-size: 11px; font-weight: 700; color: #9c6f82; margin-bottom: 3px;
+  }
   .progress-bar-bg {
-    width: 100%; height: 12px; background: #f3dce4;
-    border-radius: 10px; position: relative; overflow: visible;
+    width: 100%; height: 11px; background: #f3dce4;
+    border-radius: 10px; overflow: hidden;
   }
   .progress-fill {
     height: 100%; width: 0%; border-radius: 10px;
-    background: linear-gradient(90deg, #ff9a9e, #fecfef, #ffb347);
-    transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: linear-gradient(90deg, #ff7eb3, #ffb347);
+    transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .hud-stars {
+    display: flex; align-items: center; gap: 3px;
+    background: #fff8e6; border: 2px solid #ffe0a3;
+    padding: 4px 8px; border-radius: 12px;
   }
   .star-marker {
-    position: absolute; top: -5px; transform: translateX(-50%);
-    font-size: 16px; filter: grayscale(1) opacity(0.5);
-    transition: transform 0.3s, filter 0.3s;
+    font-size: 17px; filter: grayscale(1) opacity(0.35);
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s;
+    display: inline-block;
   }
   .star-marker.earned {
-    filter: none; transform: translateX(-50%) scale(1.25);
+    filter: none; transform: scale(1.22);
   }
 
   /* Combo bar */
   .combo-bar-wrap {
-    height: 22px; margin-bottom: 6px;
+    height: 24px; margin-bottom: 6px;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 6px;
   }
@@ -113,16 +125,16 @@
     background: linear-gradient(90deg, #ff6b9d, #ffb347);
     color: #fff; font-weight: 900; font-size: 12px;
     padding: 2px 10px; border-radius: 12px;
-    opacity: 0; transform: scale(0.8);
-    transition: opacity 0.2s, transform 0.2s;
+    visibility: hidden; opacity: 0; transform: scale(0.8);
+    transition: opacity 0.18s, transform 0.18s;
   }
-  .combo-pill.active { opacity: 1; transform: scale(1); }
+  .combo-pill.active { visibility: visible; opacity: 1; transform: scale(1); }
   .combo-timer-bg {
-    flex: 1; height: 6px; background: rgba(255,255,255,0.6);
+    flex: 1; height: 6px; background: rgba(255,255,255,0.65);
     border-radius: 4px; margin-left: 8px; overflow: hidden;
-    opacity: 0; transition: opacity 0.2s;
+    visibility: hidden; opacity: 0; transition: opacity 0.18s;
   }
-  .combo-timer-bg.active { opacity: 1; }
+  .combo-timer-bg.active { visibility: visible; opacity: 1; }
   .combo-timer-fill {
     height: 100%; width: 100%;
     background: linear-gradient(90deg, #ff6b9d, #ffbe0b);
@@ -220,34 +232,40 @@
   }
   .float-score {
     position: fixed; pointer-events: none; z-index: 60;
-    font-weight: 900; font-size: 22px; color: #ff477e;
+    font-weight: 900; font-size: 21px; color: #ff477e;
     text-shadow: 0 2px 0 #fff, 0 4px 10px rgba(255,71,126,0.35);
-    animation: floatUp 0.9s ease-out forwards;
+    animation: floatUp 1.05s ease-out forwards;
+    text-align: center; white-space: nowrap;
+  }
+  .float-sub {
+    display: block; font-size: 12px; font-weight: 800; color: #e67e22;
+    text-shadow: 0 1px 0 #fff;
   }
   .big-combo {
     position: fixed; left: 50%; top: 44%; transform: translate(-50%, -50%);
     pointer-events: none; z-index: 65;
-    font-size: 38px; font-weight: 900;
+    font-size: 34px; font-weight: 900;
     background: linear-gradient(180deg, #ff5e92, #ff9900);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 3px 0 #fff) drop-shadow(0 6px 14px rgba(255,94,146,0.4));
-    animation: comboPop 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: comboPop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     white-space: nowrap;
   }
 
-  /* Modals */
+  /* Modals - Crisp, immediate visibility (no blurry fade-in delay) */
   .modal-backdrop {
-    position: fixed; inset: 0; background: rgba(70, 40, 58, 0.52);
-    backdrop-filter: blur(4px); z-index: 100;
+    position: fixed; inset: 0; background: rgba(58, 32, 48, 0.62);
+    z-index: 120;
     display: none; justify-content: center; align-items: center; padding: 18px;
   }
-  .modal-backdrop.open { display: flex; animation: fadeIn 0.2s; }
+  .modal-backdrop.open { display: flex; }
   .modal {
     width: 100%; max-width: 390px; max-height: 86vh;
     background: #fff9fb; border-radius: 28px;
-    padding: 20px; box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+    padding: 20px; box-shadow: 0 18px 40px rgba(0,0,0,0.28);
     border: 4px solid #ffd6e0;
     display: flex; flex-direction: column; overflow: hidden;
+    opacity: 1;
   }
   .modal h2 {
     margin: 0 0 10px; text-align: center; font-size: 22px;
@@ -268,6 +286,11 @@
   .btn-secondary { background: #ffe4ec; color: var(--primary-dark); }
 
   /* Level Map Grid */
+  .map-toast {
+    min-height: 22px; margin-bottom: 6px;
+    text-align: center; font-size: 13px; font-weight: 800;
+    color: #d94862;
+  }
   .map-grid {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
     padding: 6px 2px;
@@ -280,10 +303,15 @@
     transition: transform 0.12s;
   }
   .map-btn:active { transform: scale(0.93); }
-  .map-btn.unlocked { background: linear-gradient(145deg, #fff, #fff0f5); border-color: #ff8fab; }
+  .map-btn.unlocked { background: linear-gradient(145deg, #fff, #fff0f5); border-color: #ff8fab; color: var(--text); }
   .map-btn.current { background: linear-gradient(145deg, #ff7eb3, #ff758c); color: #fff; border-color: #fff; }
-  .map-btn.locked-lv { background: #eee6ea; border-color: #ddd; color: #aaa; cursor: not-allowed; }
-  .map-num { font-size: 18px; font-weight: 900; }
+  .map-btn.locked-lv {
+    background: #eee6ea; border-color: #d8cdd2; color: #9c8c94;
+    cursor: pointer;
+  }
+  .map-btn.locked-lv .map-num { opacity: 0.65; }
+  .map-btn.shake { animation: shakeBtn 0.36s ease-in-out; }
+  .map-num { font-size: 18px; font-weight: 900; line-height: 1.1; }
   .map-stars { font-size: 11px; margin-top: 2px; letter-spacing: 1px; }
 
   .win-stars { text-align: center; font-size: 40px; margin: 6px 0 10px; letter-spacing: 6px; }
@@ -298,6 +326,13 @@
     0%, 100% { transform: scale(1.1) rotate(-3deg); }
     50% { transform: scale(1.1) rotate(3deg); }
   }
+  @keyframes shakeBtn {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
   @keyframes dropIn {
     0% { transform: translateY(-42px) scale(0.85); opacity: 0.3; }
     100% { transform: translateY(0) scale(1); opacity: 1; }
@@ -308,8 +343,8 @@
     100% { transform: scale(1); }
   }
   @keyframes floatUp {
-    0% { transform: translate(-50%, 0) scale(0.8); opacity: 1; }
-    100% { transform: translate(-50%, -65px) scale(1.15); opacity: 0; }
+    0% { transform: translate(-50%, 0) scale(0.85); opacity: 1; }
+    100% { transform: translate(-50%, -68px) scale(1.1); opacity: 0; }
   }
   @keyframes comboPop {
     0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
@@ -318,7 +353,6 @@
     100% { transform: translate(-50%, -70%) scale(0.9); opacity: 0; }
   }
   @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.14); } }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 </head>
 <body>
@@ -350,22 +384,30 @@
       </div>
       <div class="stat-box">
         <span class="stat-label">Lượt</span>
-        <span class="stat-val" id="movesVal">20</span>
+        <span class="stat-val" id="movesVal">14</span>
       </div>
     </div>
     <div class="progress-wrap">
-      <div class="progress-bar-bg">
-        <div class="progress-fill" id="progressFill"></div>
-        <span class="star-marker" id="star1" style="left: 35%">⭐</span>
-        <span class="star-marker" id="star2" style="left: 70%">⭐</span>
-        <span class="star-marker" id="star3" style="left: 98%">⭐</span>
+      <div class="progress-col">
+        <div class="progress-label-row">
+          <span>Tiến độ mục tiêu</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+      <div class="hud-stars" title="Sao đạt được theo mốc điểm">
+        <span class="star-marker" id="star1">⭐</span>
+        <span class="star-marker" id="star2">⭐</span>
+        <span class="star-marker" id="star3">⭐</span>
       </div>
     </div>
   </div>
 
   <!-- Combo -->
   <div class="combo-bar-wrap">
-    <div class="combo-pill" id="comboPill">COMBO x2</div>
+    <div class="combo-pill" id="comboPill">COMBO x1</div>
     <div class="combo-timer-bg" id="comboTimerBg">
       <div class="combo-timer-fill" id="comboTimerFill"></div>
     </div>
@@ -387,6 +429,7 @@
 <div class="modal-backdrop" id="mapModal">
   <div class="modal">
     <h2>🗺️ Bản Đồ 20 Màn Chơi</h2>
+    <div class="map-toast" id="mapToast"></div>
     <div class="modal-body">
       <div class="map-grid" id="mapGrid"></div>
     </div>
@@ -438,14 +481,14 @@
    1. CHIBI SVG CHARACTERS (8 LEVELS + SPECIALS)
    ========================================= */
 const CHARS = [
-  { id: 0, name: 'Trứng', bg: '#FFF3D6', line: '#F2C97D' },
-  { id: 1, name: 'Gà con', bg: '#FFE98A', line: '#F5B82E' },
-  { id: 2, name: 'Vịt con', bg: '#D6F5FF', line: '#5EC2E6' },
-  { id: 3, name: 'Thỏ', bg: '#FFD6EB', line: '#F285B9' },
-  { id: 4, name: 'Mèo', bg: '#FFE0C2', line: '#F29D52' },
-  { id: 5, name: 'Cún', bg: '#E6D6FF', line: '#A47CE6' },
-  { id: 6, name: 'Gấu', bg: '#E8D0C0', line: '#B58463' },
-  { id: 7, name: 'Vua Sư Tử', bg: '#FFD180', line: '#FF8F00' }
+  { id: 0, name: 'Trứng',     bg: '#FFF3D6', line: '#F2C97D', basePts: 40 },
+  { id: 1, name: 'Gà con',    bg: '#FFE98A', line: '#F5B82E', basePts: 60 },
+  { id: 2, name: 'Vịt con',   bg: '#D6F5FF', line: '#5EC2E6', basePts: 85 },
+  { id: 3, name: 'Thỏ',       bg: '#FFD6EB', line: '#F285B9', basePts: 120 },
+  { id: 4, name: 'Mèo',       bg: '#FFE0C2', line: '#F29D52', basePts: 165 },
+  { id: 5, name: 'Cún',       bg: '#E6D6FF', line: '#A47CE6', basePts: 220 },
+  { id: 6, name: 'Gấu',       bg: '#E8D0C0', line: '#B58463', basePts: 300 },
+  { id: 7, name: 'Vua Sư Tử', bg: '#FFD180', line: '#FF8F00', basePts: 420 }
 ];
 
 function getChibiSVG(level, special = null) {
@@ -493,13 +536,13 @@ function getChibiSVG(level, special = null) {
   `;
 
   switch (level) {
-    case 0: // Trứng
+    case 0:
       return `<svg viewBox="0 0 100 100">
         <path d="M50 14 C28 14 20 44 20 62 C20 80 33 88 50 88 C67 88 80 80 80 62 C80 44 72 14 50 14 Z" fill="#fffaf0" stroke="#e6be8a" stroke-width="4"/>
         <path d="M27 42 L38 48 L48 39 L58 49 L71 42" fill="none" stroke="#f2c97d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
         ${face}
       </svg>`;
-    case 1: // Gà con
+    case 1:
       return `<svg viewBox="0 0 100 100">
         <path d="M46 22 Q50 8 56 20 Q62 12 60 25" fill="#ffd54f" stroke="#f5a623" stroke-width="3" stroke-linecap="round"/>
         <circle cx="50" cy="56" r="34" fill="#ffe066" stroke="#f5b82e" stroke-width="3.5"/>
@@ -508,7 +551,7 @@ function getChibiSVG(level, special = null) {
         ${face}
         <polygon points="45,59 55,59 50,66" fill="#ff8c42"/>
       </svg>`;
-    case 2: // Vịt con
+    case 2:
       return `<svg viewBox="0 0 100 100">
         <circle cx="50" cy="56" r="34" fill="#fff3b0" stroke="#72c6e8" stroke-width="3.5"/>
         <path d="M45 22 Q50 12 55 22" fill="#fff3b0" stroke="#72c6e8" stroke-width="3"/>
@@ -519,7 +562,7 @@ function getChibiSVG(level, special = null) {
         <ellipse cx="50" cy="64" rx="13" ry="7" fill="#ff9f43" stroke="#e67e22" stroke-width="2"/>
         <path d="M44 65 Q50 69 56 65" fill="none" stroke="#8a4200" stroke-width="2.2" stroke-linecap="round"/>
       </svg>`;
-    case 3: // Thỏ
+    case 3:
       return `<svg viewBox="0 0 100 100">
         <ellipse cx="36" cy="24" rx="9" ry="20" transform="rotate(-10 36 24)" fill="#fff" stroke="#f285b9" stroke-width="3"/>
         <ellipse cx="36" cy="25" rx="4.5" ry="13" transform="rotate(-10 36 25)" fill="#ffb3d9"/>
@@ -529,7 +572,7 @@ function getChibiSVG(level, special = null) {
         ${face}
         <ellipse cx="50" cy="59" rx="3.5" ry="2.5" fill="#ff6b9d"/>
       </svg>`;
-    case 4: // Mèo
+    case 4:
       return `<svg viewBox="0 0 100 100">
         <polygon points="22,44 26,16 46,30" fill="#ffbe76" stroke="#e58e26" stroke-width="3" stroke-linejoin="round"/>
         <polygon points="78,44 74,16 54,30" fill="#ffbe76" stroke="#e58e26" stroke-width="3" stroke-linejoin="round"/>
@@ -543,7 +586,7 @@ function getChibiSVG(level, special = null) {
         ${face}
         <polygon points="47,58 53,58 50,61" fill="#ff6b9d"/>
       </svg>`;
-    case 5: // Cún
+    case 5:
       return `<svg viewBox="0 0 100 100">
         <ellipse cx="20" cy="54" rx="11" ry="20" transform="rotate(14 20 54)" fill="#a67c52" stroke="#7d5a38" stroke-width="3"/>
         <ellipse cx="80" cy="54" rx="11" ry="20" transform="rotate(-14 80 54)" fill="#a67c52" stroke="#7d5a38" stroke-width="3"/>
@@ -552,7 +595,7 @@ function getChibiSVG(level, special = null) {
         ${face}
         <ellipse cx="50" cy="60" rx="5" ry="3.5" fill="#4a3020"/>
       </svg>`;
-    case 6: // Gấu
+    case 6:
       return `<svg viewBox="0 0 100 100">
         <circle cx="25" cy="30" r="13" fill="#b07d62" stroke="#7f5539" stroke-width="3"/>
         <circle cx="25" cy="30" r="6.5" fill="#e6ccb2"/>
@@ -563,7 +606,7 @@ function getChibiSVG(level, special = null) {
         ${face}
         <ellipse cx="50" cy="60" rx="4.5" ry="3" fill="#4a2c1d"/>
       </svg>`;
-    case 7: // Vua Sư Tử
+    case 7:
       return `<svg viewBox="0 0 100 100">
         <circle cx="50" cy="58" r="37" fill="#ff8f00" stroke="#e65100" stroke-width="3" stroke-dasharray="10 4"/>
         <circle cx="50" cy="58" r="34" fill="#ff9800"/>
@@ -606,8 +649,9 @@ function playTone(freq, dur = 0.1, type = 'sine', vol = 0.14, slideTo = null) {
 
 const SFX = {
   select: (step) => playTone(380 + step * 55, 0.08, 'triangle', 0.13),
+  locked: () => playTone(180, 0.12, 'sawtooth', 0.09, 130),
   merge: (combo) => {
-    const base = 440 + Math.min(combo, 6) * 50;
+    const base = 440 + Math.min(combo, 5) * 55;
     playTone(base, 0.12, 'sine', 0.16, base * 1.35);
     setTimeout(() => playTone(base * 1.5, 0.16, 'triangle', 0.14), 70);
   },
@@ -624,29 +668,29 @@ const SFX = {
 };
 
 /* =========================================
-   3. 20 LEVELS CONFIGURATION
+   3. 20 BALANCED LEVELS CONFIGURATION
    ========================================= */
 const LEVELS = [
-  { id: 1,  moves: 18, maxSpawn: 3, goal: { type: 'score', target: 1500 }, stars: [1500, 2400, 3400], locks: 0, ices: 0 },
-  { id: 2,  moves: 18, maxSpawn: 3, goal: { type: 'collect', level: 2, target: 3 }, stars: [1800, 2800, 4000], locks: 0, ices: 0 },
-  { id: 3,  moves: 20, maxSpawn: 4, goal: { type: 'score', target: 3000 }, stars: [3000, 4500, 6200], locks: 0, ices: 0 },
-  { id: 4,  moves: 20, maxSpawn: 4, goal: { type: 'collect', level: 3, target: 3 }, stars: [3200, 4800, 6500], locks: 0, ices: 0 },
-  { id: 5,  moves: 22, maxSpawn: 4, goal: { type: 'ice', target: 4 }, stars: [3500, 5200, 7200], locks: 0, ices: 4 },
-  { id: 6,  moves: 20, maxSpawn: 4, goal: { type: 'collect', level: 4, target: 2 }, stars: [4000, 6000, 8200], locks: 2, ices: 0 },
-  { id: 7,  moves: 22, maxSpawn: 4, goal: { type: 'score', target: 5500 }, stars: [5500, 7800, 10500], locks: 2, ices: 2 },
-  { id: 8,  moves: 22, maxSpawn: 5, goal: { type: 'ice', target: 5 }, stars: [5500, 8000, 11000], locks: 2, ices: 5 },
-  { id: 9,  moves: 20, maxSpawn: 5, goal: { type: 'collect', level: 4, target: 3 }, stars: [6000, 8500, 11500], locks: 3, ices: 2 },
-  { id: 10, moves: 24, maxSpawn: 5, goal: { type: 'collect', level: 5, target: 2 }, stars: [7000, 10000, 13500], locks: 3, ices: 3 },
-  { id: 11, moves: 22, maxSpawn: 5, goal: { type: 'score', target: 8000 }, stars: [8000, 11500, 15000], locks: 3, ices: 4 },
-  { id: 12, moves: 24, maxSpawn: 5, goal: { type: 'ice', target: 6 }, stars: [8200, 12000, 16000], locks: 4, ices: 6 },
-  { id: 13, moves: 22, maxSpawn: 5, goal: { type: 'collect', level: 5, target: 3 }, stars: [8800, 12500, 16800], locks: 4, ices: 3 },
-  { id: 14, moves: 24, maxSpawn: 6, goal: { type: 'score', target: 10500 }, stars: [10500, 14500, 19000], locks: 4, ices: 4 },
-  { id: 15, moves: 25, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 2 }, stars: [11000, 15500, 20500], locks: 4, ices: 5 },
-  { id: 16, moves: 24, maxSpawn: 6, goal: { type: 'ice', target: 7 }, stars: [11500, 16000, 21500], locks: 5, ices: 7 },
-  { id: 17, moves: 25, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 3 }, stars: [12500, 17500, 23000], locks: 5, ices: 5 },
-  { id: 18, moves: 24, maxSpawn: 6, goal: { type: 'score', target: 14000 }, stars: [14000, 19500, 26000], locks: 5, ices: 6 },
-  { id: 19, moves: 26, maxSpawn: 6, goal: { type: 'ice', target: 8 }, stars: [15000, 21000, 28000], locks: 6, ices: 8 },
-  { id: 20, moves: 28, maxSpawn: 6, goal: { type: 'collect', level: 7, target: 1 }, stars: [18000, 25000, 34000], locks: 6, ices: 6 }
+  { id: 1,  moves: 13, maxSpawn: 3, goal: { type: 'score', target: 3200 },            stars: [2200, 3400, 4800],  locks: 0, ices: 0 },
+  { id: 2,  moves: 14, maxSpawn: 3, goal: { type: 'collect', level: 2, target: 4 },   stars: [2600, 4000, 5600],  locks: 0, ices: 0 },
+  { id: 3,  moves: 15, maxSpawn: 4, goal: { type: 'score', target: 4800 },            stars: [3400, 5000, 6800],  locks: 0, ices: 0 },
+  { id: 4,  moves: 16, maxSpawn: 4, goal: { type: 'collect', level: 3, target: 3 },   stars: [3800, 5500, 7400],  locks: 0, ices: 0 },
+  { id: 5,  moves: 17, maxSpawn: 4, goal: { type: 'ice', target: 4 },                 stars: [4200, 6000, 8000],  locks: 0, ices: 4 },
+  { id: 6,  moves: 17, maxSpawn: 4, goal: { type: 'collect', level: 4, target: 2 },   stars: [4600, 6600, 8800],  locks: 2, ices: 0 },
+  { id: 7,  moves: 18, maxSpawn: 4, goal: { type: 'score', target: 6800 },            stars: [5000, 7200, 9600],  locks: 2, ices: 2 },
+  { id: 8,  moves: 18, maxSpawn: 5, goal: { type: 'ice', target: 5 },                 stars: [5400, 7800, 10500], locks: 2, ices: 5 },
+  { id: 9,  moves: 18, maxSpawn: 5, goal: { type: 'collect', level: 4, target: 3 },   stars: [6000, 8600, 11500], locks: 3, ices: 2 },
+  { id: 10, moves: 20, maxSpawn: 5, goal: { type: 'collect', level: 5, target: 2 },   stars: [6800, 9800, 13000], locks: 3, ices: 3 },
+  { id: 11, moves: 19, maxSpawn: 5, goal: { type: 'score', target: 9000 },            stars: [7200, 10500, 14000], locks: 3, ices: 4 },
+  { id: 12, moves: 20, maxSpawn: 5, goal: { type: 'ice', target: 6 },                 stars: [7800, 11200, 15000], locks: 4, ices: 6 },
+  { id: 13, moves: 20, maxSpawn: 5, goal: { type: 'collect', level: 5, target: 3 },   stars: [8400, 12000, 16200], locks: 4, ices: 3 },
+  { id: 14, moves: 20, maxSpawn: 6, goal: { type: 'score', target: 11500 },           stars: [9200, 13200, 17800], locks: 4, ices: 4 },
+  { id: 15, moves: 22, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 2 },   stars: [10000, 14500, 19500], locks: 4, ices: 5 },
+  { id: 16, moves: 21, maxSpawn: 6, goal: { type: 'ice', target: 7 },                 stars: [10800, 15500, 21000], locks: 5, ices: 7 },
+  { id: 17, moves: 22, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 3 },   stars: [11800, 16800, 22500], locks: 5, ices: 5 },
+  { id: 18, moves: 21, maxSpawn: 6, goal: { type: 'score', target: 15000 },           stars: [12800, 18200, 24500], locks: 5, ices: 6 },
+  { id: 19, moves: 23, maxSpawn: 6, goal: { type: 'ice', target: 8 },                 stars: [14000, 20000, 27000], locks: 6, ices: 8 },
+  { id: 20, moves: 25, maxSpawn: 6, goal: { type: 'collect', level: 7, target: 1 },   stars: [16500, 23500, 32000], locks: 6, ices: 6 }
 ];
 
 /* =========================================
@@ -658,7 +702,7 @@ let progressData = JSON.parse(localStorage.getItem('chibiMergeSave_v1') || '{"un
 let currentLevel = Math.min(progressData.unlocked, LEVELS.length);
 let board = [];
 let score = 0;
-let movesLeft = 20;
+let movesLeft = 13;
 let goalCount = 0;
 let isPaused = false;
 let isGameOver = false;
@@ -668,7 +712,7 @@ let isDragging = false;
 let chain = [];
 let chainType = null;
 
-// Combo state
+// Combo state (0 = chưa có combo, 1 = x1, 2..5 = x2..x5)
 let combo = 0;
 let comboTime = 0;
 const COMBO_MAX_TIME = 5500;
@@ -695,7 +739,7 @@ function buildEvoBar() {
     div.className = 'evo-item';
     div.id = 'evo-' + idx;
     div.style.background = c.bg;
-    div.title = c.name;
+    div.title = `${c.name} (${c.basePts} điểm/ô)`;
     div.innerHTML = getChibiSVG(idx);
     bar.appendChild(div);
     if (idx < CHARS.length - 1) {
@@ -719,6 +763,8 @@ function startLevel(lvNum) {
   isGameOver = false;
   chain = [];
   chainType = null;
+
+  updateComboUI();
 
   // Create 5x5 board
   board = [];
@@ -755,9 +801,9 @@ function createTile(level, special = null) {
 
 function randLevel(maxSpawn) {
   const r = Math.random();
-  if (r < 0.48) return 0;
-  if (r < 0.78) return Math.min(1, maxSpawn - 1);
-  if (r < 0.93) return Math.min(2, maxSpawn - 1);
+  if (r < 0.50) return 0;
+  if (r < 0.80) return Math.min(1, maxSpawn - 1);
+  if (r < 0.94) return Math.min(2, maxSpawn - 1);
   return Math.floor(Math.random() * maxSpawn);
 }
 
@@ -821,6 +867,22 @@ function highlightEvoBar() {
   });
 }
 
+function updateComboUI() {
+  const pill = document.getElementById('comboPill');
+  const bg = document.getElementById('comboTimerBg');
+  const fill = document.getElementById('comboTimerFill');
+  if (combo >= 2 && comboTime > 0) {
+    pill.textContent = `COMBO x${combo}`;
+    pill.classList.add('active');
+    bg.classList.add('active');
+    fill.style.width = (comboTime / COMBO_MAX_TIME * 100) + '%';
+  } else {
+    pill.classList.remove('active');
+    bg.classList.remove('active');
+    fill.style.width = '0%';
+  }
+}
+
 function updateHUD() {
   const cfg = LEVELS[currentLevel - 1];
   document.getElementById('levelBadge').textContent = `🌸 Màn ${cfg.id}`;
@@ -829,27 +891,31 @@ function updateHUD() {
   mvEl.textContent = movesLeft;
   mvEl.classList.toggle('low', movesLeft <= 4);
 
-  // Goal
+  // Goal text & exact goal progress percentage
   const gIcon = document.getElementById('goalIcon');
   const gText = document.getElementById('goalText');
+  let goalPct = 0;
+
   if (cfg.goal.type === 'score') {
     gIcon.innerHTML = `<div style="font-size:26px;text-align:center;">🏆</div>`;
     gText.textContent = `Đạt ${Math.min(score, cfg.goal.target).toLocaleString('vi-VN')} / ${cfg.goal.target.toLocaleString('vi-VN')} điểm`;
+    goalPct = Math.min(100, (score / cfg.goal.target) * 100);
   } else if (cfg.goal.type === 'collect') {
     gIcon.innerHTML = getChibiSVG(cfg.goal.level);
     gText.textContent = `Tạo ${CHARS[cfg.goal.level].name}: ${Math.min(goalCount, cfg.goal.target)} / ${cfg.goal.target}`;
+    goalPct = Math.min(100, (goalCount / cfg.goal.target) * 100);
   } else if (cfg.goal.type === 'ice') {
     gIcon.innerHTML = `<div style="font-size:26px;text-align:center;">❄️</div>`;
     gText.textContent = `Phá băng: ${Math.min(goalCount, cfg.goal.target)} / ${cfg.goal.target}`;
+    goalPct = Math.min(100, (goalCount / cfg.goal.target) * 100);
   }
 
-  // Progress bar & stars
-  const maxStar = cfg.stars[2];
-  const pct = Math.min(100, (score / maxStar) * 100);
-  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressFill').style.width = goalPct + '%';
+  document.getElementById('progressPct').textContent = Math.floor(goalPct) + '%';
+
+  // 3 Stars light up in real time based on score milestones
   for (let i = 0; i < 3; i++) {
     const sEl = document.getElementById('star' + (i + 1));
-    sEl.style.left = Math.min(98, (cfg.stars[i] / maxStar) * 100) + '%';
     sEl.classList.toggle('earned', score >= cfg.stars[i]);
   }
 }
@@ -895,17 +961,14 @@ window.addEventListener('pointermove', (e) => {
     }
   }
 
-  // Already in chain?
   if (chain.some(p => p.r === r && p.c === c)) return;
 
-  // Adjacent check (horizontal, vertical, diagonal)
   const last = chain[chain.length - 1];
   if (Math.abs(last.r - r) > 1 || Math.abs(last.c - c) > 1) return;
 
   const tile = board[r][c];
   if (tile.locked) return;
 
-  // Match check
   const canConnect = tile.special !== null || chainType === null || tile.level === chainType;
   if (!canConnect) return;
 
@@ -959,7 +1022,7 @@ function drawChainLine() {
 }
 
 /* =========================================
-   8. MERGE, SPECIALS, GRAVITY & WIN CHECK
+   8. MERGE, TRANSPARENT SCORING, GRAVITY & WIN/LOSE
    ========================================= */
 function finishDrag() {
   if (!isDragging) return;
@@ -981,10 +1044,10 @@ function executeMerge() {
   const len = chain.length;
   const lastPos = chain[len - 1];
 
-  // Combo update
-  combo = comboTime > 0 ? combo + 1 : 1;
+  // Combo: starts at x1 on first merge, +1 per consecutive merge within 5.5s (max x5)
+  combo = comboTime > 0 ? Math.min(5, combo + 1) : 1;
   comboTime = COMBO_MAX_TIME;
-  const mult = Math.min(5, 1 + Math.floor((combo - 1) * 0.5) + (len >= 5 ? 1 : 0));
+  updateComboUI();
 
   // Evolution step: 3-4 -> +1, 5-6 -> +2, 7+ -> +3
   const baseLv = chainType !== null ? chainType : 0;
@@ -993,7 +1056,8 @@ function executeMerge() {
 
   // Check bombs in chain
   const bombs = chain.filter(p => board[p.r][p.c].special === 'bomb');
-  const toClear = new Set(chain.map(p => `${p.r},${p.c}`));
+  const chainKeys = new Set(chain.map(p => `${p.r},${p.c}`));
+  const toClear = new Set(chainKeys);
 
   if (bombs.length > 0) {
     SFX.bomb();
@@ -1014,8 +1078,7 @@ function executeMerge() {
 
   // Unlock adjacent locked tiles
   chain.forEach(p => {
-    const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
-    dirs.forEach(([dr, dc]) => {
+    [[-1,0],[1,0],[0,-1],[0,1]].forEach(([dr, dc]) => {
       const nr = p.r + dr, nc = p.c + dc;
       if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && board[nr][nc].locked) {
         board[nr][nc].locked = false;
@@ -1024,12 +1087,12 @@ function executeMerge() {
     });
   });
 
-  // Process cleared cells (handle Ice needing 2 merges)
-  let clearedCount = 0;
+  // Process cleared cells (Ice takes 2 hits)
+  let bombExtraCleared = 0;
   toClear.forEach(key => {
     const [r, c] = key.split(',').map(Number);
     const t = board[r][c];
-    if (r === lastPos.r && c === lastPos.c) return; // Target cell handled below
+    if (r === lastPos.r && c === lastPos.c) return;
 
     if (t.ice > 1) {
       t.ice -= 1;
@@ -1040,20 +1103,16 @@ function executeMerge() {
         if (cfg.goal.type === 'ice') goalCount++;
         spawnParticlesAtCell(r, c, 10, '#80d8ff');
       }
+      if (!chainKeys.has(key)) bombExtraCleared++;
       board[r][c] = null;
-      clearedCount++;
     }
   });
 
   // Target cell becomes evolved character (or special if chain >= 5)
   const targetTile = board[lastPos.r][lastPos.c];
-  let iceBrokenAtTarget = false;
   if (targetTile && targetTile.ice > 0) {
     targetTile.ice -= 1;
-    if (targetTile.ice === 0) {
-      iceBrokenAtTarget = true;
-      if (cfg.goal.type === 'ice') goalCount++;
-    }
+    if (targetTile.ice === 0 && cfg.goal.type === 'ice') goalCount++;
   }
 
   let spawnedSpecial = null;
@@ -1070,21 +1129,33 @@ function executeMerge() {
     goalCount++;
   }
 
-  // Score calculation
-  const gained = (len * 60 + (newLv + 1) * 80 + clearedCount * 35) * mult;
+  // CONSISTENT & TRANSPARENT SCORING FORMULA:
+  // Điểm = (Điểm cơ bản theo bậc × Số ô) × Hệ số Combo + Thưởng chuỗi dài (>=5 ô) + Thưởng nổ bom
+  const baseScore = CHARS[baseLv].basePts * len * combo;
+  const longBonus = len >= 5 ? (len - 4) * 120 : 0;
+  const bombBonus = bombExtraCleared * 40;
+  const gained = baseScore + longBonus + bombBonus;
+
   score += gained;
   movesLeft--;
 
-  // Visual FX
+  // Build transparent breakdown label
+  const reasons = [];
+  if (combo >= 2) reasons.push(`Combo x${combo}`);
+  if (longBonus > 0) reasons.push(`Thưởng chuỗi ${len}! +${longBonus}`);
+  if (bombBonus > 0) reasons.push(`Bom +${bombBonus}`);
+
   const targetEl = gridEl.children[lastPos.r * SIZE + lastPos.c];
   const tr = targetEl.getBoundingClientRect();
   spawnParticles(tr.left + tr.width / 2, tr.top + tr.height / 2, len >= 5 ? 24 : 14);
-  showFloatingScore(tr.left + tr.width / 2, tr.top + tr.height / 2, `+${gained}`);
-  if (combo >= 2 || len >= 5) {
-    showBigCombo(len >= 5 ? `TUYỆT ĐỈNH! x${mult}` : `COMBO x${combo}!`);
+  showFloatingScore(tr.left + tr.width / 2, tr.top + tr.height / 2, `+${gained}`, reasons.join(' • '));
+
+  if (len >= 5) {
+    showBigCombo(`THƯỞNG CHUỖI ${len}! +${longBonus}`);
+  } else if (combo >= 2) {
+    showBigCombo(`COMBO x${combo}!`);
   }
 
-  // Apply Gravity & Refill
   applyGravity(cfg.maxSpawn);
   renderBoard();
   updateHUD();
@@ -1121,8 +1192,8 @@ function checkEndState() {
 
   if (won) {
     isGameOver = true;
-    // Bonus for remaining moves
-    score += movesLeft * 150;
+    const moveBonus = movesLeft * 120;
+    score += moveBonus;
     updateHUD();
     const earnedStars = score >= cfg.stars[2] ? 3 : (score >= cfg.stars[1] ? 2 : 1);
     const prevStars = progressData.stars[cfg.id] || 0;
@@ -1133,11 +1204,11 @@ function checkEndState() {
     saveProgress();
     SFX.win();
     launchFireworks();
-    setTimeout(() => showResult(true, earnedStars), 650);
+    setTimeout(() => showResult(true, earnedStars, moveBonus), 450);
   } else if (movesLeft <= 0) {
     isGameOver = true;
     SFX.lose();
-    setTimeout(() => showResult(false, 0), 400);
+    setTimeout(() => showResult(false, 0, 0), 350);
   }
 }
 
@@ -1178,18 +1249,18 @@ function launchFireworks() {
       const x = window.innerWidth * (0.2 + Math.random() * 0.6);
       const y = window.innerHeight * (0.2 + Math.random() * 0.4);
       spawnParticles(x, y, 28);
-    }, i * 220);
+    }, i * 200);
   }
 }
 
-function showFloatingScore(x, y, text) {
+function showFloatingScore(x, y, mainText, subText = '') {
   const el = document.createElement('div');
   el.className = 'float-score';
   el.style.left = x + 'px';
   el.style.top = y + 'px';
-  el.textContent = text;
+  el.innerHTML = mainText + (subText ? `<span class="float-sub">${subText}</span>` : '');
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 920);
+  setTimeout(() => el.remove(), 1080);
 }
 
 function showBigCombo(text) {
@@ -1197,7 +1268,7 @@ function showBigCombo(text) {
   el.className = 'big-combo';
   el.textContent = text;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 880);
+  setTimeout(() => el.remove(), 920);
 }
 
 function drawHeart(ctx, x, y, s) {
@@ -1225,22 +1296,11 @@ function gameLoop(now) {
   const dt = now - lastFrameTime;
   lastFrameTime = now;
 
-  // Combo timer
+  // Combo countdown
   if (!isPaused && !isGameOver && comboTime > 0) {
     comboTime = Math.max(0, comboTime - dt);
-    const pill = document.getElementById('comboPill');
-    const bg = document.getElementById('comboTimerBg');
-    const fill = document.getElementById('comboTimerFill');
-    if (comboTime > 0 && combo >= 2) {
-      pill.textContent = `COMBO x${combo}`;
-      pill.classList.add('active');
-      bg.classList.add('active');
-      fill.style.width = (comboTime / COMBO_MAX_TIME * 100) + '%';
-    } else if (comboTime === 0) {
-      combo = 0;
-      pill.classList.remove('active');
-      bg.classList.remove('active');
-    }
+    if (comboTime === 0) combo = 0;
+    updateComboUI();
   }
 
   // Particles
@@ -1267,17 +1327,18 @@ function gameLoop(now) {
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function showResult(won, stars) {
+function showResult(won, stars, moveBonus = 0) {
   document.getElementById('resultTitle').textContent = won ? `🎉 Qua Màn ${currentLevel}!` : '😿 Hết Lượt Rồi!';
   document.getElementById('resultStars').textContent = won ? ('⭐'.repeat(stars) + '☆'.repeat(3 - stars)) : '💔';
   document.getElementById('resultDesc').textContent = won
-    ? `Điểm tổng: ${score.toLocaleString('vi-VN')} (đã cộng thưởng lượt dư)`
-    : `Bạn đạt ${score.toLocaleString('vi-VN')} điểm. Thử lại nhé!`;
+    ? `Điểm tổng: ${score.toLocaleString('vi-VN')}${moveBonus > 0 ? ` (gồm +${moveBonus.toLocaleString('vi-VN')} thưởng lượt dư)` : ''}`
+    : `Bạn đạt ${score.toLocaleString('vi-VN')} điểm nhưng chưa hoàn thành mục tiêu. Thử lại nhé!`;
 
   const btns = document.getElementById('resultBtns');
   btns.innerHTML = '';
+
   const retry = document.createElement('button');
-  retry.className = 'btn btn-secondary';
+  retry.className = 'btn ' + (won ? 'btn-secondary' : 'btn-primary');
   retry.textContent = 'Chơi Lại';
   retry.onclick = () => { closeModal('resultModal'); startLevel(currentLevel); };
   btns.appendChild(retry);
@@ -1290,7 +1351,7 @@ function showResult(won, stars) {
     btns.appendChild(next);
   } else {
     const mapBtn = document.createElement('button');
-    mapBtn.className = 'btn btn-primary';
+    mapBtn.className = 'btn ' + (won ? 'btn-primary' : 'btn-secondary');
     mapBtn.textContent = 'Bản Đồ Màn';
     mapBtn.onclick = () => { closeModal('resultModal'); openMap(); };
     btns.appendChild(mapBtn);
@@ -1298,18 +1359,35 @@ function showResult(won, stars) {
   openModal('resultModal');
 }
 
+let toastTimer = null;
 function openMap() {
   const grid = document.getElementById('mapGrid');
+  const toast = document.getElementById('mapToast');
+  toast.textContent = '';
   grid.innerHTML = '';
+
   LEVELS.forEach(lv => {
     const unlocked = lv.id <= progressData.unlocked;
     const st = progressData.stars[lv.id] || 0;
     const btn = document.createElement('button');
     btn.className = 'map-btn ' + (lv.id === currentLevel ? 'current' : (unlocked ? 'unlocked' : 'locked-lv'));
-    btn.innerHTML = `<div class="map-num">${unlocked ? lv.id : '🔒'}</div>
-      <div class="map-stars">${unlocked ? ('⭐'.repeat(st) + '☆'.repeat(3 - st)) : ''}</div>`;
+
+    // Locked levels still display faded level number + lock icon
+    btn.innerHTML = `<div class="map-num">${lv.id}</div>
+      <div class="map-stars">${unlocked ? ('⭐'.repeat(st) + '☆'.repeat(3 - st)) : '🔒'}</div>`;
+
     if (unlocked) {
       btn.onclick = () => { closeModal('mapModal'); startLevel(lv.id); };
+    } else {
+      btn.onclick = () => {
+        SFX.locked();
+        btn.classList.remove('shake');
+        void btn.offsetWidth;
+        btn.classList.add('shake');
+        toast.textContent = `🔒 Hoàn thành màn ${lv.id - 1} để mở khóa màn này!`;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.textContent = ''; }, 2600);
+      };
     }
     grid.appendChild(btn);
   });
@@ -1320,11 +1398,11 @@ function openHelp() {
   document.getElementById('helpBody').innerHTML = `
     <div class="help-item">
       <div class="help-icon">${getChibiSVG(1)}</div>
-      <div><b>Nối 3+ hình giống nhau</b> (ngang, dọc, chéo) để gộp thành bé Chibi cấp cao hơn. Nối càng dài tiến hóa càng cao!</div>
+      <div><b>Nối 3+ hình giống nhau</b> (ngang, dọc, chéo) để gộp thành bé Chibi cấp cao hơn. Điểm = Điểm cơ bản × Số ô × Combo.</div>
     </div>
     <div class="help-item">
       <div class="help-icon">${getChibiSVG(0, 'rainbow')}</div>
-      <div><b>Ô Cầu Vồng (nối 5 ô):</b> Nối được với mọi nhân vật Chibi.</div>
+      <div><b>Ô Cầu Vồng (nối 5 ô):</b> Nối được với mọi nhân vật Chibi, kèm thưởng chuỗi dài!</div>
     </div>
     <div class="help-item">
       <div class="help-icon">${getChibiSVG(0, 'bomb')}</div>
