@@ -252,7 +252,7 @@
     white-space: nowrap;
   }
 
-  /* Modals - Crisp, immediate visibility (no blurry fade-in delay) */
+  /* Modals - Crisp, immediate visibility */
   .modal-backdrop {
     position: fixed; inset: 0; background: rgba(58, 32, 48, 0.62);
     z-index: 120;
@@ -384,7 +384,7 @@
       </div>
       <div class="stat-box">
         <span class="stat-label">Lượt</span>
-        <span class="stat-val" id="movesVal">14</span>
+        <span class="stat-val" id="movesVal">13</span>
       </div>
     </div>
     <div class="progress-wrap">
@@ -434,7 +434,7 @@
       <div class="map-grid" id="mapGrid"></div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="closeModal('mapModal')">Đóng</button>
+      <button class="btn btn-secondary" onclick="closeMapModal()">Đóng</button>
     </div>
   </div>
 </div>
@@ -669,28 +669,29 @@ const SFX = {
 
 /* =========================================
    3. 20 BALANCED LEVELS CONFIGURATION
+   (Mốc 3 sao khả thi khi chơi tốt + thưởng lượt dư)
    ========================================= */
 const LEVELS = [
-  { id: 1,  moves: 13, maxSpawn: 3, goal: { type: 'score', target: 3200 },            stars: [2200, 3400, 4800],  locks: 0, ices: 0 },
-  { id: 2,  moves: 14, maxSpawn: 3, goal: { type: 'collect', level: 2, target: 4 },   stars: [2600, 4000, 5600],  locks: 0, ices: 0 },
-  { id: 3,  moves: 15, maxSpawn: 4, goal: { type: 'score', target: 4800 },            stars: [3400, 5000, 6800],  locks: 0, ices: 0 },
-  { id: 4,  moves: 16, maxSpawn: 4, goal: { type: 'collect', level: 3, target: 3 },   stars: [3800, 5500, 7400],  locks: 0, ices: 0 },
-  { id: 5,  moves: 17, maxSpawn: 4, goal: { type: 'ice', target: 4 },                 stars: [4200, 6000, 8000],  locks: 0, ices: 4 },
-  { id: 6,  moves: 17, maxSpawn: 4, goal: { type: 'collect', level: 4, target: 2 },   stars: [4600, 6600, 8800],  locks: 2, ices: 0 },
-  { id: 7,  moves: 18, maxSpawn: 4, goal: { type: 'score', target: 6800 },            stars: [5000, 7200, 9600],  locks: 2, ices: 2 },
-  { id: 8,  moves: 18, maxSpawn: 5, goal: { type: 'ice', target: 5 },                 stars: [5400, 7800, 10500], locks: 2, ices: 5 },
-  { id: 9,  moves: 18, maxSpawn: 5, goal: { type: 'collect', level: 4, target: 3 },   stars: [6000, 8600, 11500], locks: 3, ices: 2 },
-  { id: 10, moves: 20, maxSpawn: 5, goal: { type: 'collect', level: 5, target: 2 },   stars: [6800, 9800, 13000], locks: 3, ices: 3 },
-  { id: 11, moves: 19, maxSpawn: 5, goal: { type: 'score', target: 9000 },            stars: [7200, 10500, 14000], locks: 3, ices: 4 },
-  { id: 12, moves: 20, maxSpawn: 5, goal: { type: 'ice', target: 6 },                 stars: [7800, 11200, 15000], locks: 4, ices: 6 },
-  { id: 13, moves: 20, maxSpawn: 5, goal: { type: 'collect', level: 5, target: 3 },   stars: [8400, 12000, 16200], locks: 4, ices: 3 },
-  { id: 14, moves: 20, maxSpawn: 6, goal: { type: 'score', target: 11500 },           stars: [9200, 13200, 17800], locks: 4, ices: 4 },
-  { id: 15, moves: 22, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 2 },   stars: [10000, 14500, 19500], locks: 4, ices: 5 },
-  { id: 16, moves: 21, maxSpawn: 6, goal: { type: 'ice', target: 7 },                 stars: [10800, 15500, 21000], locks: 5, ices: 7 },
-  { id: 17, moves: 22, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 3 },   stars: [11800, 16800, 22500], locks: 5, ices: 5 },
-  { id: 18, moves: 21, maxSpawn: 6, goal: { type: 'score', target: 15000 },           stars: [12800, 18200, 24500], locks: 5, ices: 6 },
-  { id: 19, moves: 23, maxSpawn: 6, goal: { type: 'ice', target: 8 },                 stars: [14000, 20000, 27000], locks: 6, ices: 8 },
-  { id: 20, moves: 25, maxSpawn: 6, goal: { type: 'collect', level: 7, target: 1 },   stars: [16500, 23500, 32000], locks: 6, ices: 6 }
+  { id: 1,  moves: 13, maxSpawn: 3, goal: { type: 'score', target: 3200 },            stars: [2000, 3100, 3900],  locks: 0, ices: 0 },
+  { id: 2,  moves: 14, maxSpawn: 3, goal: { type: 'collect', level: 2, target: 4 },   stars: [2200, 3400, 4600],  locks: 0, ices: 0 },
+  { id: 3,  moves: 15, maxSpawn: 4, goal: { type: 'score', target: 4800 },            stars: [3000, 4600, 5600],  locks: 0, ices: 0 },
+  { id: 4,  moves: 16, maxSpawn: 4, goal: { type: 'collect', level: 3, target: 3 },   stars: [3400, 4800, 6200],  locks: 0, ices: 0 },
+  { id: 5,  moves: 17, maxSpawn: 4, goal: { type: 'ice', target: 4 },                 stars: [3800, 5400, 7000],  locks: 0, ices: 4 },
+  { id: 6,  moves: 17, maxSpawn: 4, goal: { type: 'collect', level: 4, target: 2 },   stars: [4200, 6000, 7800],  locks: 2, ices: 0 },
+  { id: 7,  moves: 18, maxSpawn: 4, goal: { type: 'score', target: 6800 },            stars: [4400, 6500, 7800],  locks: 2, ices: 2 },
+  { id: 8,  moves: 18, maxSpawn: 5, goal: { type: 'ice', target: 5 },                 stars: [4800, 7000, 9200],  locks: 2, ices: 5 },
+  { id: 9,  moves: 18, maxSpawn: 5, goal: { type: 'collect', level: 4, target: 3 },   stars: [5400, 7600, 10000], locks: 3, ices: 2 },
+  { id: 10, moves: 20, maxSpawn: 5, goal: { type: 'collect', level: 5, target: 2 },   stars: [6000, 8600, 11200], locks: 3, ices: 3 },
+  { id: 11, moves: 19, maxSpawn: 5, goal: { type: 'score', target: 9000 },            stars: [6000, 8600, 10200], locks: 3, ices: 4 },
+  { id: 12, moves: 20, maxSpawn: 5, goal: { type: 'ice', target: 6 },                 stars: [6800, 9600, 12600], locks: 4, ices: 6 },
+  { id: 13, moves: 20, maxSpawn: 5, goal: { type: 'collect', level: 5, target: 3 },   stars: [7400, 10500, 13800],locks: 4, ices: 3 },
+  { id: 14, moves: 20, maxSpawn: 6, goal: { type: 'score', target: 11500 },           stars: [7800, 11000, 13000],locks: 4, ices: 4 },
+  { id: 15, moves: 22, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 2 },   stars: [8800, 12400, 16200],locks: 4, ices: 5 },
+  { id: 16, moves: 21, maxSpawn: 6, goal: { type: 'ice', target: 7 },                 stars: [9400, 13200, 17400],locks: 5, ices: 7 },
+  { id: 17, moves: 22, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 3 },   stars: [10200, 14400, 18800],locks: 5, ices: 5 },
+  { id: 18, moves: 21, maxSpawn: 6, goal: { type: 'score', target: 15000 },           stars: [10500, 14500, 16800],locks: 5, ices: 6 },
+  { id: 19, moves: 23, maxSpawn: 6, goal: { type: 'ice', target: 8 },                 stars: [12000, 16800, 22000],locks: 6, ices: 8 },
+  { id: 20, moves: 25, maxSpawn: 6, goal: { type: 'collect', level: 7, target: 1 },   stars: [14000, 19500, 25500],locks: 6, ices: 6 }
 ];
 
 /* =========================================
@@ -871,7 +872,8 @@ function updateComboUI() {
   const pill = document.getElementById('comboPill');
   const bg = document.getElementById('comboTimerBg');
   const fill = document.getElementById('comboTimerFill');
-  if (combo >= 2 && comboTime > 0) {
+  // Hiện rõ ngay từ COMBO x1 sau lần gộp đầu tiên
+  if (combo >= 1 && comboTime > 0) {
     pill.textContent = `COMBO x${combo}`;
     pill.classList.add('active');
     bg.classList.add('active');
@@ -1129,8 +1131,7 @@ function executeMerge() {
     goalCount++;
   }
 
-  // CONSISTENT & TRANSPARENT SCORING FORMULA:
-  // Điểm = (Điểm cơ bản theo bậc × Số ô) × Hệ số Combo + Thưởng chuỗi dài (>=5 ô) + Thưởng nổ bom
+  // CONSISTENT & TRANSPARENT SCORING FORMULA
   const baseScore = CHARS[baseLv].basePts * len * combo;
   const longBonus = len >= 5 ? (len - 4) * 120 : 0;
   const bombBonus = bombExtraCleared * 40;
@@ -1139,7 +1140,7 @@ function executeMerge() {
   score += gained;
   movesLeft--;
 
-  // Build transparent breakdown label
+  // Transparent breakdown label
   const reasons = [];
   if (combo >= 2) reasons.push(`Combo x${combo}`);
   if (longBonus > 0) reasons.push(`Thưởng chuỗi ${len}! +${longBonus}`);
@@ -1327,6 +1328,14 @@ function gameLoop(now) {
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
+function closeMapModal() {
+  closeModal('mapModal');
+  // Nếu màn hiện tại đã kết thúc (hết lượt / đã thắng), mở lại hộp thoại kết quả để không bị kẹt ở bàn cờ 0 lượt
+  if (isGameOver) {
+    openModal('resultModal');
+  }
+}
+
 function showResult(won, stars, moveBonus = 0) {
   document.getElementById('resultTitle').textContent = won ? `🎉 Qua Màn ${currentLevel}!` : '😿 Hết Lượt Rồi!';
   document.getElementById('resultStars').textContent = won ? ('⭐'.repeat(stars) + '☆'.repeat(3 - stars)) : '💔';
@@ -1372,7 +1381,6 @@ function openMap() {
     const btn = document.createElement('button');
     btn.className = 'map-btn ' + (lv.id === currentLevel ? 'current' : (unlocked ? 'unlocked' : 'locked-lv'));
 
-    // Locked levels still display faded level number + lock icon
     btn.innerHTML = `<div class="map-num">${lv.id}</div>
       <div class="map-stars">${unlocked ? ('⭐'.repeat(st) + '☆'.repeat(3 - st)) : '🔒'}</div>`;
 
