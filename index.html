@@ -45,6 +45,14 @@
   body.world-4 { --bg1: #ecc4ff; --bg2: #ffd6ec; --bg3: #fff4fc; --primary: #ba68c8; --primary-dark: #8e24aa; }
   body.world-5 { --bg1: #ffd480; --bg2: #ffecb3; --bg3: #fffaf0; --primary: #ff9800; --primary-dark: #d86b00; }
 
+  /* Light performance mode */
+  body.perf-light #bgDecor { display: none; }
+  body.perf-light .tile svg,
+  body.perf-light .tile-eye,
+  body.perf-light .progress-fill.sparkle::after { animation: none !important; }
+  body.perf-light .tile.selected { box-shadow: 0 0 0 3.5px #ffd700; animation: none !important; }
+  body.perf-light .tile.dragging-head { box-shadow: 0 0 0 4px #ffb300, 0 8px 14px rgba(40,15,25,0.28) !important; }
+
   /* Floating background decor */
   #bgDecor {
     position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
@@ -345,7 +353,7 @@
   }
   .star-marker.earned { filter: none; transform: scale(1.24); }
 
-  /* Ice level first-time hint banner */
+  /* Ice level hint banner (shown on first ice level of each world: 5, 12, 23, 33, 43) */
   .ice-hint-banner {
     display: none;
     background: linear-gradient(135deg, #e1f5fe, #b3e5fc);
@@ -942,7 +950,7 @@
     </div>
   </div>
 
-  <!-- Ice Hint Banner (shown on first ice level: Level 5) -->
+  <!-- Ice Hint Banner (shown on first ice level of each world: 5, 12, 23, 33, 43) -->
   <div class="ice-hint-banner" id="iceHintBanner">
     ❄️ Ô băng có 2 lớp — gộp trực tiếp 2 lần để phá! Chỉ gộp được qua băng cùng loại.
   </div>
@@ -1108,6 +1116,10 @@
         <button class="chibi-btn toggle-btn" id="togVib" onclick="toggleSetting('vib')">BẬT</button>
       </div>
       <div class="setting-row">
+        <span>⚡ Hiệu năng</span>
+        <button class="chibi-btn toggle-btn" id="togPerf" onclick="togglePerfMode()">Mượt mà</button>
+      </div>
+      <div class="setting-row">
         <span>📱 Cài đặt ứng dụng</span>
         <button class="chibi-btn btn-sky toggle-btn" onclick="SFX.click(); closeModal('settingsModal'); openInstallGuide();">📲 Cài App</button>
       </div>
@@ -1208,12 +1220,13 @@ async function handleInstallClick() {
 /* =========================================
    1. CHIBI SVG CHARACTERS & WORLDS DATA
    ========================================= */
+// Màu nền ô Mèo đổi sang xanh mint pastel (#C8F7DC) để khác biệt hoàn toàn với Gà con (#FFE26A)
 const CHARS = [
   { id: 0, name: 'Trứng',     bg: '#FFF2C6', line: '#F2B84B', basePts: 40,  bio: 'Một quả trứng bé xíu, bên trong là điều kỳ diệu đang chờ nở!' },
   { id: 1, name: 'Gà con',    bg: '#FFE26A', line: '#F59F00', basePts: 60,  bio: 'Chíp chíp! Bé gà con vàng ươm luôn tràn đầy năng lượng mỗi sáng.' },
   { id: 2, name: 'Vịt con',   bg: '#BCEEFF', line: '#29B6F6', basePts: 85,  bio: 'Thích bơi lội tung tăng và hay kêu quạc quạc rủ bạn chơi cùng.' },
   { id: 3, name: 'Thỏ',       bg: '#FFC4E1', line: '#F06292', basePts: 120, bio: 'Đôi tai dài mềm mịn, nhảy tưng tưng mỗi khi thấy cà rốt.' },
-  { id: 4, name: 'Mèo',       bg: '#FFD0A6', line: '#FB8C00', basePts: 165, bio: 'Hơi kiêu một chút nhưng lại mê được vuốt ve dưới cằm.' },
+  { id: 4, name: 'Mèo',       bg: '#C8F7DC', line: '#34C77B', basePts: 165, bio: 'Hơi kiêu một chút nhưng lại mê được vuốt ve dưới cằm.' },
   { id: 5, name: 'Cún',       bg: '#DCC4FF', line: '#8E5CE6', basePts: 220, bio: 'Người bạn trung thành luôn vẫy đuôi chào đón bạn trở về.' },
   { id: 6, name: 'Gấu',       bg: '#E2BEA8', line: '#8D5B42', basePts: 300, bio: 'Ôm cực kỳ ấm áp và sẵn sàng chia sẻ hũ mật ong ngọt lịm.' },
   { id: 7, name: 'Vua Sư Tử', bg: '#FFC45C', line: '#E65100', basePts: 420, bio: 'Vị vua oai phong nhưng siêu dễ thương của Vương Quốc Chibi!' }
@@ -1226,6 +1239,8 @@ const WORLDS = [
   { id: 4, name: 'Thành Phố Kẹo',    icon: '🍬', range: [31, 40], bg: '#f9ebff', decor: ['🍬','🍭','🍩','🧁','🍓'] },
   { id: 5, name: 'Vương Quốc Sư Tử', icon: '👑', range: [41, 50], bg: '#fff6e0', decor: ['👑','✨','☀️','⭐','🦁'] }
 ];
+
+const ICE_HINT_LEVELS = [5, 12, 23, 33, 43];
 
 const BOOSTERS_INFO = {
   hammer:  { id: 'hammer',  name: 'Búa',       icon: '🔨', price: 100, desc: 'Đập vỡ 1 ô bất kỳ' },
@@ -1505,7 +1520,6 @@ function buildLevels() {
         locks, ices: Math.max(3, ices - 1)
       };
     } else if (mod === 3 || mod === 7) {
-      // Màn băng: hạ ngưỡng sao xuống ~73% để dễ đạt 2-3 sao khi chơi tốt
       const baseStar = Math.round((8400 * scale) / 100) * 100;
       lv = {
         id, moves: 22, maxSpawn,
@@ -1514,7 +1528,6 @@ function buildLevels() {
         locks, ices
       };
     } else if (mod === 5 || mod === 9) {
-      // Màn thu thập cấp cao (25, 29, 35, 39, 45, 49): cân bằng số lượng & lượt
       const colLv = id >= 45 ? 7 : Math.min(6, 4 + Math.floor(world / 2));
       const target = colLv === 7 ? 1 : (colLv === 6 ? 2 : 3);
       const baseStar = Math.round((11500 * scale) / 100) * 100;
@@ -1579,11 +1592,17 @@ const LOGIN_REWARDS = [
 ];
 
 /* =========================================
-   5. SAVE DATA & RETROACTIVE LEGACY SYNC
+   5. SAVE DATA, AUTO-DETECT LOW-END DEVICE & LEGACY SYNC
    ========================================= */
 const SAVE_KEY = 'chibiMergeSave_v1';
 const MAX_HEARTS = 5;
 const HEART_REGEN_MS = 10 * 60 * 1000;
+
+function detectDefaultPerfMode() {
+  const lowMem = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 4;
+  const lowCpu = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
+  return (lowMem || lowCpu) ? 'light' : 'smooth';
+}
 
 function getTodayStr() {
   const d = new Date();
@@ -1598,6 +1617,11 @@ function loadProgress() {
   let raw = {};
   try { raw = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); } catch (e) { raw = {}; }
 
+  const rawSettings = raw.settings && typeof raw.settings === 'object' ? raw.settings : {};
+  const perf = (rawSettings.perf === 'light' || rawSettings.perf === 'smooth')
+    ? rawSettings.perf
+    : detectDefaultPerfMode();
+
   return {
     unlocked: typeof raw.unlocked === 'number' ? Math.max(1, raw.unlocked) : 1,
     stars: raw.stars && typeof raw.stars === 'object' ? raw.stars : {},
@@ -1610,7 +1634,7 @@ function loadProgress() {
     codex: Array.isArray(raw.codex) ? raw.codex : [],
     codexRewarded: !!raw.codexRewarded,
     stats: Object.assign({ merges: 0, ices: 0, winStreak: 0, maxChain: 0, maxCombo: 0, lions: 0 }, raw.stats || {}),
-    settings: Object.assign({ music: true, sfx: true, vib: true }, raw.settings || {}),
+    settings: Object.assign({ music: true, sfx: true, vib: true, perf }, rawSettings, { perf }),
     daily: raw.daily || { date: '', quests: [] },
     login: raw.login || { streak: 0, lastClaimDate: '' },
     tutorialSeen: !!raw.tutorialSeen
@@ -1621,6 +1645,10 @@ let progressData = loadProgress();
 
 function saveProgress() {
   localStorage.setItem(SAVE_KEY, JSON.stringify(progressData));
+}
+
+function applyPerfClass() {
+  document.body.classList.toggle('perf-light', progressData.settings.perf === 'light');
 }
 
 function syncLegacyProgress() {
@@ -1828,7 +1856,6 @@ let chainType = null;
 let combo = 0;
 let comboTime = 0;
 const COMBO_MAX_TIME = 5500;
-let lastFrameTime = performance.now();
 let lastIceWarnTime = 0;
 
 let pendingLevel = 1;
@@ -1844,13 +1871,14 @@ const dragPreviewEl = document.getElementById('dragPreview');
 
 function applyWorldTheme(lvNum) {
   const worldId = Math.ceil(lvNum / 10);
-  document.body.className = `world-${worldId}`;
+  document.body.className = `world-${worldId}` + (progressData.settings.perf === 'light' ? ' perf-light' : '');
   renderBgDecor(worldId);
 }
 
 function renderBgDecor(worldId) {
   const box = document.getElementById('bgDecor');
   box.innerHTML = '';
+  if (progressData.settings.perf === 'light') return;
   const w = WORLDS[worldId - 1];
   for (let i = 0; i < 16; i++) {
     const el = document.createElement('div');
@@ -2055,7 +2083,7 @@ document.getElementById('btnConfirmPlay').onclick = () => {
 };
 
 /* =========================================
-   8. LEVEL START, BOARD & BOOSTERS IN-GAME
+   8. LEVEL START, BOARD, DEADLOCK CHECK & BOOSTERS
    ========================================= */
 function buildEvoBar() {
   const bar = document.getElementById('evoBar');
@@ -2075,6 +2103,102 @@ function buildEvoBar() {
       bar.appendChild(arr);
     }
   });
+}
+
+function canTileJoinChain(tile, currentType) {
+  if (!tile || tile.locked) return false;
+  if (tile.special !== null) {
+    // Cầu Vồng / Bom vẫn phải tuân quy tắc băng nếu bị đóng băng (trừ khi cùng loại)
+    if (tile.ice > 0 && currentType !== null && tile.level !== currentType) return false;
+    return true;
+  }
+  return currentType === null || tile.level === currentType;
+}
+
+// Kiểm tra bàn còn chuỗi hợp lệ không (>=3 ô, hoặc >=2 ô có Bom)
+function hasValidMove() {
+  const visited = Array.from({ length: SIZE }, () => Array(SIZE).fill(false));
+
+  function dfs(r, c, curType, len, hasBomb) {
+    if (len >= 3 || (hasBomb && len >= 2)) return true;
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        const nr = r + dr, nc = c + dc;
+        if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE || visited[nr][nc]) continue;
+        const nt = board[nr][nc];
+        if (!canTileJoinChain(nt, curType)) continue;
+        visited[nr][nc] = true;
+        const nextType = (curType === null && nt.special === null) ? nt.level : curType;
+        const nextBomb = hasBomb || nt.special === 'bomb';
+        if (dfs(nr, nc, nextType, len + 1, nextBomb)) {
+          visited[nr][nc] = false;
+          return true;
+        }
+        visited[nr][nc] = false;
+      }
+    }
+    return false;
+  }
+
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c < SIZE; c++) {
+      const t = board[r][c];
+      if (!t || t.locked) continue;
+      visited[r][c] = true;
+      const startType = t.special === null ? t.level : null;
+      const found = dfs(r, c, startType, 1, t.special === 'bomb');
+      visited[r][c] = false;
+      if (found) return true;
+    }
+  }
+  return false;
+}
+
+function shuffleMovableTiles() {
+  const coords = [];
+  const tiles = [];
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c < SIZE; c++) {
+      const t = board[r][c];
+      // Ô băng & ô khóa đứng yên, chỉ xáo các ô di chuyển được
+      if (t && !t.locked && t.ice === 0) {
+        coords.push([r, c]);
+        tiles.push(t);
+      }
+    }
+  }
+  shuffle(tiles);
+  coords.forEach(([r, c], i) => {
+    board[r][c] = tiles[i];
+    board[r][c].anim = 'fall';
+  });
+}
+
+function ensurePlayableBoard(showNotice = true) {
+  if (hasValidMove()) return;
+  for (let attempt = 0; attempt < 8; attempt++) {
+    shuffleMovableTiles();
+    if (hasValidMove()) break;
+  }
+  // Nếu vẫn hết nước (trường hợp cực hiếm), tạo 1 cụm 3 ô giống nhau ở 3 ô trống liền kề
+  if (!hasValidMove()) {
+    const free = [];
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        if (!board[r][c].locked && board[r][c].ice === 0) free.push([r, c]);
+      }
+    }
+    if (free.length >= 3) {
+      const lv = board[free[0][0]][free[0][1]].level;
+      board[free[1][0]][free[1][1]].level = lv;
+      board[free[2][0]][free[2][1]].level = lv;
+    }
+  }
+  renderBoard();
+  if (showNotice) {
+    showToast('🔀', 'Bàn hết nước đi — đã xáo lại!');
+  }
 }
 
 function startLevel(lvNum) {
@@ -2099,7 +2223,7 @@ function startLevel(lvNum) {
   activeBoosterMode = null;
 
   document.getElementById('boardFrame').classList.remove('board-locked');
-  document.getElementById('iceHintBanner').classList.toggle('show', lvNum === 5);
+  document.getElementById('iceHintBanner').classList.toggle('show', ICE_HINT_LEVELS.includes(lvNum));
 
   updateComboUI();
   renderInGameBoosters();
@@ -2124,6 +2248,7 @@ function startLevel(lvNum) {
     board[r][c].ice = 2;
   }
 
+  ensurePlayableBoard(false);
   renderBoard(true);
   updateHUD();
   resizeCanvases();
@@ -2178,13 +2303,7 @@ function useBoosterClick(id) {
   if (id === 'shuffle') {
     progressData.boosters.shuffle--;
     saveProgress();
-    const flat = [];
-    for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) flat.push(board[r][c]);
-    shuffle(flat);
-    for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-      board[r][c] = flat[r * SIZE + c];
-      board[r][c].anim = 'fall';
-    }
+    shuffleMovableTiles();
     SFX.merge(3);
     renderBoard();
     renderInGameBoosters();
@@ -2211,7 +2330,6 @@ function createTile(level, special = null) {
   return { level, special, locked: false, ice: 0, anim: '' };
 }
 
-// Tăng tỉ lệ xuất hiện ô cấp cao (Thỏ, Mèo, Cún) từ màn 9 và đặc biệt từ màn 15 trở đi
 function randLevel(maxSpawn, cfg = null) {
   const lvId = cfg ? cfg.id : currentLevel;
   const r = Math.random();
@@ -2368,7 +2486,7 @@ function updateHUD() {
 }
 
 /* =========================================
-   10. PROMINENT DRAG-AND-CONNECT (1.35x HEAD) + PREVIEW BUBBLE
+   10. PROMINENT DRAG-AND-CONNECT + PREVIEW BUBBLE
    ========================================= */
 const boardFrame = document.getElementById('boardFrame');
 
@@ -2395,7 +2513,7 @@ boardFrame.addEventListener('pointerdown', (e) => {
       saveProgress();
       if (board[r][c].ice > 0 && cfg.goal.type === 'ice') goalCount++;
       board[r][c] = null;
-      spawnParticlesAtCell(r, c, 18, '#ff9800');
+      spawnParticlesAtCell(r, c, 12, '#ff9800');
       SFX.bomb();
       applyGravity(cfg.maxSpawn, cfg);
     } else if (activeBoosterMode === 'rainbow') {
@@ -2404,7 +2522,7 @@ boardFrame.addEventListener('pointerdown', (e) => {
       board[r][c].special = 'rainbow';
       board[r][c].locked = false;
       board[r][c].anim = 'merge';
-      spawnParticlesAtCell(r, c, 18, '#ff6b9d');
+      spawnParticlesAtCell(r, c, 12, '#ff6b9d');
       SFX.coin();
     }
     activeBoosterMode = null;
@@ -2412,6 +2530,7 @@ boardFrame.addEventListener('pointerdown', (e) => {
     renderInGameBoosters();
     updateHUD();
     checkEndState();
+    if (!isGameOver) ensurePlayableBoard(true);
     return;
   }
 
@@ -2422,6 +2541,8 @@ boardFrame.addEventListener('pointerdown', (e) => {
   chain = [{ r, c }];
   chainType = tile.special ? null : tile.level;
   SFX.select(0);
+  // Tối đa 6 hạt khi kéo mỗi ô (chế độ Nhẹ: 2 hạt)
+  spawnParticlesAtCell(r, c, progressData.settings.perf === 'light' ? 2 : 6, CHARS[tile.level].line);
   updateSelectionUI();
 });
 
@@ -2451,9 +2572,7 @@ window.addEventListener('pointermove', (e) => {
   const tile = board[r][c];
   if (tile.locked) return;
 
-  const canConnect = tile.special !== null || chainType === null || tile.level === chainType;
-  if (!canConnect) {
-    // Nhắc nhỏ khi chuỗi bị chặn vì đi qua ô băng khác loại
+  if (!canTileJoinChain(tile, chainType)) {
     if (tile.ice > 0 && Date.now() - lastIceWarnTime > 1700) {
       lastIceWarnTime = Date.now();
       showToast('❄️', 'Ô băng khác loại chặn chuỗi! Chỉ nối qua băng cùng loại.');
@@ -2464,6 +2583,8 @@ window.addEventListener('pointermove', (e) => {
   if (chainType === null && !tile.special) chainType = tile.level;
   chain.push({ r, c });
   SFX.select(chain.length - 1);
+  // Tối đa 6 hạt khi kéo mỗi ô
+  spawnParticlesAtCell(r, c, progressData.settings.perf === 'light' ? 2 : 6, CHARS[tile.level].line);
   updateSelectionUI();
 });
 
@@ -2497,8 +2618,7 @@ function updateSelectionUI() {
       } else if (selectedSet.has(key)) {
         el.classList.add('selected');
       } else {
-        const canMatch = !t.locked && (t.special !== null || chainType === null || t.level === chainType);
-        if (canMatch) el.classList.add('connectable');
+        if (canTileJoinChain(t, chainType)) el.classList.add('connectable');
         else el.classList.add('dimmed');
       }
     }
@@ -2546,8 +2666,10 @@ function drawChainLine() {
   lineCtx.lineCap = 'round';
   lineCtx.lineJoin = 'round';
   lineCtx.strokeStyle = '#ff9800';
-  lineCtx.shadowColor = '#ffd700';
-  lineCtx.shadowBlur = 16;
+  if (progressData.settings.perf !== 'light') {
+    lineCtx.shadowColor = '#ffd700';
+    lineCtx.shadowBlur = 14;
+  }
   lineCtx.beginPath();
   chain.forEach((p, i) => {
     const el = gridEl.children[p.r * SIZE + p.c];
@@ -2567,7 +2689,7 @@ function drawChainLine() {
 }
 
 /* =========================================
-   11. MERGE, LIGHT RAYS BURST, STATS & WIN/LOSE
+   11. MERGE, GRAVITY (PINNED ICE/LOCK), STATS & WIN/LOSE
    ========================================= */
 function finishDrag() {
   if (!isDragging) return;
@@ -2581,6 +2703,7 @@ function finishDrag() {
   document.querySelectorAll('.tile').forEach(el => el.classList.remove('selected', 'dragging-head', 'connectable', 'dimmed'));
 
   const hasBomb = chain.some(p => board[p.r][p.c].special === 'bomb');
+  // Chuỗi bị từ chối: giữ nguyên combo, không reset combo hay comboTime
   if (chain.length < 3 && !(hasBomb && chain.length >= 2)) {
     chain = [];
     return;
@@ -2592,7 +2715,17 @@ function executeMerge() {
   if (isGameOver || isPaused) return;
   const cfg = LEVELS[currentLevel - 1];
   const len = chain.length;
-  const lastPos = chain[len - 1];
+
+  // Chọn ô đích gộp kết quả: ưu tiên ô cuối chuỗi KHÔNG phải ô băng để ô gộp kết quả không rơi vào ô băng
+  let mergePos = chain[len - 1];
+  for (let i = len - 1; i >= 0; i--) {
+    const p = chain[i];
+    if (board[p.r][p.c] && board[p.r][p.c].ice === 0) {
+      mergePos = p;
+      break;
+    }
+  }
+  const mergeKey = `${mergePos.r},${mergePos.c}`;
 
   combo = comboTime > 0 ? Math.min(5, combo + 1) : 1;
   comboTime = COMBO_MAX_TIME;
@@ -2634,42 +2767,33 @@ function executeMerge() {
       const nr = p.r + dr, nc = p.c + dc;
       if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && board[nr][nc].locked) {
         board[nr][nc].locked = false;
-        spawnParticlesAtCell(nr, nc, 8, '#ffb347');
+        spawnParticlesAtCell(nr, nc, 6, '#ffb347');
       }
     });
   });
 
   let bombExtraCleared = 0;
   toClear.forEach(key => {
+    if (key === mergeKey) return;
     const [r, c] = key.split(',').map(Number);
     const t = board[r][c];
-    if (r === lastPos.r && c === lastPos.c) return;
+    if (!t) return;
 
     if (t.ice > 1) {
       t.ice -= 1;
-      spawnParticlesAtCell(r, c, 6, '#80d8ff');
+      spawnParticlesAtCell(r, c, 5, '#80d8ff');
     } else {
       if (t.ice === 1) {
         t.ice = 0;
         progressData.stats.ices++;
         updateDailyProgress('ices', 1);
         if (cfg.goal.type === 'ice') goalCount++;
-        spawnParticlesAtCell(r, c, 10, '#80d8ff');
+        spawnParticlesAtCell(r, c, 8, '#80d8ff');
       }
       if (!chainKeys.has(key)) bombExtraCleared++;
       board[r][c] = null;
     }
   });
-
-  const targetTile = board[lastPos.r][lastPos.c];
-  if (targetTile && targetTile.ice > 0) {
-    targetTile.ice -= 1;
-    if (targetTile.ice === 0) {
-      progressData.stats.ices++;
-      updateDailyProgress('ices', 1);
-      if (cfg.goal.type === 'ice') goalCount++;
-    }
-  }
 
   let spawnedSpecial = null;
   if (len >= 6) spawnedSpecial = 'bomb';
@@ -2678,12 +2802,27 @@ function executeMerge() {
     updateDailyProgress('rainbows', 1);
   }
 
-  const newTile = createTile(newLv, spawnedSpecial);
-  newTile.anim = 'merge';
-  if (targetTile && targetTile.ice > 0) newTile.ice = targetTile.ice;
-  board[lastPos.r][lastPos.c] = newTile;
+  // Xử lý ô đích gộp
+  const targetTile = board[mergePos.r][mergePos.c];
+  let createdTile = false;
+  if (targetTile && targetTile.ice > 1) {
+    // Trường hợp tất cả các ô trong chuỗi đều có băng 2 lớp: giảm băng, không ghi đè thành ô gộp
+    targetTile.ice -= 1;
+  } else {
+    if (targetTile && targetTile.ice === 1) {
+      targetTile.ice = 0;
+      progressData.stats.ices++;
+      updateDailyProgress('ices', 1);
+      if (cfg.goal.type === 'ice') goalCount++;
+    }
+    const newTile = createTile(newLv, spawnedSpecial);
+    newTile.anim = 'merge';
+    board[mergePos.r][mergePos.c] = newTile;
+    createdTile = true;
+  }
 
-  if (!spawnedSpecial) {
+  // Bộ đếm thu thập chỉ tính con vật được TẠO RA
+  if (createdTile && !spawnedSpecial) {
     unlockCodex(newLv);
     if (newLv === 7) {
       progressData.stats.lions++;
@@ -2702,6 +2841,7 @@ function executeMerge() {
   const gained = baseScore + longBonus + bombBonus;
 
   score += gained;
+  // Mọi chuỗi hợp lệ (kể cả qua Cầu Vồng / Bom) đều trừ 1 lượt ở màn thường
   if (!isTimedLevel) movesLeft--;
 
   const reasons = [];
@@ -2709,19 +2849,17 @@ function executeMerge() {
   if (longBonus > 0) reasons.push(`Thưởng chuỗi ${len}! +${longBonus}`);
   if (bombBonus > 0) reasons.push(`Bom +${bombBonus}`);
 
-  const targetEl = gridEl.children[lastPos.r * SIZE + lastPos.c];
+  const targetEl = gridEl.children[mergePos.r * SIZE + mergePos.c];
   const tr = targetEl.getBoundingClientRect();
   const cx = tr.left + tr.width / 2;
   const cy = tr.top + tr.height / 2;
   const burstColor = CHARS[newLv].line;
 
-  if (fxCanvas.width !== window.innerWidth || fxCanvas.height !== window.innerHeight) {
-    fxCanvas.width = window.innerWidth;
-    fxCanvas.height = window.innerHeight;
+  const isLight = progressData.settings.perf === 'light';
+  if (!isLight) {
+    spawnLightBurst(cx, cy, len >= 5 ? 12 : 10, len >= 5 ? 132 : 108);
   }
-
-  spawnLightBurst(cx, cy, len >= 5 ? 12 : 10, len >= 5 ? 132 : 108);
-  spawnParticles(cx, cy, len >= 5 ? 28 : 18, burstColor);
+  spawnParticles(cx, cy, isLight ? 8 : (len >= 5 ? 22 : 14), burstColor);
   showFloatingScore(cx, cy, `+${gained}`, reasons.join(' • '));
 
   if (len >= 5) {
@@ -2739,25 +2877,35 @@ function executeMerge() {
   renderBoard();
   updateHUD();
   checkEndState();
+  if (!isGameOver) ensurePlayableBoard(true);
 }
 
+// Ô băng và ô khóa đứng yên không rơi; chỉ các ô bình thường rơi lấp chỗ trống
 function applyGravity(maxSpawn, cfg = null) {
   for (let c = 0; c < SIZE; c++) {
-    let writeR = SIZE - 1;
+    const movable = [];
+    const freeRows = [];
     for (let r = SIZE - 1; r >= 0; r--) {
-      if (board[r][c] !== null) {
-        if (writeR !== r) {
-          board[writeR][c] = board[r][c];
-          board[writeR][c].anim = 'fall';
-          board[r][c] = null;
-        }
-        writeR--;
+      const t = board[r][c];
+      if (t !== null && (t.ice > 0 || t.locked)) {
+        // Đứng yên tại chỗ
+        continue;
+      }
+      freeRows.push(r);
+      if (t !== null) {
+        movable.push({ tile: t, oldR: r });
       }
     }
-    for (let r = writeR; r >= 0; r--) {
-      const nt = createTile(randLevel(maxSpawn, cfg));
-      nt.anim = 'fall';
-      board[r][c] = nt;
+    for (let i = 0; i < freeRows.length; i++) {
+      const targetR = freeRows[i];
+      if (i < movable.length) {
+        board[targetR][c] = movable[i].tile;
+        if (movable[i].oldR !== targetR) board[targetR][c].anim = 'fall';
+      } else {
+        const nt = createTile(randLevel(maxSpawn, cfg));
+        nt.anim = 'fall';
+        board[targetR][c] = nt;
+      }
     }
   }
 }
@@ -2830,10 +2978,18 @@ function checkEndState(timeUp = false) {
 }
 
 /* =========================================
-   12. PARTICLES, BOLD LIGHT RAYS, FIREWORKS & LOOP
+   12. ON-DEMAND FX LOOP (rAF CHỈ CHẠY KHI CÒN HẠT / TIA SÁNG)
    ========================================= */
 let particles = [];
 let lightBursts = [];
+let fxRafId = null;
+let lastFxTime = 0;
+
+function startFxLoop() {
+  if (fxRafId !== null) return;
+  lastFxTime = performance.now();
+  fxRafId = requestAnimationFrame(fxLoop);
+}
 
 function spawnLightBurst(x, y, rays = 12, maxR = 115) {
   lightBursts.push({
@@ -2842,6 +2998,7 @@ function spawnLightBurst(x, y, rays = 12, maxR = 115) {
     life: 1,
     duration: 850
   });
+  startFxLoop();
 }
 
 function showToast(icon, msg) {
@@ -2860,7 +3017,7 @@ function spawnParticlesAtCell(r, c, count, color = null) {
   spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, count, color);
 }
 
-function spawnParticles(x, y, count = 16, mainColor = null) {
+function spawnParticles(x, y, count = 12, mainColor = null) {
   const colors = ['#ff6b9d', '#ffb347', '#ffd93d', '#6bcb77', '#72c6e8', '#c77dff'];
   const shapes = ['star', 'heart', 'circle'];
   for (let i = 0; i < count; i++) {
@@ -2874,12 +3031,15 @@ function spawnParticles(x, y, count = 16, mainColor = null) {
       life: 1, decay: 0.02 + Math.random() * 0.018
     });
   }
+  startFxLoop();
 }
 
 function launchFireworks() {
-  for (let i = 0; i < 5; i++) {
+  const bursts = progressData.settings.perf === 'light' ? 3 : 5;
+  const count = progressData.settings.perf === 'light' ? 12 : 24;
+  for (let i = 0; i < bursts; i++) {
     setTimeout(() => {
-      spawnParticles(window.innerWidth * (0.2 + Math.random() * 0.6), window.innerHeight * (0.2 + Math.random() * 0.4), 28);
+      spawnParticles(window.innerWidth * (0.2 + Math.random() * 0.6), window.innerHeight * (0.2 + Math.random() * 0.4), count);
     }, i * 200);
   }
 }
@@ -2925,29 +3085,9 @@ function drawStar(ctx, x, y, r) {
   ctx.closePath(); ctx.fill();
 }
 
-let secTick = 0;
-function gameLoop(now) {
-  const dt = now - lastFrameTime;
-  lastFrameTime = now;
-
-  secTick += dt;
-  if (secTick >= 1000) {
-    secTick = 0;
-    if (document.getElementById('homeScreen').classList.contains('active')) updateHomeUI();
-  }
-
-  if (document.getElementById('gameScreen').classList.contains('active') && !isPaused && !isGameOver) {
-    if (comboTime > 0) {
-      comboTime = Math.max(0, comboTime - dt);
-      if (comboTime === 0) combo = 0;
-      updateComboUI();
-    }
-    if (isTimedLevel && timeRemainingMs > 0) {
-      timeRemainingMs = Math.max(0, timeRemainingMs - dt);
-      updateHUD();
-      if (timeRemainingMs === 0) checkEndState(true);
-    }
-  }
+function fxLoop(now) {
+  const dt = Math.min(64, now - lastFxTime);
+  lastFxTime = now;
 
   fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
 
@@ -3009,8 +3149,42 @@ function gameLoop(now) {
     else { fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2); fxCtx.fill(); }
     fxCtx.restore();
   }
-  requestAnimationFrame(gameLoop);
+
+  if (particles.length > 0 || lightBursts.length > 0) {
+    fxRafId = requestAnimationFrame(fxLoop);
+  } else {
+    fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+    fxRafId = null;
+  }
 }
+
+// Bộ đếm thời gian nhẹ (100ms) cho combo, màn tính giờ và hồi tim — không chạy rAF khi đứng yên
+let lastTimerTick = performance.now();
+let homeSecAccum = 0;
+setInterval(() => {
+  const now = performance.now();
+  const dt = now - lastTimerTick;
+  lastTimerTick = now;
+
+  homeSecAccum += dt;
+  if (homeSecAccum >= 1000) {
+    homeSecAccum = 0;
+    if (document.getElementById('homeScreen').classList.contains('active')) updateHomeUI();
+  }
+
+  if (document.getElementById('gameScreen').classList.contains('active') && !isPaused && !isGameOver) {
+    if (comboTime > 0) {
+      comboTime = Math.max(0, comboTime - dt);
+      if (comboTime === 0) combo = 0;
+      updateComboUI();
+    }
+    if (isTimedLevel && timeRemainingMs > 0) {
+      timeRemainingMs = Math.max(0, timeRemainingMs - dt);
+      updateHUD();
+      if (timeRemainingMs === 0) checkEndState(true);
+    }
+  }
+}, 100);
 
 /* =========================================
    13. INTERACTIVE 5-STEP TUTORIAL WITH REAL SCREEN HIGHLIGHT
@@ -3330,6 +3504,10 @@ function openSettings() {
     btn.textContent = on ? 'BẬT' : 'TẮT';
     btn.className = 'chibi-btn toggle-btn ' + (on ? 'btn-mint' : 'is-disabled');
   });
+  const perfBtn = document.getElementById('togPerf');
+  const isSmooth = progressData.settings.perf !== 'light';
+  perfBtn.textContent = isSmooth ? 'Mượt mà' : 'Nhẹ';
+  perfBtn.className = 'chibi-btn toggle-btn ' + (isSmooth ? 'btn-mint' : 'btn-gold');
   openModal('settingsModal');
 }
 
@@ -3341,6 +3519,18 @@ function toggleSetting(k) {
     if (progressData.settings.music) { initAudio(); startBGM(); }
     else stopBGM();
   }
+  openSettings();
+}
+
+function togglePerfMode() {
+  progressData.settings.perf = progressData.settings.perf === 'light' ? 'smooth' : 'light';
+  saveProgress();
+  SFX.click();
+  applyPerfClass();
+  const worldId = document.getElementById('gameScreen').classList.contains('active')
+    ? Math.ceil(currentLevel / 10)
+    : 1;
+  renderBgDecor(worldId);
   openSettings();
 }
 
@@ -3367,16 +3557,18 @@ document.getElementById('btnMap').onclick = () => { SFX.click(); openMap(); };
 document.getElementById('btnPause').onclick = () => { SFX.click(); togglePause(); };
 document.getElementById('btnRestart').onclick = () => { SFX.click(); openPreLevel(currentLevel); };
 
+// Giới hạn canvas ở độ phân giải CSS pixel (không nhân devicePixelRatio)
 function resizeCanvases() {
   const rect = boardFrame.getBoundingClientRect();
-  lineCanvas.width = rect.width;
-  lineCanvas.height = rect.height;
+  lineCanvas.width = Math.round(rect.width);
+  lineCanvas.height = Math.round(rect.height);
   fxCanvas.width = window.innerWidth;
   fxCanvas.height = window.innerHeight;
 }
 window.addEventListener('resize', resizeCanvases);
 
 // Boot
+applyPerfClass();
 syncLegacyProgress();
 buildEvoBar();
 renderBgDecor(1);
@@ -3384,7 +3576,6 @@ document.getElementById('mascotBox').innerHTML = getChibiSVG(7, null, true);
 document.getElementById('miniMascotBox').innerHTML = getChibiSVG(7, null, true);
 updateHomeUI();
 resizeCanvases();
-requestAnimationFrame(gameLoop);
 </script>
 </body>
 </html>
