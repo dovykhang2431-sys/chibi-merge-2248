@@ -255,11 +255,12 @@
   }
   .star-marker.earned { filter: none; transform: scale(1.22); }
 
-  /* Combo bar */
+  /* Combo bar + Non-overlapping Banner Slot */
   .combo-bar-wrap {
-    height: 22px; margin-bottom: 4px;
+    height: 28px; margin-bottom: 4px;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 6px;
+    position: relative;
   }
   .combo-pill {
     background: linear-gradient(90deg, #ff6b9d, #ffb347);
@@ -279,6 +280,20 @@
     height: 100%; width: 100%;
     background: linear-gradient(90deg, #ff6b9d, #ffbe0b);
     transition: width 0.1s linear;
+  }
+  #bannerSlot {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none; z-index: 20;
+  }
+  .big-combo {
+    font-size: 16px; font-weight: 900;
+    background: linear-gradient(135deg, #ff5e92, #ff9900);
+    color: #fff; padding: 3px 14px; border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(255, 94, 146, 0.35);
+    border: 2px solid #fff;
+    animation: comboPop 1.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    white-space: nowrap;
   }
 
   /* Board */
@@ -358,7 +373,7 @@
     margin-top: 7px;
   }
   .booster-btn {
-    flex: 1; max-width: 110px;
+    flex: 1; max-width: 120px;
     background: var(--card); border: 2px solid #ffd6e0; border-radius: 14px;
     padding: 5px 8px; cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 5px;
@@ -395,47 +410,37 @@
   .evo-item.active { opacity: 1; transform: scale(1.16); box-shadow: 0 2px 6px rgba(0,0,0,0.18); }
   .evo-arrow { font-size: 10px; color: #c49aa8; font-weight: 900; }
 
-  /* FX Layer & Toast */
+  /* FX Layer & Bottom Toast (never covers HUD/board) */
   #fxCanvas {
     position: fixed; inset: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 50;
   }
   .float-score {
     position: fixed; pointer-events: none; z-index: 60;
-    font-weight: 900; font-size: 21px; color: #ff477e;
+    font-weight: 900; font-size: 20px; color: #ff477e;
     text-shadow: 0 2px 0 #fff, 0 4px 10px rgba(255,71,126,0.35);
-    animation: floatUp 1.05s ease-out forwards;
+    animation: floatUp 0.95s ease-out forwards;
     text-align: center; white-space: nowrap;
   }
   .float-sub {
-    display: block; font-size: 12px; font-weight: 800; color: #e67e22;
+    display: block; font-size: 11.5px; font-weight: 800; color: #e67e22;
     text-shadow: 0 1px 0 #fff;
   }
-  .big-combo {
-    position: fixed; left: 50%; top: 44%; transform: translate(-50%, -50%);
-    pointer-events: none; z-index: 65;
-    font-size: 32px; font-weight: 900;
-    background: linear-gradient(180deg, #ff5e92, #ff9900);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 3px 0 #fff) drop-shadow(0 6px 14px rgba(255,94,146,0.4));
-    animation: comboPop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    white-space: nowrap;
-  }
   #toastBox {
-    position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
-    z-index: 200; display: flex; flex-direction: column; gap: 6px;
-    width: 90%; max-width: 380px; pointer-events: none;
+    position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+    z-index: 200; display: flex; flex-direction: column-reverse; gap: 5px;
+    width: 90%; max-width: 360px; pointer-events: none;
   }
   .toast-item {
     background: linear-gradient(135deg, #fff9e6, #ffe0b2);
-    border: 3px solid #ffb347; border-radius: 18px;
-    padding: 10px 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    display: flex; align-items: center; gap: 10px;
-    font-size: 13px; font-weight: 800; color: #5a3e4d;
-    animation: toastIn 0.3s ease-out;
+    border: 2.5px solid #ffb347; border-radius: 16px;
+    padding: 7px 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12.5px; font-weight: 800; color: #5a3e4d;
+    animation: toastIn 0.22s ease-out;
   }
   @keyframes toastIn {
-    from { transform: translateY(-24px); opacity: 0; }
+    from { transform: translateY(18px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
   }
 
@@ -506,7 +511,7 @@
   .map-stars { font-size: 9px; margin-top: 1px; }
   .boss-crown { position: absolute; top: -6px; font-size: 12px; }
 
-  /* Cards for Quests, Achievements, Codex, Boosters, Settings */
+  /* Cards */
   .list-card {
     display: flex; align-items: center; gap: 10px;
     background: #fff; padding: 9px 11px; border-radius: 15px; margin-bottom: 8px;
@@ -534,11 +539,16 @@
   }
   .booster-pick {
     background: #fff; border: 2.5px solid #ffe0eb; border-radius: 16px;
-    padding: 8px; text-align: center; cursor: pointer;
+    padding: 8px; text-align: center; cursor: pointer; position: relative;
   }
   .booster-pick.picked {
     background: #fff8e1; border-color: #ff9800;
-    box-shadow: 0 0 0 2px rgba(255,152,0,0.25);
+    box-shadow: 0 0 0 2px rgba(255,152,0,0.3);
+  }
+  .picked-tag {
+    position: absolute; top: 5px; right: 6px;
+    background: #ff9800; color: #fff; font-size: 9.5px; font-weight: 900;
+    padding: 1px 5px; border-radius: 8px;
   }
   .buy-btn-mini {
     margin-top: 5px; border: none; border-radius: 10px;
@@ -583,13 +593,13 @@
   }
   @keyframes floatUp {
     0% { transform: translate(-50%, 0) scale(0.85); opacity: 1; }
-    100% { transform: translate(-50%, -68px) scale(1.1); opacity: 0; }
+    100% { transform: translate(-50%, -62px) scale(1.08); opacity: 0; }
   }
   @keyframes comboPop {
-    0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
-    25% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
-    75% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    100% { transform: translate(-50%, -70%) scale(0.9); opacity: 0; }
+    0% { transform: scale(0.6); opacity: 0; }
+    15% { transform: scale(1.08); opacity: 1; }
+    80% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.92); opacity: 0; }
   }
   @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.14); } }
 </style>
@@ -686,12 +696,13 @@
     </div>
   </div>
 
-  <!-- Combo -->
+  <!-- Combo Bar & Non-overlapping Banner Slot -->
   <div class="combo-bar-wrap">
     <div class="combo-pill" id="comboPill">COMBO x1</div>
     <div class="combo-timer-bg" id="comboTimerBg">
       <div class="combo-timer-fill" id="comboTimerFill"></div>
     </div>
+    <div id="bannerSlot"></div>
   </div>
 
   <!-- 5x5 Board -->
@@ -719,8 +730,9 @@
     <h2 id="preLvTitle">🌸 Màn 1</h2>
     <div class="modal-body">
       <div id="preLvGoal" style="text-align:center;font-weight:800;color:#8c5a2b;background:#fff9eb;padding:8px;border-radius:14px;border:2px solid #ffe4b5;margin-bottom:8px;"></div>
-      <div style="text-align:center;font-size:12.5px;font-weight:800;color:#a87b8e;">
-        Chọn tối đa 2 Booster mang vào màn (🪙 <span id="preLvCoins">0</span> xu)
+      <div style="text-align:center;font-size:12px;font-weight:800;color:#a87b8e;line-height:1.35;">
+        Chạm vào thẻ booster để chọn/bỏ chọn (tối đa 2), rồi bấm Bắt Đầu.<br>
+        Số xu hiện có: 🪙 <span id="preLvCoins" style="color:#b86b00;">0</span> xu
       </div>
       <div class="booster-pick-grid" id="boosterPickGrid"></div>
     </div>
@@ -874,10 +886,10 @@ const CHARS = [
 ];
 
 const WORLDS = [
-  { id: 1, name: 'Vườn Hoa',       icon: '🌸', range: [1, 10],  bg: '#fff0f5', decor: ['🌸','🌼','🌺','🌷'] },
-  { id: 2, name: 'Rừng Xanh',      icon: '🌿', range: [11, 20], bg: '#eefbe8', decor: ['🌿','🍃','🍀','🌱'] },
-  { id: 3, name: 'Biển Cả',        icon: '🌊', range: [21, 30], bg: '#e6f7ff', decor: ['🌊','🐚','🫧','⭐'] },
-  { id: 4, name: 'Thành Phố Kẹo',  icon: '🍬', range: [31, 40], bg: '#f9ebff', decor: ['🍬','🍭','🍩','🧁'] },
+  { id: 1, name: 'Vườn Hoa',         icon: '🌸', range: [1, 10],  bg: '#fff0f5', decor: ['🌸','🌼','🌺','🌷'] },
+  { id: 2, name: 'Rừng Xanh',        icon: '🌿', range: [11, 20], bg: '#eefbe8', decor: ['🌿','🍃','🍀','🌱'] },
+  { id: 3, name: 'Biển Cả',          icon: '🌊', range: [21, 30], bg: '#e6f7ff', decor: ['🌊','🐚','🫧','⭐'] },
+  { id: 4, name: 'Thành Phố Kẹo',    icon: '🍬', range: [31, 40], bg: '#f9ebff', decor: ['🍬','🍭','🍩','🧁'] },
   { id: 5, name: 'Vương Quốc Sư Tử', icon: '👑', range: [41, 50], bg: '#fff6e0', decor: ['👑','✨','☀️','🦁'] }
 ];
 
@@ -1119,7 +1131,6 @@ function buildLevels() {
     { id: 20, moves: 16, maxSpawn: 6, goal: { type: 'score', target: 14500 },         stars: [11000, 14600, 16500],locks: 5, ices: 5, boss: true }
   ];
 
-  // Generate levels 21..50 with balanced progression
   for (let id = 21; id <= 50; id++) {
     const world = Math.ceil(id / 10);
     const isBoss = id % 10 === 0;
@@ -1193,23 +1204,23 @@ const LEVELS = buildLevels();
    4. ACHIEVEMENTS, DAILY QUESTS & 7-DAY LOGIN
    ========================================= */
 const ACHIEVEMENTS = [
-  { id: 'newbie',   name: 'Tay Mới',            desc: 'Qua màn 1',                        icon: '🌱', reward: 50 },
-  { id: 'merge100', name: 'Gộp 100 Lần',        desc: 'Gộp tổng cộng 100 lần',            icon: '✨', reward: 100 },
-  { id: 'lion1',    name: 'Vua Sư Tử Đầu Tiên', desc: 'Tạo Vua Sư Tử lần đầu tiên',       icon: '🦁', reward: 150 },
-  { id: 'chain10',  name: 'Chuỗi 10 Ô',         desc: 'Nối chuỗi 10 ô trong 1 lần kéo',   icon: '🔗', reward: 150 },
-  { id: 'stars10',  name: 'Ngôi Sao Vàng',      desc: 'Đạt 3 sao ở 10 màn',               icon: '🌟', reward: 200 },
+  { id: 'newbie',   name: 'Tay Mới',               desc: 'Qua màn 1',                        icon: '🌱', reward: 50 },
+  { id: 'merge100', name: 'Gộp 100 Lần',           desc: 'Gộp tổng cộng 100 lần',            icon: '✨', reward: 100 },
+  { id: 'lion1',    name: 'Vua Sư Tử Đầu Tiên',    desc: 'Tạo Vua Sư Tử lần đầu tiên',       icon: '🦁', reward: 150 },
+  { id: 'chain10',  name: 'Chuỗi 10 Ô',            desc: 'Nối chuỗi 10 ô trong 1 lần kéo',   icon: '🔗', reward: 150 },
+  { id: 'stars10',  name: 'Ngôi Sao Vàng',         desc: 'Đạt 3 sao ở 10 màn',               icon: '🌟', reward: 200 },
   { id: 'streak5',  name: 'Thắng 5 Màn Liên Tiếp', desc: 'Thắng 5 màn liên tiếp không thua', icon: '🔥', reward: 200 },
-  { id: 'ice50',    name: 'Phá Băng',           desc: 'Phá tổng cộng 50 ô Băng',          icon: '❄️', reward: 100 },
-  { id: 'combo5',   name: 'Bậc Thầy Combo',     desc: 'Đạt Combo x5',                     icon: '⚡', reward: 150 }
+  { id: 'ice50',    name: 'Phá Băng',              desc: 'Phá tổng cộng 50 ô Băng',          icon: '❄️', reward: 100 },
+  { id: 'combo5',   name: 'Bậc Thầy Combo',        desc: 'Đạt Combo x5',                     icon: '⚡', reward: 150 }
 ];
 
 const DAILY_POOL = [
-  { id: 'dq_merge',   type: 'merges',   target: 30, text: 'Gộp 30 lần',             reward: 60 },
-  { id: 'dq_lion',    type: 'lions',    target: 2,  text: 'Tạo 2 Vua Sư Tử',        reward: 100 },
-  { id: 'dq_3star',   type: 'stars3',   target: 2,  text: 'Đạt 3 sao 2 màn',        reward: 90 },
-  { id: 'dq_rainbow', type: 'rainbows', target: 5,  text: 'Tạo 5 ô Cầu Vồng',       reward: 80 },
-  { id: 'dq_ice',     type: 'ices',     target: 10, text: 'Phá 10 ô Băng',          reward: 70 },
-  { id: 'dq_play',    type: 'plays',    target: 5,  text: 'Chơi 5 màn bất kỳ',      reward: 50 }
+  { id: 'dq_merge',   type: 'merges',   target: 30, text: 'Gộp 30 lần',        reward: 60 },
+  { id: 'dq_lion',    type: 'lions',    target: 2,  text: 'Tạo 2 Vua Sư Tử',   reward: 100 },
+  { id: 'dq_3star',   type: 'stars3',   target: 2,  text: 'Đạt 3 sao 2 màn',   reward: 90 },
+  { id: 'dq_rainbow', type: 'rainbows', target: 5,  text: 'Tạo 5 ô Cầu Vồng',  reward: 80 },
+  { id: 'dq_ice',     type: 'ices',     target: 10, text: 'Phá 10 ô Băng',     reward: 70 },
+  { id: 'dq_play',    type: 'plays',    target: 5,  text: 'Chơi 5 màn bất kỳ', reward: 50 }
 ];
 
 const LOGIN_REWARDS = [
@@ -1229,11 +1240,11 @@ const LOGIN_REWARDS = [
 ];
 
 /* =========================================
-   5. SAVE DATA (BACKWARD-COMPATIBLE MIGRATION)
+   5. SAVE DATA & RETROACTIVE LEGACY SYNC
    ========================================= */
 const SAVE_KEY = 'chibiMergeSave_v1';
 const MAX_HEARTS = 5;
-const HEART_REGEN_MS = 10 * 60 * 1000; // 10 phút
+const HEART_REGEN_MS = 10 * 60 * 1000;
 
 function getTodayStr() {
   const d = new Date();
@@ -1248,7 +1259,6 @@ function loadProgress() {
   let raw = {};
   try { raw = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); } catch (e) { raw = {}; }
 
-  // Preserve old unlocked & stars, initialize new fields with defaults
   const data = {
     unlocked: typeof raw.unlocked === 'number' ? Math.max(1, raw.unlocked) : 1,
     stars: raw.stars && typeof raw.stars === 'object' ? raw.stars : {},
@@ -1274,11 +1284,82 @@ function saveProgress() {
   localStorage.setItem(SAVE_KEY, JSON.stringify(progressData));
 }
 
+// Đồng bộ ngược tiến độ cũ sang Điểm cao nhất, Sổ Tay Chibi và Thành Tích
+function syncLegacyProgress() {
+  let changed = false;
+  let maxPassed = Math.max(0, progressData.unlocked - 1);
+  let estimatedHighScore = progressData.highScore;
+
+  Object.entries(progressData.stars).forEach(([lvIdStr, starCount]) => {
+    const lvId = Number(lvIdStr);
+    const st = Number(starCount);
+    if (st >= 1 && lvId >= 1 && lvId <= LEVELS.length) {
+      if (lvId > maxPassed) maxPassed = lvId;
+      const cfg = LEVELS[lvId - 1];
+      const milestoneScore = cfg.stars[Math.min(2, st - 1)];
+      if (milestoneScore > estimatedHighScore) estimatedHighScore = milestoneScore;
+    }
+  });
+
+  if (estimatedHighScore > progressData.highScore) {
+    progressData.highScore = estimatedHighScore;
+    changed = true;
+  }
+
+  // Mở khóa Sổ Tay tương ứng với các bậc Chibi đã từng tạo ra ở các màn đã qua
+  if (maxPassed >= 1) {
+    let highestTierReached = 0;
+    for (let id = 1; id <= maxPassed; id++) {
+      const cfg = LEVELS[id - 1];
+      highestTierReached = Math.max(highestTierReached, cfg.maxSpawn);
+      if (cfg.goal.type === 'collect') highestTierReached = Math.max(highestTierReached, cfg.goal.level);
+      if (cfg.goal.type === 'collect2') highestTierReached = Math.max(highestTierReached, cfg.goal.l1, cfg.goal.l2);
+    }
+    highestTierReached = Math.min(CHARS.length - 1, highestTierReached);
+    for (let t = 0; t <= highestTierReached; t++) {
+      if (!progressData.codex.includes(t)) {
+        progressData.codex.push(t);
+        changed = true;
+      }
+    }
+    if (progressData.codex.length === CHARS.length && !progressData.codexRewarded) {
+      progressData.codexRewarded = true;
+      progressData.coins += 500;
+      changed = true;
+    }
+  }
+
+  // Đồng bộ Thành Tích từ tiến độ đã có (chạy im lặng, không spam toast lúc mở game)
+  const stars3Count = Object.values(progressData.stars).filter(v => v >= 3).length;
+  if (!progressData.achievements.newbie && maxPassed >= 1) {
+    progressData.achievements.newbie = true;
+    progressData.coins += 50;
+    changed = true;
+  }
+  if (!progressData.achievements.stars10 && stars3Count >= 10) {
+    progressData.achievements.stars10 = true;
+    progressData.coins += 200;
+    changed = true;
+  }
+
+  if (changed) saveProgress();
+}
+
+function syncCoinsUI() {
+  const txt = progressData.coins.toLocaleString('vi-VN');
+  const gEl = document.getElementById('gameCoins');
+  const hEl = document.getElementById('homeCoins');
+  const pEl = document.getElementById('preLvCoins');
+  if (gEl) gEl.textContent = txt;
+  if (hEl) hEl.textContent = txt;
+  if (pEl) pEl.textContent = txt;
+}
+
 function addCoins(amount) {
   progressData.coins += amount;
   saveProgress();
+  syncCoinsUI();
   updateHomeUI();
-  document.getElementById('gameCoins').textContent = progressData.coins.toLocaleString('vi-VN');
 }
 
 function regenHearts() {
@@ -1374,15 +1455,20 @@ function checkAchievements() {
     ice50: s.ices >= 50,
     combo5: s.maxCombo >= 5
   };
+  let anyUnlocked = false;
   ACHIEVEMENTS.forEach(a => {
     if (!progressData.achievements[a.id] && checks[a.id]) {
       progressData.achievements[a.id] = true;
       progressData.coins += a.reward;
+      anyUnlocked = true;
       SFX.coin();
       showToast(a.icon, `Thành tích "${a.name}"! +${a.reward} 🪙`);
     }
   });
-  saveProgress();
+  if (anyUnlocked) {
+    saveProgress();
+    syncCoinsUI();
+  }
 }
 
 /* =========================================
@@ -1400,7 +1486,6 @@ let isGameOver = false;
 let isTimedLevel = false;
 let timeRemainingMs = 0;
 
-// Dragging & Combo
 let isDragging = false;
 let chain = [];
 let chainType = null;
@@ -1409,10 +1494,9 @@ let comboTime = 0;
 const COMBO_MAX_TIME = 5500;
 let lastFrameTime = performance.now();
 
-// Boosters for current level
 let pendingLevel = 1;
 let pickedBoosters = [];
-let activeBoosterMode = null; // 'hammer' | 'rainbow' | null
+let activeBoosterMode = null;
 
 const gridEl = document.getElementById('grid');
 const lineCanvas = document.getElementById('lineCanvas');
@@ -1484,7 +1568,6 @@ function updateHomeUI() {
   const nextLv = Math.min(progressData.unlocked, LEVELS.length);
   document.getElementById('btnHomePlay').textContent = `▶ CHƠI MÀN ${nextLv}`;
 
-  // Daily quest red dot
   const hasClaimable = progressData.daily.quests.some(q => !q.claimed && q.progress >= q.target);
   const dailyBtn = document.getElementById('btnDailyMenu');
   dailyBtn.querySelectorAll('.red-dot').forEach(d => d.remove());
@@ -1494,7 +1577,6 @@ function updateHomeUI() {
     dailyBtn.appendChild(dot);
   }
 
-  // 7-day login strip
   const today = getTodayStr();
   const claimedToday = progressData.login.lastClaimDate === today;
   const currentDayNum = claimedToday ? progressData.login.streak : ((progressData.login.streak % 7) + 1);
@@ -1543,7 +1625,7 @@ function formatGoalText(cfg) {
 }
 
 function renderBoosterPicker() {
-  document.getElementById('preLvCoins').textContent = progressData.coins.toLocaleString('vi-VN');
+  syncCoinsUI();
   const grid = document.getElementById('boosterPickGrid');
   grid.innerHTML = '';
   Object.values(BOOSTERS_INFO).forEach(b => {
@@ -1552,6 +1634,7 @@ function renderBoosterPicker() {
     const card = document.createElement('div');
     card.className = 'booster-pick' + (isPicked ? ' picked' : '');
     card.innerHTML = `
+      ${isPicked ? '<span class="picked-tag">✓ Đã chọn</span>' : ''}
       <div style="font-size:24px;">${b.icon}</div>
       <div style="font-weight:900;font-size:13px;">${b.name} (${owned})</div>
       <div style="font-size:10.5px;color:#8c6b7a;">${b.desc}</div>
@@ -1580,6 +1663,10 @@ function buyBooster(id) {
   }
   progressData.coins -= b.price;
   progressData.boosters[id] = (progressData.boosters[id] || 0) + 1;
+  // Tự động chọn booster vừa mua nếu chưa đủ 2 slot
+  if (!pickedBoosters.includes(id) && pickedBoosters.length < 2) {
+    pickedBoosters.push(id);
+  }
   saveProgress();
   SFX.coin();
   renderBoosterPicker();
@@ -1607,6 +1694,7 @@ document.getElementById('btnBuyHeart').onclick = () => {
   SFX.coin();
   showToast('❤️', 'Đã mua +1 Tim!');
   closeModal('heartModal');
+  syncCoinsUI();
   updateHomeUI();
 };
 
@@ -1742,7 +1830,6 @@ function useBoosterClick(id) {
     return;
   }
 
-  // hammer or rainbow -> toggle target mode
   activeBoosterMode = activeBoosterMode === id ? null : id;
   renderInGameBoosters();
 }
@@ -1839,7 +1926,7 @@ function updateHUD() {
   const cfg = LEVELS[currentLevel - 1];
   const world = WORLDS[Math.ceil(cfg.id / 10) - 1];
   document.getElementById('levelBadge').textContent = `${world.icon} Màn ${cfg.id}${cfg.boss ? ' 👑' : ''}`;
-  document.getElementById('gameCoins').textContent = progressData.coins.toLocaleString('vi-VN');
+  syncCoinsUI();
   document.getElementById('scoreVal').textContent = score.toLocaleString('vi-VN');
 
   const mvLabel = document.getElementById('movesLabel');
@@ -1898,7 +1985,6 @@ boardFrame.addEventListener('pointerdown', (e) => {
   if (!cell) return;
   const r = +cell.dataset.r, c = +cell.dataset.c;
 
-  // Handle Hammer / Rainbow Booster targeting
   if (activeBoosterMode) {
     const cfg = LEVELS[currentLevel - 1];
     if (activeBoosterMode === 'hammer') {
@@ -2040,7 +2126,6 @@ function executeMerge() {
   comboTime = COMBO_MAX_TIME;
   updateComboUI();
 
-  // Stats & Quests
   progressData.stats.merges++;
   progressData.stats.maxChain = Math.max(progressData.stats.maxChain, len);
   progressData.stats.maxCombo = Math.max(progressData.stats.maxCombo, combo);
@@ -2072,7 +2157,6 @@ function executeMerge() {
     SFX.merge(combo);
   }
 
-  // Unlock adjacent locked tiles
   chain.forEach(p => {
     [[-1,0],[1,0],[0,-1],[0,1]].forEach(([dr, dc]) => {
       const nr = p.r + dr, nc = p.c + dc;
@@ -2083,7 +2167,6 @@ function executeMerge() {
     });
   });
 
-  // Process cleared cells
   let bombExtraCleared = 0;
   toClear.forEach(key => {
     const [r, c] = key.split(',').map(Number);
@@ -2141,7 +2224,6 @@ function executeMerge() {
     }
   }
 
-  // Transparent scoring
   const baseScore = CHARS[baseLv].basePts * len * combo;
   const longBonus = len >= 5 ? (len - 4) * 120 : 0;
   const bombBonus = bombExtraCleared * 40;
@@ -2206,7 +2288,6 @@ function checkEndState(timeUp = false) {
     const moveBonus = isTimedLevel ? 0 : movesLeft * 120;
     score += moveBonus;
     if (score > progressData.highScore) progressData.highScore = score;
-    updateHUD();
 
     const earnedStars = score >= cfg.stars[2] ? 3 : (score >= cfg.stars[1] ? 2 : 1);
     const prevStars = progressData.stars[cfg.id] || 0;
@@ -2217,12 +2298,11 @@ function checkEndState(timeUp = false) {
     if (earnedStars === 3) updateDailyProgress('stars3', 1);
     progressData.stats.winStreak++;
 
-    // Coin rewards
+    // Cộng xu thưởng sao & rương boss
     const starCoins = earnedStars * 50;
     let rewardText = `+${starCoins} 🪙`;
     progressData.coins += starCoins;
 
-    // Boss chest
     if (cfg.boss) {
       const bossCoins = 250;
       const bKeys = Object.keys(BOOSTERS_INFO);
@@ -2234,6 +2314,11 @@ function checkEndState(timeUp = false) {
 
     saveProgress();
     checkAchievements();
+    // Cập nhật ngay toàn bộ HUD (gồm thanh xu trong màn & trang chủ) trước khi mở hộp thoại qua màn
+    updateHUD();
+    syncCoinsUI();
+    updateHomeUI();
+
     SFX.win();
     launchFireworks();
     setTimeout(() => showResult(true, earnedStars, moveBonus, rewardText), 420);
@@ -2251,7 +2336,7 @@ function checkEndState(timeUp = false) {
 }
 
 /* =========================================
-   12. PARTICLES, FIREWORKS, TOAST & LOOP
+   12. PARTICLES, FIREWORKS, NON-OVERLAPPING TOAST & BANNER
    ========================================= */
 let particles = [];
 
@@ -2259,9 +2344,9 @@ function showToast(icon, msg) {
   const box = document.getElementById('toastBox');
   const item = document.createElement('div');
   item.className = 'toast-item';
-  item.innerHTML = `<span style="font-size:20px;">${icon}</span><span>${msg}</span>`;
+  item.innerHTML = `<span style="font-size:18px;">${icon}</span><span>${msg}</span>`;
   box.appendChild(item);
-  setTimeout(() => item.remove(), 3200);
+  setTimeout(() => item.remove(), 1600);
 }
 
 function spawnParticlesAtCell(r, c, count, color = null) {
@@ -2302,15 +2387,18 @@ function showFloatingScore(x, y, mainText, subText = '') {
   el.style.top = y + 'px';
   el.innerHTML = mainText + (subText ? `<span class="float-sub">${subText}</span>` : '');
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1080);
+  setTimeout(() => el.remove(), 980);
 }
 
+// Hiện banner Combo / Thưởng chuỗi ngay phía trên bàn cờ (dưới HUD), không che ô bàn cờ
 function showBigCombo(text) {
+  const slot = document.getElementById('bannerSlot');
+  slot.innerHTML = '';
   const el = document.createElement('div');
   el.className = 'big-combo';
   el.textContent = text;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 920);
+  slot.appendChild(el);
+  setTimeout(() => { if (el.parentNode === slot) el.remove(); }, 1400);
 }
 
 function drawHeart(ctx, x, y, s) {
@@ -2339,14 +2427,12 @@ function gameLoop(now) {
   const dt = now - lastFrameTime;
   lastFrameTime = now;
 
-  // Periodic heart timer refresh on home screen
   secTick += dt;
   if (secTick >= 1000) {
     secTick = 0;
     if (document.getElementById('homeScreen').classList.contains('active')) updateHomeUI();
   }
 
-  // In-game timers
   if (document.getElementById('gameScreen').classList.contains('active') && !isPaused && !isGameOver) {
     if (comboTime > 0) {
       comboTime = Math.max(0, comboTime - dt);
@@ -2360,7 +2446,6 @@ function gameLoop(now) {
     }
   }
 
-  // Particles
   fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
@@ -2619,7 +2704,8 @@ function resizeCanvases() {
 }
 window.addEventListener('resize', resizeCanvases);
 
-// Boot on Home Screen
+// Boot: đồng bộ ngược dữ liệu cũ trước khi hiển thị Trang Chủ
+syncLegacyProgress();
 buildEvoBar();
 renderBgDecor(1);
 document.getElementById('mascotBox').innerHTML = getChibiSVG(7, null, true);
