@@ -67,6 +67,18 @@
     100% { transform: translateY(-16vh) rotate(360deg) scale(0.95); }
   }
 
+  /* Auto-save indicator */
+  #saveIndicator {
+    position: fixed; top: 8px; right: 10px; z-index: 250;
+    background: rgba(255, 255, 255, 0.94);
+    border: 2px solid #7ae5b8; border-radius: 14px;
+    padding: 3px 10px; font-size: 11px; font-weight: 900; color: #269c70;
+    box-shadow: 0 4px 10px rgba(38, 156, 112, 0.2);
+    pointer-events: none; opacity: 0; transform: translateY(-6px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  #saveIndicator.show { opacity: 1; transform: translateY(0); }
+
   .screen {
     width: 100%; max-width: 460px; height: 100%; max-height: 880px;
     display: none; flex-direction: column;
@@ -79,8 +91,8 @@
      UNIFIED CHIBI PASTEL BUTTON SYSTEM
      ========================= */
   .chibi-btn {
-    border: 2.5px solid rgba(255,255,255,0.92);
-    border-radius: 20px;
+    border: 3px solid rgba(255,255,255,0.95);
+    border-radius: 22px;
     font-family: inherit;
     font-weight: 900;
     cursor: pointer;
@@ -116,6 +128,18 @@
     padding: 10px 16px; font-size: 14px;
     box-shadow: 0 4px 0 #2185c5, 0 6px 14px rgba(71, 178, 245, 0.32);
   }
+  .chibi-btn.btn-lav {
+    background: linear-gradient(180deg, #cfa6ff 0%, #a774f2 100%);
+    color: #fff;
+    padding: 10px 16px; font-size: 14px;
+    box-shadow: 0 4px 0 #7b4bc4, 0 6px 14px rgba(167, 116, 242, 0.32);
+  }
+  .chibi-btn.btn-peach {
+    background: linear-gradient(180deg, #ffab91 0%, #ff7f5c 100%);
+    color: #fff;
+    padding: 10px 16px; font-size: 14px;
+    box-shadow: 0 4px 0 #d45535, 0 6px 14px rgba(255, 127, 92, 0.32);
+  }
   .chibi-btn.btn-secondary {
     background: linear-gradient(180deg, #fff5f8 0%, #ffdbe7 100%);
     color: #c93b6b;
@@ -136,17 +160,23 @@
      HOME SCREEN
      ========================= */
   .home-top {
-    display: flex; justify-content: space-between; align-items: center; gap: 6px;
-    background: var(--card); border-radius: 22px; padding: 8px 10px;
-    box-shadow: var(--shadow); margin-bottom: 10px;
-    border: 2px solid rgba(255,255,255,0.9);
+    display: flex; justify-content: space-between; align-items: center; gap: 5px;
+    background: var(--card); border-radius: 22px; padding: 7px 9px;
+    box-shadow: var(--shadow); margin-bottom: 8px;
+    border: 2.5px solid rgba(255,255,255,0.95);
+    flex-wrap: wrap;
   }
   .res-pill {
     display: flex; align-items: center; gap: 4px;
     background: #fff5f8; border: 2px solid #ffe0eb;
-    border-radius: 14px; padding: 4px 8px;
-    font-size: 12px; font-weight: 900; color: var(--text);
+    border-radius: 14px; padding: 3px 7px;
+    font-size: 11.5px; font-weight: 900; color: var(--text);
     white-space: nowrap;
+  }
+  .res-pill.player-pill {
+    background: linear-gradient(180deg, #fff3f8, #ffdce9);
+    border-color: #ff9ec4; color: #c93b6b; cursor: pointer;
+    max-width: 132px; overflow: hidden; text-overflow: ellipsis;
   }
   .res-pill.clickable { cursor: pointer; }
   .res-pill small { font-size: 10px; color: #a87b8e; font-weight: 700; }
@@ -157,19 +187,19 @@
     text-align: center; min-height: 0;
   }
   .game-logo {
-    font-size: 35px; font-weight: 900; line-height: 1.05;
+    font-size: 34px; font-weight: 900; line-height: 1.05;
     background: linear-gradient(180deg, #ff5e92 0%, #ff9933 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 3px 0 #fff) drop-shadow(0 6px 14px rgba(255, 107, 157, 0.35));
-    margin: 0 0 6px;
+    margin: 0 0 5px;
   }
   .game-sub {
-    font-size: 13px; font-weight: 800; color: #a86b82;
+    font-size: 12.5px; font-weight: 800; color: #a86b82;
     background: rgba(255,255,255,0.82); padding: 3px 12px; border-radius: 14px;
-    margin-bottom: 6px; border: 1.5px solid #ffe0eb;
+    margin-bottom: 5px; border: 1.5px solid #ffe0eb;
   }
   .mascot-wrap {
-    width: 126px; height: 126px; margin: 2px 0 10px;
+    width: 118px; height: 118px; margin: 2px 0 8px;
     animation: mascotBounce 1.8s ease-in-out infinite;
     filter: drop-shadow(0 12px 16px rgba(255, 143, 0, 0.28));
   }
@@ -189,27 +219,29 @@
   }
 
   .btn-play-big {
-    width: 84%; max-width: 286px; padding: 14px 24px;
-    border-radius: 28px; font-size: 21px;
+    width: 84%; max-width: 286px; padding: 13px 24px;
+    border-radius: 28px; font-size: 20px;
     background: linear-gradient(180deg, #ff7eb3 0%, #ff5c8d 100%);
     color: #fff;
     box-shadow: 0 7px 0 #d63d6c, 0 14px 24px rgba(255, 92, 141, 0.42);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+  }
+  .home-sub-actions {
+    display: flex; gap: 8px; margin-bottom: 8px;
   }
   .btn-install-home {
-    padding: 7px 18px; font-size: 13px; border-radius: 18px;
-    margin-bottom: 10px;
+    padding: 6px 14px; font-size: 12.5px; border-radius: 18px;
   }
 
   /* 7-Day Login Strip */
   .login-strip {
     width: 100%; background: var(--card); border-radius: 20px;
-    padding: 8px 10px; box-shadow: var(--shadow); margin-bottom: 10px;
+    padding: 7px 10px; box-shadow: var(--shadow); margin-bottom: 8px;
     border: 2px solid rgba(255,255,255,0.9);
   }
   .login-strip-head {
     display: flex; justify-content: space-between; align-items: center;
-    font-size: 12px; font-weight: 900; color: var(--primary-dark); margin-bottom: 6px;
+    font-size: 12px; font-weight: 900; color: var(--primary-dark); margin-bottom: 5px;
   }
   .login-days {
     display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
@@ -233,12 +265,12 @@
 
   /* Home Menu Grid */
   .home-menu {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;
     width: 100%;
   }
   .menu-btn {
-    padding: 9px 6px; border-radius: 18px;
-    flex-direction: column; gap: 3px;
+    padding: 8px 6px; border-radius: 18px;
+    flex-direction: column; gap: 2px;
     font-size: 11.5px; color: #fff;
   }
   .menu-btn.m-pink { background: linear-gradient(180deg, #ff8fb8, #ff6b9d); box-shadow: 0 4px 0 #d64576; }
@@ -247,14 +279,14 @@
   .menu-btn.m-sky  { background: linear-gradient(180deg, #82d4ff, #47b2f5); box-shadow: 0 4px 0 #2185c5; }
   .menu-btn.m-lav  { background: linear-gradient(180deg, #cfa6ff, #a774f2); box-shadow: 0 4px 0 #7b4bc4; }
   .menu-btn.m-peach{ background: linear-gradient(180deg, #ffab91, #ff7f5c); box-shadow: 0 4px 0 #d45535; }
-  .menu-btn span.ico { font-size: 19px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); }
+  .menu-btn span.ico { font-size: 18px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); }
   .red-dot {
     position: absolute; top: 4px; right: 6px; width: 10px; height: 10px;
     background: #ff3b30; border-radius: 50%; border: 2px solid #fff;
   }
 
   /* =========================
-     GAME SCREEN
+     GAME SCREEN (UNIFIED CHIBI ICON BUTTONS)
      ========================= */
   .top-bar {
     display: flex; justify-content: space-between; align-items: center;
@@ -264,7 +296,7 @@
     background: linear-gradient(135deg, var(--primary), var(--accent));
     color: #fff; font-weight: 900; font-size: 13px;
     padding: 5px 11px; border-radius: 18px;
-    border: 2px solid rgba(255,255,255,0.85);
+    border: 2.5px solid rgba(255,255,255,0.92);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
     display: flex; align-items: center; gap: 4px;
     white-space: nowrap;
@@ -277,12 +309,16 @@
   }
   .icon-btns { display: flex; gap: 4px; }
   .icon-btn {
-    width: 34px; height: 34px; border-radius: 13px; padding: 0;
-    background: linear-gradient(180deg, #fff8fa, #ffe0eb);
-    color: #c93b6b; font-size: 15px;
-    box-shadow: 0 3px 0 #eab5c8;
-    text-shadow: none;
+    width: 35px; height: 35px; border-radius: 15px; padding: 0;
+    font-size: 15px;
+    border: 2.5px solid rgba(255,255,255,0.95);
+    color: #fff;
   }
+  .icon-btn.ic-pink  { background: linear-gradient(180deg, #ff8fb8, #ff6b9d); box-shadow: 0 3.5px 0 #d64576, 0 5px 10px rgba(255,107,157,0.25); }
+  .icon-btn.ic-sky   { background: linear-gradient(180deg, #82d4ff, #47b2f5); box-shadow: 0 3.5px 0 #2185c5, 0 5px 10px rgba(71,178,245,0.25); }
+  .icon-btn.ic-mint  { background: linear-gradient(180deg, #7ae5b8, #42c997); box-shadow: 0 3.5px 0 #269c70, 0 5px 10px rgba(66,201,151,0.25); }
+  .icon-btn.ic-lav   { background: linear-gradient(180deg, #cfa6ff, #a774f2); box-shadow: 0 3.5px 0 #7b4bc4, 0 5px 10px rgba(167,116,242,0.25); }
+  .icon-btn.ic-gold  { background: linear-gradient(180deg, #ffd166, #ffa726); box-shadow: 0 3.5px 0 #d47a00, 0 5px 10px rgba(255,167,38,0.25); }
 
   /* HUD */
   .hud {
@@ -353,7 +389,7 @@
   }
   .star-marker.earned { filter: none; transform: scale(1.24); }
 
-  /* Ice level hint banner (shown on first ice level of each world: 5, 12, 23, 33, 43) */
+  /* Ice level hint banner */
   .ice-hint-banner {
     display: none;
     background: linear-gradient(135deg, #e1f5fe, #b3e5fc);
@@ -486,7 +522,7 @@
   #dragPreviewSvg { width: 28px; height: 28px; }
   #dragPreviewPts { font-size: 13px; font-weight: 900; color: #d85a00; }
 
-  /* Tile - Bigger Chibi, Idle Bounce, Prominent 1.35x Dragging Head */
+  /* Tile */
   .tile {
     position: relative; border-radius: 17px;
     display: flex; align-items: center; justify-content: center;
@@ -604,7 +640,7 @@
   .evo-item.active { opacity: 1; transform: scale(1.16); box-shadow: 0 2px 6px rgba(0,0,0,0.18); }
   .evo-arrow { font-size: 10px; color: #c49aa8; font-weight: 900; }
 
-  /* FX Layer on top of all board tiles */
+  /* FX Layer */
   #fxCanvas {
     position: fixed; inset: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 95;
@@ -658,6 +694,37 @@
   }
   .modal-body { overflow-y: auto; padding-right: 4px; font-size: 13.5px; line-height: 1.45; }
   .btn-row { display: flex; gap: 8px; margin-top: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* Inputs */
+  .chibi-input {
+    width: 100%; padding: 10px 14px; border-radius: 16px;
+    border: 2.5px solid #ffb3cf; background: #fff;
+    font-family: inherit; font-size: 15px; font-weight: 800; color: var(--text);
+    outline: none; user-select: text; -webkit-user-select: text;
+  }
+  .chibi-input:focus { border-color: #ff5c8d; box-shadow: 0 0 0 3px rgba(255, 92, 141, 0.2); }
+  .chibi-textarea {
+    width: 100%; min-height: 84px; padding: 9px 11px; border-radius: 14px;
+    border: 2.5px solid #ffb3cf; background: #fff;
+    font-family: monospace; font-size: 11.5px; color: var(--text);
+    resize: none; outline: none; user-select: text; -webkit-user-select: text;
+    word-break: break-all;
+  }
+  .code-err {
+    color: #d32f2f; font-size: 12px; font-weight: 800;
+    margin-top: 6px; min-height: 16px; text-align: center;
+  }
+
+  /* Profile Grid */
+  .profile-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px;
+  }
+  .profile-stat {
+    background: #fff; border: 2px solid #ffe0eb; border-radius: 16px;
+    padding: 9px 8px; text-align: center;
+  }
+  .profile-stat .p-lbl { font-size: 11px; font-weight: 800; color: #a87b8e; }
+  .profile-stat .p-val { font-size: 17px; font-weight: 900; color: var(--primary-dark); margin-top: 2px; }
 
   /* World Map */
   .world-section {
@@ -720,7 +787,7 @@
   .codex-card.locked-card { background: #f2edf0; border-color: #ddd; opacity: 0.78; }
   .codex-svg { width: 56px; height: 56px; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; }
 
-  /* Booster Picker - Out-of-stock (0): grey/dimmed body + BIG lock at top-right corner, Buy button ALWAYS bright */
+  /* Booster Picker */
   .booster-pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
   .booster-pick {
     background: #fff; border: 2.5px solid #ffe0eb; border-radius: 18px;
@@ -752,11 +819,15 @@
   }
 
   .setting-row {
-    display: flex; justify-content: space-between; align-items: center;
-    background: #fff; padding: 11px 14px; border-radius: 16px;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    background: #fff; padding: 10px 12px; border-radius: 16px;
     margin-bottom: 8px; border: 2px solid #ffe4ec; font-weight: 800;
   }
-  .toggle-btn { padding: 6px 14px; font-size: 12.5px; border-radius: 14px; }
+  .setting-block {
+    background: #fff; padding: 10px 12px; border-radius: 16px;
+    margin-bottom: 8px; border: 2px solid #ffe4ec;
+  }
+  .toggle-btn { padding: 6px 13px; font-size: 12px; border-radius: 14px; }
   .win-stars { text-align: center; font-size: 38px; margin: 4px 0 8px; letter-spacing: 6px; }
 
   /* Install Guide Box */
@@ -776,7 +847,7 @@
   .step-ico { font-size: 15px; flex-shrink: 0; }
   .ico-inline { display: inline-block; padding: 0 4px; font-weight: 900; }
 
-  /* Interactive Tutorial with Real Screen Highlight & Graphic Arrows */
+  /* Interactive Tutorial */
   .tut-highlight {
     position: relative !important;
     z-index: 125 !important;
@@ -860,13 +931,14 @@
 <div id="bgDecor"></div>
 <canvas id="fxCanvas"></canvas>
 <div id="toastBox"></div>
+<div id="saveIndicator">✓ Đã lưu</div>
 
 <!-- =========================
      SCREEN 1: HOME SCREEN
      ========================= -->
 <div id="homeScreen" class="screen active">
   <div class="home-top">
-    <div class="res-pill" title="Điểm cao nhất">🏆 <span id="homeHighScore">0</span></div>
+    <div class="res-pill player-pill" id="homePlayerPill" title="Xem Hồ Sơ">🐾 <span id="homePlayerName">Người Chơi</span></div>
     <div class="res-pill" title="Tổng sao">⭐ <span id="homeStars">0/150</span></div>
     <div class="res-pill" title="Số xu">🪙 <span id="homeCoins">0</span></div>
     <div class="res-pill clickable" id="homeHeartsPill" title="Số tim (Bấm để mua thêm)">❤️ <span id="homeHearts">5/5</span></div>
@@ -877,7 +949,10 @@
     <div class="game-sub">✨ Giải Đố Nối Hình Siêu Cute ✨</div>
     <div class="mascot-wrap" id="mascotBox"></div>
     <button class="chibi-btn btn-play-big" id="btnHomePlay">▶ CHƠI MÀN 1</button>
-    <button class="chibi-btn btn-sky btn-install-home" id="btnHomeInstall">📲 Cài App</button>
+    <div class="home-sub-actions">
+      <button class="chibi-btn btn-mint btn-install-home" onclick="SFX.click(); openProfile()">👤 Hồ Sơ</button>
+      <button class="chibi-btn btn-sky btn-install-home" id="btnHomeInstall">📲 Cài App</button>
+    </div>
   </div>
 
   <!-- 7-Day Login Strip -->
@@ -908,11 +983,11 @@
     <div class="level-badge" id="levelBadge">🌸 Màn 1</div>
     <div class="mini-coin">🪙 <span id="gameCoins">0</span></div>
     <div class="icon-btns">
-      <button class="chibi-btn icon-btn" id="btnHelpGame" title="Hướng dẫn">❓</button>
-      <button class="chibi-btn icon-btn" id="btnHome" title="Màn hình chính">🏠</button>
-      <button class="chibi-btn icon-btn" id="btnMap" title="Bản đồ màn">🗺️</button>
-      <button class="chibi-btn icon-btn" id="btnPause" title="Tạm dừng">⏸️</button>
-      <button class="chibi-btn icon-btn" id="btnRestart" title="Chơi lại">🔄</button>
+      <button class="chibi-btn icon-btn ic-gold" id="btnHelpGame" title="Hướng dẫn">❓</button>
+      <button class="chibi-btn icon-btn ic-pink" id="btnHome" title="Về Màn Hình Chính">🏠</button>
+      <button class="chibi-btn icon-btn ic-sky" id="btnMap" title="Bản đồ màn">🗺️</button>
+      <button class="chibi-btn icon-btn ic-lav" id="btnPause" title="Tạm dừng">⏸️</button>
+      <button class="chibi-btn icon-btn ic-mint" id="btnRestart" title="Chơi lại">🔄</button>
     </div>
   </div>
 
@@ -950,12 +1025,12 @@
     </div>
   </div>
 
-  <!-- Ice Hint Banner (shown on first ice level of each world: 5, 12, 23, 33, 43) -->
+  <!-- Ice Hint Banner -->
   <div class="ice-hint-banner" id="iceHintBanner">
     ❄️ Ô băng có 2 lớp — gộp trực tiếp 2 lần để phá! Chỉ gộp được qua băng cùng loại.
   </div>
 
-  <!-- Combo Bar + Mini Mascot + Non-overlapping Speech & Banner -->
+  <!-- Combo Bar + Mini Mascot -->
   <div class="combo-bar-wrap" id="comboBarWrap">
     <div class="mini-mascot-box" id="miniMascotBox"></div>
     <div class="combo-pill" id="comboPill">COMBO x1</div>
@@ -988,6 +1063,60 @@
 <!-- =========================
      MODALS
      ========================= -->
+<!-- Player Name Prompt Modal (First time / Rename) -->
+<div class="modal-backdrop" id="nameModal">
+  <div class="modal">
+    <h2>🐾 Đặt Tên Người Chơi</h2>
+    <div class="modal-body" style="text-align:center;">
+      <p style="font-weight:700;margin:0 0 10px;">Hãy đặt một cái tên thật dễ thương cho hồ sơ của bạn (tối đa 12 ký tự):</p>
+      <input type="text" id="playerNameInput" class="chibi-input" maxlength="12" placeholder="Người Chơi">
+    </div>
+    <div class="btn-row">
+      <button class="chibi-btn btn-primary" onclick="SFX.click(); confirmPlayerName()">✓ Lưu Tên</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal-backdrop" id="profileModal">
+  <div class="modal">
+    <h2>👤 Hồ Sơ Người Chơi</h2>
+    <div class="modal-body">
+      <div style="text-align:center;background:#fff;border:2px solid #ffe0eb;border-radius:18px;padding:10px;">
+        <div style="font-size:20px;font-weight:900;color:var(--primary-dark);" id="profName">Người Chơi</div>
+        <button class="chibi-btn btn-lav" style="margin-top:6px;padding:5px 12px;font-size:12px;" onclick="SFX.click(); closeModal('profileModal'); openNameModal(true);">✏️ Đổi Tên</button>
+      </div>
+      <div class="profile-grid">
+        <div class="profile-stat"><div class="p-lbl">⭐ Tổng Sao</div><div class="p-val" id="profStars">0/150</div></div>
+        <div class="profile-stat"><div class="p-lbl">🏆 Điểm Cao Nhất</div><div class="p-val" id="profHighScore">0</div></div>
+        <div class="profile-stat"><div class="p-lbl">🗺️ Màn Đã Qua</div><div class="p-val" id="profLevels">0/50</div></div>
+        <div class="profile-stat"><div class="p-lbl">🪙 Tổng Xu</div><div class="p-val" id="profCoins">0</div></div>
+        <div class="profile-stat"><div class="p-lbl">🏅 Thành Tích</div><div class="p-val" id="profAch">0/8</div></div>
+        <div class="profile-stat"><div class="p-lbl">📖 Chibi Sưu Tầm</div><div class="p-val" id="profCodex">0/8</div></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('profileModal')">⬅️ Quay Lại</button>
+    </div>
+  </div>
+</div>
+
+<!-- Recovery Code Import Modal -->
+<div class="modal-backdrop" id="importCodeModal">
+  <div class="modal">
+    <h2>📥 Nhập Mã Khôi Phục</h2>
+    <div class="modal-body">
+      <p style="font-weight:700;margin:0 0 8px;text-align:center;">Dán mã khôi phục từ máy cũ vào ô bên dưới để tiếp tục tiến trình:</p>
+      <textarea id="importCodeInput" class="chibi-textarea" placeholder="Dán mã bắt đầu bằng CM2248:..."></textarea>
+      <div class="code-err" id="importCodeErr"></div>
+    </div>
+    <div class="btn-row">
+      <button class="chibi-btn btn-secondary" onclick="SFX.click(); closeModal('importCodeModal')">⬅️ Quay Lại</button>
+      <button class="chibi-btn btn-mint" onclick="SFX.click(); applyRecoveryCode()">✓ Khôi Phục</button>
+    </div>
+  </div>
+</div>
+
 <!-- Install Guide Modal -->
 <div class="modal-backdrop" id="installModal">
   <div class="modal">
@@ -1010,7 +1139,7 @@
       </div>
     </div>
     <div class="btn-row">
-      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('installModal')">Đã Hiểu!</button>
+      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('installModal')">⬅️ Quay Lại</button>
     </div>
   </div>
 </div>
@@ -1028,7 +1157,7 @@
       <div class="booster-pick-grid" id="boosterPickGrid"></div>
     </div>
     <div class="btn-row">
-      <button class="chibi-btn btn-secondary" onclick="SFX.click(); closeModal('preLevelModal')">Hủy</button>
+      <button class="chibi-btn btn-secondary" onclick="SFX.click(); closeModal('preLevelModal')">⬅️ Quay Lại</button>
       <button class="chibi-btn btn-primary" id="btnConfirmPlay">▶ Bắt Đầu!</button>
     </div>
   </div>
@@ -1042,7 +1171,7 @@
       <p id="heartModalDesc" style="font-weight:700;"></p>
     </div>
     <div class="btn-row">
-      <button class="chibi-btn btn-secondary" onclick="SFX.click(); closeModal('heartModal')">Đợi Hồi</button>
+      <button class="chibi-btn btn-secondary" onclick="SFX.click(); closeModal('heartModal')">⬅️ Quay Lại</button>
       <button class="chibi-btn btn-gold" id="btnBuyHeart">Mua 1 Tim (200 🪙)</button>
     </div>
   </div>
@@ -1055,7 +1184,7 @@
     <div class="map-toast" id="mapToast"></div>
     <div class="modal-body" id="mapWorldsBody"></div>
     <div class="btn-row">
-      <button class="chibi-btn btn-secondary" onclick="SFX.click(); closeMapModal()">Đóng</button>
+      <button class="chibi-btn btn-secondary" onclick="SFX.click(); closeMapModal()">⬅️ Quay Lại</button>
     </div>
   </div>
 </div>
@@ -1066,7 +1195,7 @@
     <h2>📋 Nhiệm Vụ Ngày</h2>
     <div class="modal-body" id="dailyBody"></div>
     <div class="btn-row">
-      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('dailyModal')">Đóng</button>
+      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('dailyModal')">⬅️ Quay Lại</button>
     </div>
   </div>
 </div>
@@ -1082,7 +1211,7 @@
       <div class="codex-grid" id="codexGrid"></div>
     </div>
     <div class="btn-row">
-      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('codexModal')">Đóng</button>
+      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('codexModal')">⬅️ Quay Lại</button>
     </div>
   </div>
 </div>
@@ -1093,7 +1222,7 @@
     <h2>🏅 Thành Tích</h2>
     <div class="modal-body" id="achBody"></div>
     <div class="btn-row">
-      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('achModal')">Đóng</button>
+      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('achModal')">⬅️ Quay Lại</button>
     </div>
   </div>
 </div>
@@ -1103,6 +1232,13 @@
   <div class="modal">
     <h2>⚙️ Cài Đặt</h2>
     <div class="modal-body">
+      <div class="setting-row">
+        <span>👤 <span id="setPlayerName">Người Chơi</span></span>
+        <div style="display:flex;gap:5px;">
+          <button class="chibi-btn btn-mint toggle-btn" onclick="SFX.click(); closeModal('settingsModal'); openProfile();">Hồ Sơ</button>
+          <button class="chibi-btn btn-lav toggle-btn" onclick="SFX.click(); closeModal('settingsModal'); openNameModal(true);">Đổi Tên</button>
+        </div>
+      </div>
       <div class="setting-row">
         <span>🎵 Nhạc Nền</span>
         <button class="chibi-btn toggle-btn" id="togMusic" onclick="toggleSetting('music')">BẬT</button>
@@ -1119,18 +1255,28 @@
         <span>⚡ Hiệu năng</span>
         <button class="chibi-btn toggle-btn" id="togPerf" onclick="togglePerfMode()">Mượt mà</button>
       </div>
+      <div class="setting-block">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-weight:900;">🔑 Mã Khôi Phục (Đổi máy)</span>
+          <span id="recoveryLenLabel" style="font-size:11px;font-weight:800;color:#8c6b7a;"></span>
+        </div>
+        <div style="display:flex;gap:6px;justify-content:center;">
+          <button class="chibi-btn btn-gold toggle-btn" style="flex:1;" onclick="SFX.click(); copyRecoveryCode()">📋 Sao chép mã</button>
+          <button class="chibi-btn btn-sky toggle-btn" style="flex:1;" onclick="SFX.click(); openImportCodeModal()">📥 Nhập mã</button>
+        </div>
+      </div>
       <div class="setting-row">
         <span>📱 Cài đặt ứng dụng</span>
         <button class="chibi-btn btn-sky toggle-btn" onclick="SFX.click(); closeModal('settingsModal'); openInstallGuide();">📲 Cài App</button>
       </div>
     </div>
     <div class="btn-row">
-      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('settingsModal')">Xong</button>
+      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('settingsModal')">⬅️ Quay Lại</button>
     </div>
   </div>
 </div>
 
-<!-- Interactive 5-Step Tutorial Modal with Real Highlight & Graphic Arrows -->
+<!-- Interactive 5-Step Tutorial Modal -->
 <div class="modal-backdrop" id="tutorialModal">
   <div class="modal">
     <div class="tut-graphic-arrow" id="tutArrowTop" style="display:none;">
@@ -1160,9 +1306,10 @@
       <p>Nghỉ ngơi một chút rồi tiếp tục chinh phục các bé Chibi nhé!</p>
     </div>
     <div class="btn-row">
-      <button class="chibi-btn btn-primary" onclick="SFX.click(); togglePause()">Tiếp Tục</button>
-      <button class="chibi-btn btn-gold" onclick="SFX.click(); closeModal('pauseModal'); openPreLevel(currentLevel);">Chơi Lại</button>
-      <button class="chibi-btn btn-secondary" onclick="SFX.click(); closeModal('pauseModal'); goHome();">🏠 Trang Chủ</button>
+      <button class="chibi-btn btn-primary" onclick="SFX.click(); togglePause()">▶ Tiếp Tục</button>
+      <button class="chibi-btn btn-gold" onclick="SFX.click(); closeModal('pauseModal'); openPreLevel(currentLevel);">🔄 Chơi Lại</button>
+      <button class="chibi-btn btn-lav" onclick="SFX.click(); closeModal('pauseModal'); openSettings();">⚙️ Cài Đặt</button>
+      <button class="chibi-btn btn-pink btn-peach" onclick="SFX.click(); closeModal('pauseModal'); goHome();">🏠 Về Màn Hình Chính</button>
     </div>
   </div>
 </div>
@@ -1220,7 +1367,6 @@ async function handleInstallClick() {
 /* =========================================
    1. CHIBI SVG CHARACTERS & WORLDS DATA
    ========================================= */
-// Màu nền ô Mèo đổi sang xanh mint pastel (#C8F7DC) để khác biệt hoàn toàn với Gà con (#FFE26A)
 const CHARS = [
   { id: 0, name: 'Trứng',     bg: '#FFF2C6', line: '#F2B84B', basePts: 40,  bio: 'Một quả trứng bé xíu, bên trong là điều kỳ diệu đang chờ nở!' },
   { id: 1, name: 'Gà con',    bg: '#FFE26A', line: '#F59F00', basePts: 60,  bio: 'Chíp chíp! Bé gà con vàng ươm luôn tràn đầy năng lượng mỗi sáng.' },
@@ -1592,7 +1738,7 @@ const LOGIN_REWARDS = [
 ];
 
 /* =========================================
-   5. SAVE DATA, AUTO-DETECT LOW-END DEVICE & LEGACY SYNC
+   5. SAVE DATA, AUTO-SAVE INDICATOR & RECOVERY CODE
    ========================================= */
 const SAVE_KEY = 'chibiMergeSave_v1';
 const MAX_HEARTS = 5;
@@ -1623,6 +1769,7 @@ function loadProgress() {
     : detectDefaultPerfMode();
 
   return {
+    playerName: typeof raw.playerName === 'string' && raw.playerName.trim() ? raw.playerName.trim().slice(0, 12) : '',
     unlocked: typeof raw.unlocked === 'number' ? Math.max(1, raw.unlocked) : 1,
     stars: raw.stars && typeof raw.stars === 'object' ? raw.stars : {},
     coins: typeof raw.coins === 'number' ? raw.coins : 0,
@@ -1642,9 +1789,246 @@ function loadProgress() {
 }
 
 let progressData = loadProgress();
+let saveIndTimer = null;
 
-function saveProgress() {
-  localStorage.setItem(SAVE_KEY, JSON.stringify(progressData));
+function showSaveIndicator() {
+  const el = document.getElementById('saveIndicator');
+  if (!el) return;
+  el.classList.add('show');
+  clearTimeout(saveIndTimer);
+  saveIndTimer = setTimeout(() => el.classList.remove('show'), 1500);
+}
+
+function saveProgress(silent = false) {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(progressData));
+    if (!silent) showSaveIndicator();
+  } catch (e) {}
+}
+
+// Tự lưu khi ẩn trang / đóng trang
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') saveProgress(true);
+});
+window.addEventListener('pagehide', () => saveProgress(true));
+window.addEventListener('beforeunload', () => saveProgress(true));
+
+/* --- Player Name & Profile --- */
+function getDisplayName() {
+  return (progressData.playerName && progressData.playerName.trim()) ? progressData.playerName.trim() : 'Người Chơi';
+}
+
+function openNameModal(isEdit = false) {
+  const inp = document.getElementById('playerNameInput');
+  inp.value = isEdit ? getDisplayName() : (progressData.playerName || '');
+  openModal('nameModal');
+  setTimeout(() => inp.focus(), 80);
+}
+
+function confirmPlayerName() {
+  const inp = document.getElementById('playerNameInput');
+  const val = (inp.value || '').trim().slice(0, 12) || 'Người Chơi';
+  progressData.playerName = val;
+  saveProgress();
+  closeModal('nameModal');
+  updateHomeUI();
+  showToast('🐾', `Xin chào ${val}!`);
+}
+
+function openProfile() {
+  const totalStars = Object.values(progressData.stars).reduce((a, b) => a + b, 0);
+  const passedCount = Object.values(progressData.stars).filter(v => v >= 1).length;
+  const achCount = Object.values(progressData.achievements).filter(Boolean).length;
+
+  document.getElementById('profName').textContent = getDisplayName();
+  document.getElementById('profStars').textContent = `${totalStars}/${LEVELS.length * 3}`;
+  document.getElementById('profHighScore').textContent = progressData.highScore.toLocaleString('vi-VN');
+  document.getElementById('profLevels').textContent = `${passedCount}/${LEVELS.length}`;
+  document.getElementById('profCoins').textContent = progressData.coins.toLocaleString('vi-VN');
+  document.getElementById('profAch').textContent = `${achCount}/${ACHIEVEMENTS.length}`;
+  document.getElementById('profCodex').textContent = `${progressData.codex.length}/${CHARS.length}`;
+  openModal('profileModal');
+}
+
+/* --- Compact Recovery Code (Target < 1500 chars, ~200 chars actual) --- */
+function generateRecoveryCode() {
+  // Compact stars string of length up to 50, trimmed trailing zeros
+  let sStr = '';
+  for (let i = 1; i <= LEVELS.length; i++) sStr += String(progressData.stars[i] || 0);
+  sStr = sStr.replace(/0+$/, '');
+
+  // Bitmask for achievements (8 bits) & codex (8 bits)
+  let aMask = 0;
+  ACHIEVEMENTS.forEach((a, idx) => { if (progressData.achievements[a.id]) aMask |= (1 << idx); });
+  let xMask = 0;
+  progressData.codex.forEach(lv => { if (lv >= 0 && lv < 8) xMask |= (1 << lv); });
+
+  // Compact daily quests
+  const dq = (progressData.daily && Array.isArray(progressData.daily.quests))
+    ? progressData.daily.quests.map(q => [DAILY_POOL.findIndex(p => p.id === q.id), q.progress || 0, q.claimed ? 1 : 0])
+    : [];
+
+  const payload = {
+    v: 1,
+    n: getDisplayName(),
+    u: progressData.unlocked,
+    s: sStr,
+    c: progressData.coins,
+    h: progressData.hearts,
+    hs: progressData.highScore,
+    b: [
+      progressData.boosters.hammer || 0,
+      progressData.boosters.shuffle || 0,
+      progressData.boosters.rainbow || 0,
+      progressData.boosters.plus3 || 0
+    ],
+    a: aMask,
+    x: xMask,
+    xr: progressData.codexRewarded ? 1 : 0,
+    d: [progressData.daily.date || '', dq],
+    l: [progressData.login.streak || 0, progressData.login.lastClaimDate || '']
+  };
+
+  const json = JSON.stringify(payload);
+  const b64 = btoa(unescape(encodeURIComponent(json)));
+  return 'CM2248:' + b64 + ':END';
+}
+
+function copyRecoveryCode() {
+  const code = generateRecoveryCode();
+  const lenEl = document.getElementById('recoveryLenLabel');
+  if (lenEl) lenEl.textContent = `Độ dài: ${code.length} ký tự`;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(() => {
+      showToast('📋', `Đã sao chép mã (${code.length} ký tự)!`);
+    }).catch(() => fallbackCopy(code));
+  } else {
+    fallbackCopy(code);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('📋', `Đã sao chép mã (${text.length} ký tự)!`);
+  } catch (e) {
+    showToast('⚠️', 'Không tự sao chép được, hãy thử lại!');
+  }
+  ta.remove();
+}
+
+function openImportCodeModal() {
+  closeModal('settingsModal');
+  document.getElementById('importCodeInput').value = '';
+  document.getElementById('importCodeErr').textContent = '';
+  openModal('importCodeModal');
+}
+
+function applyRecoveryCode() {
+  const errEl = document.getElementById('importCodeErr');
+  errEl.textContent = '';
+  const raw = (document.getElementById('importCodeInput').value || '').trim().replace(/\s+/g, '');
+
+  if (!raw) {
+    errEl.textContent = 'Vui lòng dán mã khôi phục vào ô trên.';
+    SFX.locked();
+    return;
+  }
+  if (!raw.startsWith('CM2248:')) {
+    errEl.textContent = 'Mã không đúng định dạng (phải bắt đầu bằng "CM2248:").';
+    SFX.locked();
+    return;
+  }
+  if (!raw.endsWith(':END')) {
+    errEl.textContent = 'Mã bị cắt giữa chừng (thiếu phần kết thúc ":END"). Vui lòng sao chép đủ toàn bộ mã!';
+    SFX.locked();
+    return;
+  }
+
+  const b64 = raw.slice(7, -4);
+  if (!b64) {
+    errEl.textContent = 'Mã bị trống phần dữ liệu.';
+    SFX.locked();
+    return;
+  }
+
+  let payload;
+  try {
+    const json = decodeURIComponent(escape(atob(b64)));
+    payload = JSON.parse(json);
+  } catch (e) {
+    errEl.textContent = 'Mã bị cắt giữa chừng hoặc bị sửa đổi ký tự, không thể giải mã!';
+    SFX.locked();
+    return;
+  }
+
+  if (!payload || typeof payload !== 'object' || typeof payload.u !== 'number') {
+    errEl.textContent = 'Dữ liệu trong mã không hợp lệ hoặc bị thiếu trường quan trọng.';
+    SFX.locked();
+    return;
+  }
+
+  // Restore all progress safely
+  progressData.playerName = typeof payload.n === 'string' && payload.n.trim() ? payload.n.trim().slice(0, 12) : 'Người Chơi';
+  progressData.unlocked = Math.max(1, Math.min(LEVELS.length, Math.floor(payload.u)));
+
+  const newStars = {};
+  if (typeof payload.s === 'string') {
+    for (let i = 0; i < payload.s.length && i < LEVELS.length; i++) {
+      const v = Number(payload.s[i]);
+      if (v >= 1 && v <= 3) newStars[i + 1] = v;
+    }
+  }
+  progressData.stars = newStars;
+  progressData.coins = Math.max(0, Number(payload.c) || 0);
+  progressData.hearts = Math.max(0, Math.min(MAX_HEARTS, Number(payload.h) || MAX_HEARTS));
+  progressData.lastHeartTime = Date.now();
+  progressData.highScore = Math.max(0, Number(payload.hs) || 0);
+
+  if (Array.isArray(payload.b) && payload.b.length >= 4) {
+    progressData.boosters = {
+      hammer: Math.max(0, Number(payload.b[0]) || 0),
+      shuffle: Math.max(0, Number(payload.b[1]) || 0),
+      rainbow: Math.max(0, Number(payload.b[2]) || 0),
+      plus3: Math.max(0, Number(payload.b[3]) || 0)
+    };
+  }
+
+  const newAch = {};
+  const aMask = Number(payload.a) || 0;
+  ACHIEVEMENTS.forEach((a, idx) => { if (aMask & (1 << idx)) newAch[a.id] = true; });
+  progressData.achievements = newAch;
+
+  const newCodex = [];
+  const xMask = Number(payload.x) || 0;
+  for (let i = 0; i < CHARS.length; i++) { if (xMask & (1 << i)) newCodex.push(i); }
+  progressData.codex = newCodex;
+  progressData.codexRewarded = !!payload.xr;
+
+  if (Array.isArray(payload.d) && payload.d.length === 2 && Array.isArray(payload.d[1])) {
+    const quests = payload.d[1]
+      .filter(item => Array.isArray(item) && DAILY_POOL[item[0]])
+      .map(item => ({ ...DAILY_POOL[item[0]], progress: Number(item[1]) || 0, claimed: !!item[2] }));
+    if (quests.length) progressData.daily = { date: String(payload.d[0] || ''), quests };
+  }
+
+  if (Array.isArray(payload.l) && payload.l.length === 2) {
+    progressData.login = { streak: Number(payload.l[0]) || 0, lastClaimDate: String(payload.l[1] || '') };
+  }
+
+  saveProgress();
+  closeModal('importCodeModal');
+  updateHomeUI();
+  syncCoinsUI();
+  SFX.win();
+  showToast('🎉', `Đã khôi phục tiến trình của ${getDisplayName()}!`);
 }
 
 function applyPerfClass() {
@@ -1706,7 +2090,7 @@ function syncLegacyProgress() {
     changed = true;
   }
 
-  if (changed) saveProgress();
+  if (changed) saveProgress(true);
 }
 
 function syncCoinsUI() {
@@ -1738,7 +2122,7 @@ function regenHearts() {
     const gained = Math.floor(elapsed / HEART_REGEN_MS);
     progressData.hearts = Math.min(MAX_HEARTS, progressData.hearts + gained);
     progressData.lastHeartTime = progressData.hearts >= MAX_HEARTS ? now : progressData.lastHeartTime + gained * HEART_REGEN_MS;
-    saveProgress();
+    saveProgress(true);
   }
 }
 
@@ -1751,7 +2135,7 @@ function ensureDailyQuests() {
       date: today,
       quests: pool.slice(0, 3).map(q => ({ ...q, progress: 0, claimed: false }))
     };
-    saveProgress();
+    saveProgress(true);
   }
 }
 
@@ -1764,7 +2148,7 @@ function updateDailyProgress(type, amount = 1) {
       changed = true;
     }
   });
-  if (changed) saveProgress();
+  if (changed) saveProgress(true);
 }
 
 function checkLoginStreakReset() {
@@ -1773,7 +2157,7 @@ function checkLoginStreakReset() {
   const last = progressData.login.lastClaimDate;
   if (last && last !== today && last !== yest) {
     progressData.login.streak = 0;
-    saveProgress();
+    saveProgress(true);
   }
 }
 
@@ -1917,7 +2301,7 @@ function updateHomeUI() {
   checkLoginStreakReset();
 
   const totalStars = Object.values(progressData.stars).reduce((a, b) => a + b, 0);
-  document.getElementById('homeHighScore').textContent = progressData.highScore.toLocaleString('vi-VN');
+  document.getElementById('homePlayerName').textContent = getDisplayName();
   document.getElementById('homeStars').textContent = `${totalStars}/${LEVELS.length * 3}`;
   document.getElementById('homeCoins').textContent = progressData.coins.toLocaleString('vi-VN');
 
@@ -2108,14 +2492,12 @@ function buildEvoBar() {
 function canTileJoinChain(tile, currentType) {
   if (!tile || tile.locked) return false;
   if (tile.special !== null) {
-    // Cầu Vồng / Bom vẫn phải tuân quy tắc băng nếu bị đóng băng (trừ khi cùng loại)
     if (tile.ice > 0 && currentType !== null && tile.level !== currentType) return false;
     return true;
   }
   return currentType === null || tile.level === currentType;
 }
 
-// Kiểm tra bàn còn chuỗi hợp lệ không (>=3 ô, hoặc >=2 ô có Bom)
 function hasValidMove() {
   const visited = Array.from({ length: SIZE }, () => Array(SIZE).fill(false));
 
@@ -2161,7 +2543,6 @@ function shuffleMovableTiles() {
   for (let r = 0; r < SIZE; r++) {
     for (let c = 0; c < SIZE; c++) {
       const t = board[r][c];
-      // Ô băng & ô khóa đứng yên, chỉ xáo các ô di chuyển được
       if (t && !t.locked && t.ice === 0) {
         coords.push([r, c]);
         tiles.push(t);
@@ -2181,7 +2562,6 @@ function ensurePlayableBoard(showNotice = true) {
     shuffleMovableTiles();
     if (hasValidMove()) break;
   }
-  // Nếu vẫn hết nước (trường hợp cực hiếm), tạo 1 cụm 3 ô giống nhau ở 3 ô trống liền kề
   if (!hasValidMove()) {
     const free = [];
     for (let r = 0; r < SIZE; r++) {
@@ -2541,7 +2921,6 @@ boardFrame.addEventListener('pointerdown', (e) => {
   chain = [{ r, c }];
   chainType = tile.special ? null : tile.level;
   SFX.select(0);
-  // Tối đa 6 hạt khi kéo mỗi ô (chế độ Nhẹ: 2 hạt)
   spawnParticlesAtCell(r, c, progressData.settings.perf === 'light' ? 2 : 6, CHARS[tile.level].line);
   updateSelectionUI();
 });
@@ -2583,7 +2962,6 @@ window.addEventListener('pointermove', (e) => {
   if (chainType === null && !tile.special) chainType = tile.level;
   chain.push({ r, c });
   SFX.select(chain.length - 1);
-  // Tối đa 6 hạt khi kéo mỗi ô
   spawnParticlesAtCell(r, c, progressData.settings.perf === 'light' ? 2 : 6, CHARS[tile.level].line);
   updateSelectionUI();
 });
@@ -2689,7 +3067,7 @@ function drawChainLine() {
 }
 
 /* =========================================
-   11. MERGE, GRAVITY (PINNED ICE/LOCK), STATS & WIN/LOSE
+   11. MERGE, GRAVITY, STATS & WIN/LOSE
    ========================================= */
 function finishDrag() {
   if (!isDragging) return;
@@ -2703,7 +3081,6 @@ function finishDrag() {
   document.querySelectorAll('.tile').forEach(el => el.classList.remove('selected', 'dragging-head', 'connectable', 'dimmed'));
 
   const hasBomb = chain.some(p => board[p.r][p.c].special === 'bomb');
-  // Chuỗi bị từ chối: giữ nguyên combo, không reset combo hay comboTime
   if (chain.length < 3 && !(hasBomb && chain.length >= 2)) {
     chain = [];
     return;
@@ -2716,7 +3093,6 @@ function executeMerge() {
   const cfg = LEVELS[currentLevel - 1];
   const len = chain.length;
 
-  // Chọn ô đích gộp kết quả: ưu tiên ô cuối chuỗi KHÔNG phải ô băng để ô gộp kết quả không rơi vào ô băng
   let mergePos = chain[len - 1];
   for (let i = len - 1; i >= 0; i--) {
     const p = chain[i];
@@ -2802,11 +3178,9 @@ function executeMerge() {
     updateDailyProgress('rainbows', 1);
   }
 
-  // Xử lý ô đích gộp
   const targetTile = board[mergePos.r][mergePos.c];
   let createdTile = false;
   if (targetTile && targetTile.ice > 1) {
-    // Trường hợp tất cả các ô trong chuỗi đều có băng 2 lớp: giảm băng, không ghi đè thành ô gộp
     targetTile.ice -= 1;
   } else {
     if (targetTile && targetTile.ice === 1) {
@@ -2821,7 +3195,6 @@ function executeMerge() {
     createdTile = true;
   }
 
-  // Bộ đếm thu thập chỉ tính con vật được TẠO RA
   if (createdTile && !spawnedSpecial) {
     unlockCodex(newLv);
     if (newLv === 7) {
@@ -2841,7 +3214,6 @@ function executeMerge() {
   const gained = baseScore + longBonus + bombBonus;
 
   score += gained;
-  // Mọi chuỗi hợp lệ (kể cả qua Cầu Vồng / Bom) đều trừ 1 lượt ở màn thường
   if (!isTimedLevel) movesLeft--;
 
   const reasons = [];
@@ -2880,21 +3252,15 @@ function executeMerge() {
   if (!isGameOver) ensurePlayableBoard(true);
 }
 
-// Ô băng và ô khóa đứng yên không rơi; chỉ các ô bình thường rơi lấp chỗ trống
 function applyGravity(maxSpawn, cfg = null) {
   for (let c = 0; c < SIZE; c++) {
     const movable = [];
     const freeRows = [];
     for (let r = SIZE - 1; r >= 0; r--) {
       const t = board[r][c];
-      if (t !== null && (t.ice > 0 || t.locked)) {
-        // Đứng yên tại chỗ
-        continue;
-      }
+      if (t !== null && (t.ice > 0 || t.locked)) continue;
       freeRows.push(r);
-      if (t !== null) {
-        movable.push({ tile: t, oldR: r });
-      }
+      if (t !== null) movable.push({ tile: t, oldR: r });
     }
     for (let i = 0; i < freeRows.length; i++) {
       const targetR = freeRows[i];
@@ -2978,7 +3344,7 @@ function checkEndState(timeUp = false) {
 }
 
 /* =========================================
-   12. ON-DEMAND FX LOOP (rAF CHỈ CHẠY KHI CÒN HẠT / TIA SÁNG)
+   12. ON-DEMAND FX LOOP
    ========================================= */
 let particles = [];
 let lightBursts = [];
@@ -3158,7 +3524,6 @@ function fxLoop(now) {
   }
 }
 
-// Bộ đếm thời gian nhẹ (100ms) cho combo, màn tính giờ và hồi tim — không chạy rAF khi đứng yên
 let lastTimerTick = performance.now();
 let homeSecAccum = 0;
 setInterval(() => {
@@ -3187,7 +3552,7 @@ setInterval(() => {
 }, 100);
 
 /* =========================================
-   13. INTERACTIVE 5-STEP TUTORIAL WITH REAL SCREEN HIGHLIGHT
+   13. INTERACTIVE 5-STEP TUTORIAL
    ========================================= */
 let tutStep = 0;
 const TUT_STEPS = [
@@ -3317,7 +3682,7 @@ function nextTutorialStep() {
 function closeTutorial() {
   clearTutorialHighlights();
   progressData.tutorialSeen = true;
-  saveProgress();
+  saveProgress(true);
   closeModal('tutorialModal');
   if (document.getElementById('gameScreen').classList.contains('active')) isPaused = false;
 }
@@ -3347,7 +3712,7 @@ function showResult(won, stars, moveBonus = 0, rewardText = '') {
   btns.innerHTML = '';
 
   const retry = document.createElement('button');
-  retry.className = 'chibi-btn ' + (won ? 'btn-secondary' : 'btn-primary');
+  retry.className = 'chibi-btn ' + (won ? 'btn-gold' : 'btn-primary');
   retry.textContent = '🔄 Chơi Lại';
   retry.onclick = () => { SFX.click(); closeModal('resultModal'); openPreLevel(currentLevel); };
   btns.appendChild(retry);
@@ -3366,13 +3731,11 @@ function showResult(won, stars, moveBonus = 0, rewardText = '') {
   mapBtn.onclick = () => { SFX.click(); closeModal('resultModal'); openMap(); };
   btns.appendChild(mapBtn);
 
-  if (!won) {
-    const homeBtn = document.createElement('button');
-    homeBtn.className = 'chibi-btn btn-secondary';
-    homeBtn.textContent = '🏠 Về Màn Hình Chính';
-    homeBtn.onclick = () => { SFX.click(); closeModal('resultModal'); goHome(); };
-    btns.appendChild(homeBtn);
-  }
+  const homeBtn = document.createElement('button');
+  homeBtn.className = 'chibi-btn btn-peach';
+  homeBtn.textContent = '🏠 Về Màn Hình Chính';
+  homeBtn.onclick = () => { SFX.click(); closeModal('resultModal'); goHome(); };
+  btns.appendChild(homeBtn);
 
   openModal('resultModal');
 }
@@ -3498,6 +3861,10 @@ function openAchievements() {
 }
 
 function openSettings() {
+  document.getElementById('setPlayerName').textContent = getDisplayName();
+  const code = generateRecoveryCode();
+  document.getElementById('recoveryLenLabel').textContent = `Độ dài: ${code.length} ký tự`;
+
   ['music', 'sfx', 'vib'].forEach(k => {
     const btn = document.getElementById('tog' + k.charAt(0).toUpperCase() + k.slice(1));
     const on = !!progressData.settings[k];
@@ -3550,6 +3917,7 @@ document.getElementById('btnHomePlay').onclick = () => {
   openPreLevel(Math.min(progressData.unlocked, LEVELS.length));
 };
 document.getElementById('btnHomeInstall').onclick = handleInstallClick;
+document.getElementById('homePlayerPill').onclick = () => { SFX.click(); openProfile(); };
 document.getElementById('homeHeartsPill').onclick = () => { SFX.click(); openHeartModal(); };
 document.getElementById('btnHelpGame').onclick = () => { SFX.click(); openTutorial(0); };
 document.getElementById('btnHome').onclick = () => { SFX.click(); goHome(); };
@@ -3557,7 +3925,6 @@ document.getElementById('btnMap').onclick = () => { SFX.click(); openMap(); };
 document.getElementById('btnPause').onclick = () => { SFX.click(); togglePause(); };
 document.getElementById('btnRestart').onclick = () => { SFX.click(); openPreLevel(currentLevel); };
 
-// Giới hạn canvas ở độ phân giải CSS pixel (không nhân devicePixelRatio)
 function resizeCanvases() {
   const rect = boardFrame.getBoundingClientRect();
   lineCanvas.width = Math.round(rect.width);
@@ -3576,6 +3943,11 @@ document.getElementById('mascotBox').innerHTML = getChibiSVG(7, null, true);
 document.getElementById('miniMascotBox').innerHTML = getChibiSVG(7, null, true);
 updateHomeUI();
 resizeCanvases();
+
+// Lần đầu mở game hoặc chưa có tên -> hiện khung đặt tên người chơi
+if (!progressData.playerName) {
+  setTimeout(() => openNameModal(false), 220);
+}
 </script>
 </body>
 </html>
