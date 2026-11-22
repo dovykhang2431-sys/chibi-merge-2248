@@ -686,7 +686,7 @@
   .codex-card.locked-card { background: #f2edf0; border-color: #ddd; opacity: 0.78; }
   .codex-svg { width: 56px; height: 56px; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; }
 
-  /* Booster Picker - Out-of-stock (0): grey/dimmed body + BIG prominent lock icon, Buy button ALWAYS bright */
+  /* Booster Picker - Out-of-stock (0): grey/dimmed body + BIG lock at top-right corner (never covers title), Buy button ALWAYS bright */
   .booster-pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
   .booster-pick {
     background: #fff; border: 2.5px solid #ffe0eb; border-radius: 18px;
@@ -703,9 +703,9 @@
     opacity: 0.48; filter: grayscale(0.9);
   }
   .lock-big-overlay {
-    position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
-    font-size: 32px; z-index: 3; pointer-events: none;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.32));
+    position: absolute; top: 4px; right: 6px;
+    font-size: 28px; line-height: 1; z-index: 3; pointer-events: none;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.28));
   }
   .picked-tag {
     position: absolute; top: 5px; right: 6px;
@@ -1852,7 +1852,7 @@ function renderBoosterPicker() {
     const isOut = owned <= 0;
     const card = document.createElement('div');
     card.className = 'booster-pick' + (isPicked ? ' picked' : '') + (isOut ? ' out-of-stock' : '');
-    // Khi số lượng = 0: phần thân thẻ mờ xám + icon khóa 🔒 TO rõ ở giữa trên; nút Mua LUÔN SÁNG màu cam-vàng không bị khóa
+    // Khi số lượng = 0: phần thân thẻ mờ xám + icon khóa 🔒 TO rõ ở góc trên-phải (không che tiêu đề); nút Mua LUÔN SÁNG màu cam-vàng
     card.innerHTML = `
       ${isPicked ? '<span class="picked-tag">✓ Đã chọn</span>' : ''}
       ${isOut ? '<span class="lock-big-overlay" title="Chưa sở hữu">🔒</span>' : ''}
@@ -2554,13 +2554,11 @@ function executeMerge() {
   const cy = tr.top + tr.height / 2;
   const burstColor = CHARS[newLv].line;
 
-  // Đảm bảo fxCanvas có kích thước chuẩn trước khi bắn tia sáng
   if (fxCanvas.width !== window.innerWidth || fxCanvas.height !== window.innerHeight) {
     fxCanvas.width = window.innerWidth;
     fxCanvas.height = window.innerHeight;
   }
 
-  // Hiệu ứng 10-12 tia sáng dài, đậm, nổi bật tỏa ra trong 0.85 giây + hạt sao + chữ điểm bay
   spawnLightBurst(cx, cy, len >= 5 ? 12 : 10, len >= 5 ? 132 : 108);
   spawnParticles(cx, cy, len >= 5 ? 28 : 18, burstColor);
   showFloatingScore(cx, cy, `+${gained}`, reasons.join(' • '));
@@ -2674,7 +2672,7 @@ function spawnLightBurst(x, y, rays = 12, maxR = 115) {
     x, y, rays, maxR,
     angle: Math.random() * Math.PI,
     life: 1,
-    duration: 850 // 0.85 giây rõ rệt
+    duration: 850
   });
 }
 
@@ -2785,7 +2783,6 @@ function gameLoop(now) {
 
   fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
 
-  // Vẽ 10-12 tia sáng dài, đậm, nổi bật tỏa ra từ ô vừa gộp (kéo dài 0.85 giây trên lớp trên cùng)
   for (let i = lightBursts.length - 1; i >= 0; i--) {
     const b = lightBursts[i];
     b.life -= dt / b.duration;
@@ -2802,7 +2799,6 @@ function gameLoop(now) {
     fxCtx.rotate(b.angle);
     fxCtx.globalAlpha = alpha;
 
-    // Vòng lóe sáng ở tâm
     const ringR = 22 + 38 * progress;
     fxCtx.beginPath();
     fxCtx.arc(0, 0, ringR, 0, Math.PI * 2);
@@ -2810,7 +2806,6 @@ function gameLoop(now) {
     fxCtx.lineWidth = 4 * b.life;
     fxCtx.stroke();
 
-    // Các tia sáng thẳng tỏa ra
     for (let r = 0; r < b.rays; r++) {
       const a = (r * Math.PI * 2) / b.rays;
       fxCtx.save();
@@ -2833,7 +2828,6 @@ function gameLoop(now) {
     fxCtx.restore();
   }
 
-  // Draw particles
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
     p.x += p.vx; p.y += p.vy; p.vy += 0.14;
