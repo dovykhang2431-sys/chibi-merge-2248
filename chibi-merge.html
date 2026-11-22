@@ -212,7 +212,7 @@
     box-shadow: 0 2px 0 #c93b6b;
   }
 
-  /* Home Menu Grid (Unified Chibi Pastel) */
+  /* Home Menu Grid */
   .home-menu {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
     width: 100%;
@@ -334,9 +334,9 @@
   }
   .star-marker.earned { filter: none; transform: scale(1.24); }
 
-  /* Combo bar + Mini Mascot + Banner Slot */
+  /* Combo bar + Mini Mascot + Non-overlapping Speech & Banner */
   .combo-bar-wrap {
-    height: 32px; margin-bottom: 4px;
+    height: 34px; margin-bottom: 4px;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 4px; gap: 6px;
     position: relative;
@@ -351,16 +351,23 @@
   }
   @keyframes mascotCheer {
     0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-    35% { transform: translateY(-9px) rotate(-10deg) scale(1.22); }
-    70% { transform: translateY(-5px) rotate(10deg) scale(1.18); }
+    35% { transform: translateY(-6px) rotate(-10deg) scale(1.2); }
+    70% { transform: translateY(-3px) rotate(10deg) scale(1.16); }
   }
+  /* Speech bubble sits neatly beside the lion inside combo-bar-wrap, never overlapping HUD or board */
   .mascot-speech {
-    position: absolute; left: 36px; top: -4px;
+    position: absolute; left: 40px; top: 50%; transform: translateY(-50%);
     background: #fff; border: 2px solid #ff9800; color: #d86b00;
-    font-size: 11px; font-weight: 900; padding: 2px 8px; border-radius: 12px;
-    white-space: nowrap; box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+    font-size: 11.5px; font-weight: 900; padding: 3px 10px; border-radius: 14px;
+    white-space: nowrap; box-shadow: 0 3px 10px rgba(255,152,0,0.25);
     z-index: 25; pointer-events: none;
-    animation: comboPop 1.45s ease-out forwards;
+    animation: speechPop 1.4s ease-out forwards;
+  }
+  @keyframes speechPop {
+    0% { opacity: 0; transform: translateY(-50%) scale(0.7); }
+    15% { opacity: 1; transform: translateY(-50%) scale(1.06); }
+    82% { opacity: 1; transform: translateY(-50%) scale(1); }
+    100% { opacity: 0; transform: translateY(-50%) scale(0.92); }
   }
   .combo-pill {
     background: linear-gradient(90deg, #ff5e92, #ff9900);
@@ -386,13 +393,14 @@
   }
   #bannerSlot {
     position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 4px;
     pointer-events: none; z-index: 20;
   }
   .big-combo {
-    font-size: 15.5px; font-weight: 900;
+    font-size: 14px; font-weight: 900;
     background: linear-gradient(135deg, #ff5e92, #ff9900);
-    color: #fff; padding: 3px 14px; border-radius: 16px;
+    color: #fff; padding: 3px 12px; border-radius: 16px;
     box-shadow: 0 4px 12px rgba(255, 94, 146, 0.38);
     border: 2px solid #fff;
     animation: comboPop 1.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -411,6 +419,7 @@
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), inset 0 0 0 3px rgba(255,255,255,0.95);
     position: relative;
     touch-action: none;
+    overflow: visible;
   }
   .board-frame.targeting {
     box-shadow: 0 0 0 4px #ff9800, 0 12px 28px rgba(255, 152, 0, 0.38);
@@ -422,6 +431,7 @@
     grid-template-rows: repeat(5, 1fr);
     gap: 7px;
     position: relative; z-index: 2;
+    overflow: visible;
   }
   #lineCanvas {
     position: absolute; inset: 0; width: 100%; height: 100%;
@@ -436,21 +446,21 @@
     border: 2.5px solid #ff9800; border-radius: 18px;
     padding: 3px 9px 3px 5px;
     box-shadow: 0 6px 16px rgba(255, 152, 0, 0.42);
-    transform: translate(-50%, -115%);
+    transform: translate(-50%, -125%);
     white-space: nowrap;
   }
   #dragPreview.show { display: flex; }
   #dragPreviewSvg { width: 28px; height: 28px; }
   #dragPreviewPts { font-size: 13px; font-weight: 900; color: #d85a00; }
 
-  /* Tile - Bigger Chibi, Idle Bounce, Prominent Drag States */
+  /* Tile - Bigger Chibi, Idle Bounce, Prominent 1.35x Dragging Head */
   .tile {
     position: relative; border-radius: 17px;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     box-shadow: 0 4px 0 rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06);
     border: 2px solid rgba(255,255,255,0.85);
-    transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.16s, opacity 0.16s, filter 0.16s;
+    transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s, opacity 0.14s, filter 0.14s;
     overflow: hidden;
   }
   .tile svg {
@@ -462,29 +472,39 @@
     50% { transform: translateY(-2.5px) scale(1.02, 0.98); }
   }
 
-  /* Dragging states: Lifted, Connectable, Dimmed */
+  /* Tiles in chain */
   .tile.selected {
-    transform: scale(1.22);
+    transform: scale(1.14);
     border-color: #ffd700;
-    box-shadow: 0 0 0 4px #ffd700, 0 0 22px rgba(255, 200, 0, 0.9), 0 12px 20px rgba(0,0,0,0.22);
-    animation: selectedPulse 0.45s ease-in-out infinite;
+    box-shadow: 0 0 0 3.5px #ffd700, 0 0 18px rgba(255, 200, 0, 0.85), 0 8px 14px rgba(0,0,0,0.2);
+    animation: selectedGlow 0.55s ease-in-out infinite;
     z-index: 6;
   }
   .tile.selected svg { animation: none; }
-  @keyframes selectedPulse {
-    0%, 100% { transform: scale(1.22) rotate(-2deg); }
-    50% { transform: scale(1.27) rotate(2deg); }
+  @keyframes selectedGlow {
+    0%, 100% { filter: brightness(1.05); }
+    50% { filter: brightness(1.18); }
   }
+
+  /* Active head tile being dragged: clearly lifted 1.35x with deep shadow */
+  .tile.dragging-head {
+    transform: scale(1.35) !important;
+    border: 3px solid #fff176;
+    box-shadow: 0 0 0 4px #ffb300, 0 0 28px rgba(255, 200, 0, 0.98), 0 18px 28px rgba(40, 15, 25, 0.42) !important;
+    z-index: 10 !important;
+    animation: none !important;
+  }
+
   .tile.connectable {
-    transform: scale(1.06);
+    transform: scale(1.05);
     box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.85), 0 0 14px rgba(255, 193, 7, 0.6);
     filter: brightness(1.08);
     z-index: 3;
   }
   .tile.dimmed {
-    opacity: 0.42;
-    filter: saturate(0.55) brightness(0.92);
-    transform: scale(0.94);
+    opacity: 0.4;
+    filter: saturate(0.5) brightness(0.9);
+    transform: scale(0.93);
   }
 
   .tile.falling { animation: dropIn 0.32s cubic-bezier(0.34, 1.45, 0.64, 1); }
@@ -669,6 +689,7 @@
   .codex-card.locked-card { background: #f2edf0; border-color: #ddd; opacity: 0.78; }
   .codex-svg { width: 56px; height: 56px; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; }
 
+  /* Booster Picker - Out-of-stock (0) clearly greyed/dimmed with big lock, Buy button stays bright */
   .booster-pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
   .booster-pick {
     background: #fff; border: 2.5px solid #ffe0eb; border-radius: 18px;
@@ -678,13 +699,25 @@
     background: #fff8e1; border-color: #ff9800;
     box-shadow: 0 0 0 2px rgba(255,152,0,0.3);
   }
+  .booster-pick.out-of-stock {
+    background: #eae4e7; border-color: #cfc6ca; cursor: default;
+  }
+  .booster-pick.out-of-stock .booster-card-body {
+    opacity: 0.5; filter: grayscale(0.85);
+  }
+  .lock-corner-icon {
+    position: absolute; top: 5px; right: 7px;
+    font-size: 18px; z-index: 2;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+  }
   .picked-tag {
     position: absolute; top: 5px; right: 6px;
     background: #ff9800; color: #fff; font-size: 9.5px; font-weight: 900;
-    padding: 1px 6px; border-radius: 8px;
+    padding: 1px 6px; border-radius: 8px; z-index: 2;
   }
   .buy-btn-mini {
-    margin-top: 5px; padding: 4px 10px; font-size: 11px; border-radius: 12px;
+    margin-top: 6px; padding: 4px 10px; font-size: 11px; border-radius: 12px;
+    position: relative; z-index: 3;
   }
 
   .setting-row {
@@ -695,35 +728,55 @@
   .toggle-btn { padding: 6px 14px; font-size: 12.5px; border-radius: 14px; }
   .win-stars { text-align: center; font-size: 38px; margin: 4px 0 8px; letter-spacing: 6px; }
 
-  /* Interactive Tutorial Overlay */
-  .tut-demo-box {
-    background: #fff5f8; border: 2.5px dashed #ff8fab; border-radius: 20px;
-    padding: 14px 10px; margin: 10px 0;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    min-height: 92px; position: relative; overflow: hidden;
+  /* Interactive Tutorial with Real Screen Highlight & Graphic Arrows */
+  .tut-highlight {
+    position: relative !important;
+    z-index: 125 !important;
+    box-shadow: 0 0 0 5px #ffd700, 0 0 28px rgba(255, 215, 0, 0.95) !important;
+    animation: tutRingPulse 1s ease-in-out infinite !important;
   }
-  .tut-arrow-badge {
-    display: inline-block; background: #fff3cd; color: #d86b00;
-    border: 2px solid #ffb347; border-radius: 12px;
-    padding: 3px 10px; font-size: 12px; font-weight: 900;
-    margin-bottom: 6px; animation: mascotBounce 1.2s infinite;
+  @keyframes tutRingPulse {
+    0%, 100% { box-shadow: 0 0 0 4px #ffd700, 0 0 18px rgba(255, 215, 0, 0.85); }
+    50% { box-shadow: 0 0 0 7px #ffeb3b, 0 0 32px rgba(255, 215, 0, 1); }
+  }
+  #tutorialModal.pos-top { align-items: flex-start; padding-top: 10px; background: rgba(58, 32, 48, 0.48); }
+  #tutorialModal.pos-bottom { align-items: flex-end; padding-bottom: 12px; background: rgba(58, 32, 48, 0.48); }
+  #tutorialModal .modal {
+    padding: 14px 16px; max-width: 390px; position: relative; overflow: visible;
+  }
+  .tut-graphic-arrow {
+    display: flex; justify-content: center; align-items: center;
+    height: 28px; margin: 2px 0;
+  }
+  .tut-graphic-arrow svg {
+    width: 34px; height: 28px;
+    filter: drop-shadow(0 2px 4px rgba(255, 140, 0, 0.45));
+    animation: arrowBob 0.9s ease-in-out infinite;
+  }
+  @keyframes arrowBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+  }
+  .tut-demo-box {
+    background: #fff5f8; border: 2px dashed #ff8fab; border-radius: 16px;
+    padding: 10px 8px; margin: 6px 0;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 70px;
   }
   .tut-tile {
-    width: 52px; height: 52px; border-radius: 14px;
+    width: 46px; height: 46px; border-radius: 13px;
     display: flex; align-items: center; justify-content: center;
     border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
   .tut-tile.glow-demo {
     box-shadow: 0 0 0 3px #ffd700, 0 0 14px rgba(255,200,0,0.8);
-    animation: selectedPulse 0.7s infinite;
+    animation: selectedGlow 0.7s infinite;
   }
   .tut-dots {
     display: flex; justify-content: center; gap: 6px; margin-top: 6px;
   }
-  .tut-dot {
-    width: 9px; height: 9px; border-radius: 50%; background: #ffd6e0;
-  }
-  .tut-dot.active { background: #ff5c8d; width: 22px; border-radius: 6px; }
+  .tut-dot { width: 8px; height: 8px; border-radius: 50%; background: #ffd6e0; }
+  .tut-dot.active { background: #ff5c8d; width: 20px; border-radius: 6px; }
 
   @keyframes shakeBtn {
     0%, 100% { transform: translateX(0); }
@@ -847,8 +900,8 @@
     </div>
   </div>
 
-  <!-- Combo Bar + Mini Mascot + Banner Slot -->
-  <div class="combo-bar-wrap">
+  <!-- Combo Bar + Mini Mascot + Non-overlapping Speech & Banner -->
+  <div class="combo-bar-wrap" id="comboBarWrap">
     <div class="mini-mascot-box" id="miniMascotBox"></div>
     <div class="combo-pill" id="comboPill">COMBO x1</div>
     <div class="combo-timer-bg" id="comboTimerBg">
@@ -987,19 +1040,24 @@
   </div>
 </div>
 
-<!-- Interactive 4-Step Tutorial Modal -->
+<!-- Interactive 4-Step Tutorial Modal with Real Highlight & Graphic Arrows -->
 <div class="modal-backdrop" id="tutorialModal">
   <div class="modal">
-    <h2 id="tutTitle">🐾 Hướng Dẫn Chơi (1/4)</h2>
+    <div class="tut-graphic-arrow" id="tutArrowTop" style="display:none;">
+      <svg viewBox="0 0 40 32"><path d="M20 2 L36 18 L26 18 L26 30 L14 30 L14 18 L4 18 Z" fill="#ff9800" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/></svg>
+    </div>
+    <h2 id="tutTitle" style="font-size:18px;margin-bottom:4px;">🐾 Hướng Dẫn Chơi (1/4)</h2>
     <div class="modal-body" style="text-align:center;">
-      <div class="tut-arrow-badge" id="tutPointer">👇 Nhìn vào bàn cờ 5x5</div>
-      <p id="tutDesc" style="font-weight:800;margin:4px 0 8px;"></p>
+      <p id="tutDesc" style="font-weight:800;margin:2px 0 6px;font-size:13px;"></p>
       <div class="tut-demo-box" id="tutDemoBox"></div>
       <div class="tut-dots" id="tutDots"></div>
     </div>
-    <div class="btn-row">
-      <button class="chibi-btn btn-secondary" onclick="SFX.click(); closeTutorial()">Bỏ qua</button>
-      <button class="chibi-btn btn-primary" id="btnTutNext" onclick="SFX.click(); nextTutorialStep()">Tiếp theo ➡️</button>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="chibi-btn btn-secondary" style="padding:8px 14px;font-size:13px;" onclick="SFX.click(); closeTutorial()">Bỏ qua</button>
+      <button class="chibi-btn btn-primary" id="btnTutNext" style="padding:8px 16px;font-size:13px;" onclick="SFX.click(); nextTutorialStep()">Tiếp theo ➡️</button>
+    </div>
+    <div class="tut-graphic-arrow" id="tutArrowBottom" style="display:none;margin-top:6px;">
+      <svg viewBox="0 0 40 32"><path d="M20 30 L36 14 L26 14 L26 2 L14 2 L14 14 L4 14 Z" fill="#ff9800" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/></svg>
     </div>
   </div>
 </div>
@@ -1034,7 +1092,7 @@
 
 <script>
 /* =========================================
-   1. CHIBI SVG CHARACTERS (VIVID, THICK STROKES, BLINKING EYES)
+   1. CHIBI SVG CHARACTERS & WORLDS DATA
    ========================================= */
 const CHARS = [
   { id: 0, name: 'Trứng',     bg: '#FFF2C6', line: '#F2B84B', basePts: 40,  bio: 'Một quả trứng bé xíu, bên trong là điều kỳ diệu đang chờ nở!' },
@@ -1794,22 +1852,30 @@ function renderBoosterPicker() {
   Object.values(BOOSTERS_INFO).forEach(b => {
     const owned = progressData.boosters[b.id] || 0;
     const isPicked = pickedBoosters.includes(b.id);
+    const isOut = owned <= 0;
     const canAfford = progressData.coins >= b.price;
     const card = document.createElement('div');
-    card.className = 'booster-pick' + (isPicked ? ' picked' : '');
+    card.className = 'booster-pick' + (isPicked ? ' picked' : '') + (isOut ? ' out-of-stock' : '');
     card.innerHTML = `
       ${isPicked ? '<span class="picked-tag">✓ Đã chọn</span>' : ''}
-      <div style="font-size:24px;">${b.icon}</div>
-      <div style="font-weight:900;font-size:13px;">${b.name} (${owned})</div>
-      <div style="font-size:10.5px;color:#8c6b7a;">${b.desc}</div>
+      ${isOut ? '<span class="lock-corner-icon" title="Chưa sở hữu">🔒</span>' : ''}
+      <div class="booster-card-body">
+        <div style="font-size:24px;">${b.icon}</div>
+        <div style="font-weight:900;font-size:13px;">${b.name} (${owned})</div>
+        <div style="font-size:10.5px;color:#8c6b7a;">${b.desc}</div>
+      </div>
       <button class="chibi-btn btn-gold buy-btn-mini ${canAfford ? '' : 'is-disabled'}" onclick="event.stopPropagation(); buyBooster('${b.id}')">${canAfford ? '' : '🔒 '}Mua ${b.price} 🪙</button>
     `;
     card.onclick = () => {
+      if (isOut) {
+        SFX.locked();
+        showToast('🔒', `Chưa có ${b.name}! Hãy bấm nút Mua bằng xu.`);
+        return;
+      }
       SFX.click();
       if (isPicked) {
         pickedBoosters = pickedBoosters.filter(x => x !== b.id);
       } else {
-        if (owned <= 0) { showToast('💡', `Bạn chưa có ${b.name}, hãy bấm Mua bằng xu!`); return; }
         if (pickedBoosters.length >= 2) { showToast('💡', 'Chỉ được mang tối đa 2 Booster!'); return; }
         pickedBoosters.push(b.id);
       }
@@ -1942,7 +2008,6 @@ function startLevel(lvNum) {
   updateHUD();
   resizeCanvases();
 
-  // Lần đầu tiên mở Màn 1 (chưa xem hướng dẫn) -> tự động mở hướng dẫn tương tác
   if (lvNum === 1 && !progressData.tutorialSeen) {
     setTimeout(() => openTutorial(0), 260);
   }
@@ -1950,15 +2015,18 @@ function startLevel(lvNum) {
 
 function triggerMascotCheer(text) {
   const box = document.getElementById('miniMascotBox');
+  const wrap = document.getElementById('comboBarWrap');
   box.classList.remove('cheer');
   void box.offsetWidth;
   box.classList.add('cheer');
-  box.querySelectorAll('.mascot-speech').forEach(s => s.remove());
+
+  // Đặt bong bóng khen ngay trong comboBarWrap (bên cạnh sư tử, giữa HUD và bàn cờ) để không đè lên thanh tiến độ
+  wrap.querySelectorAll('.mascot-speech').forEach(s => s.remove());
   const sp = document.createElement('div');
   sp.className = 'mascot-speech';
   sp.textContent = text;
-  box.appendChild(sp);
-  setTimeout(() => sp.remove(), 1450);
+  wrap.appendChild(sp);
+  setTimeout(() => sp.remove(), 1400);
 }
 
 function renderInGameBoosters() {
@@ -2062,7 +2130,6 @@ function renderBoard(initial = false) {
       t.anim = '';
 
       cell.innerHTML = getChibiSVG(t.level, t.special);
-      // Stagger idle animation so board feels alive
       const svg = cell.querySelector('svg');
       if (svg) svg.style.animationDelay = ((r * 5 + c) * 0.12 % 2.4) + 's';
 
@@ -2165,7 +2232,7 @@ function updateHUD() {
 }
 
 /* =========================================
-   10. PROMINENT DRAG-AND-CONNECT + PREVIEW BUBBLE
+   10. PROMINENT DRAG-AND-CONNECT (1.35x HEAD) + PREVIEW BUBBLE
    ========================================= */
 const boardFrame = document.getElementById('boardFrame');
 
@@ -2261,16 +2328,21 @@ function recalcChainType() {
 
 function updateSelectionUI() {
   const selectedSet = new Set(chain.map(p => `${p.r},${p.c}`));
+  const head = chain.length > 0 ? chain[chain.length - 1] : null;
+  const headKey = head ? `${head.r},${head.c}` : '';
+
   for (let r = 0; r < SIZE; r++) {
     for (let c = 0; c < SIZE; c++) {
       const el = gridEl.children[r * SIZE + c];
       if (!el) continue;
-      el.classList.remove('selected', 'connectable', 'dimmed');
+      el.classList.remove('selected', 'dragging-head', 'connectable', 'dimmed');
       if (!isDragging) continue;
 
       const key = `${r},${c}`;
       const t = board[r][c];
-      if (selectedSet.has(key)) {
+      if (key === headKey) {
+        el.classList.add('selected', 'dragging-head');
+      } else if (selectedSet.has(key)) {
         el.classList.add('selected');
       } else {
         const canMatch = !t.locked && (t.special !== null || chainType === null || t.level === chainType);
@@ -2335,7 +2407,6 @@ function drawChainLine() {
   });
   lineCtx.stroke();
 
-  // Inner bright core line
   lineCtx.lineWidth = 5;
   lineCtx.strokeStyle = '#fff59d';
   lineCtx.shadowBlur = 0;
@@ -2344,14 +2415,14 @@ function drawChainLine() {
 }
 
 /* =========================================
-   11. MERGE, STATS, CODEX, GRAVITY & WIN/LOSE
+   11. MERGE, LIGHT RAYS BURST, STATS & WIN/LOSE
    ========================================= */
 function finishDrag() {
   if (!isDragging) return;
   isDragging = false;
   lineCtx.clearRect(0, 0, lineCanvas.width, lineCanvas.height);
   dragPreviewEl.classList.remove('show');
-  document.querySelectorAll('.tile').forEach(el => el.classList.remove('selected', 'connectable', 'dimmed'));
+  document.querySelectorAll('.tile').forEach(el => el.classList.remove('selected', 'dragging-head', 'connectable', 'dimmed'));
 
   const hasBomb = chain.some(p => board[p.r][p.c].special === 'bomb');
   if (chain.length < 3 && !(hasBomb && chain.length >= 2)) {
@@ -2483,9 +2554,14 @@ function executeMerge() {
 
   const targetEl = gridEl.children[lastPos.r * SIZE + lastPos.c];
   const tr = targetEl.getBoundingClientRect();
+  const cx = tr.left + tr.width / 2;
+  const cy = tr.top + tr.height / 2;
   const burstColor = CHARS[newLv].line;
-  spawnParticles(tr.left + tr.width / 2, tr.top + tr.height / 2, len >= 5 ? 28 : 18, burstColor);
-  showFloatingScore(tr.left + tr.width / 2, tr.top + tr.height / 2, `+${gained}`, reasons.join(' • '));
+
+  // Hiệu ứng tia sáng tỏa ra + hạt sao + chữ điểm bay
+  spawnLightBurst(cx, cy, len >= 5 ? 12 : 10, len >= 5 ? 86 : 68);
+  spawnParticles(cx, cy, len >= 5 ? 28 : 18, burstColor);
+  showFloatingScore(cx, cy, `+${gained}`, reasons.join(' • '));
 
   if (len >= 5) {
     showBigCombo(`THƯỞNG CHUỖI ${len}! +${longBonus}`);
@@ -2586,9 +2662,19 @@ function checkEndState(timeUp = false) {
 }
 
 /* =========================================
-   12. PARTICLES, FIREWORKS, TOAST & LOOP
+   12. PARTICLES, LIGHT RAYS, FIREWORKS & LOOP
    ========================================= */
 let particles = [];
+let lightBursts = [];
+
+function spawnLightBurst(x, y, rays = 10, maxR = 72) {
+  lightBursts.push({
+    x, y, rays, maxR,
+    angle: Math.random() * Math.PI,
+    life: 1,
+    duration: 600 // ~0.6 giây
+  });
+}
 
 function showToast(icon, msg) {
   const box = document.getElementById('toastBox');
@@ -2696,6 +2782,42 @@ function gameLoop(now) {
   }
 
   fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+
+  // Draw radiating light rays (tia sáng vàng/trắng xoay nhẹ rồi mờ dần trong 0.6s)
+  for (let i = lightBursts.length - 1; i >= 0; i--) {
+    const b = lightBursts[i];
+    b.life -= dt / b.duration;
+    b.angle += 0.025;
+    if (b.life <= 0) { lightBursts.splice(i, 1); continue; }
+
+    const progress = 1 - b.life;
+    const outerR = b.maxR * (0.45 + 0.65 * progress);
+    const innerR = 10 + 18 * progress;
+
+    fxCtx.save();
+    fxCtx.translate(b.x, b.y);
+    fxCtx.rotate(b.angle);
+    fxCtx.globalAlpha = Math.max(0, b.life);
+
+    for (let r = 0; r < b.rays; r++) {
+      const a = (r * Math.PI * 2) / b.rays;
+      fxCtx.save();
+      fxCtx.rotate(a);
+      fxCtx.beginPath();
+      fxCtx.moveTo(innerR, -2.2);
+      fxCtx.lineTo(outerR, 0);
+      fxCtx.lineTo(innerR, 2.2);
+      fxCtx.closePath();
+      fxCtx.fillStyle = r % 2 === 0 ? '#fff9c4' : '#ffd54f';
+      fxCtx.shadowColor = '#ffb300';
+      fxCtx.shadowBlur = 10;
+      fxCtx.fill();
+      fxCtx.restore();
+    }
+    fxCtx.restore();
+  }
+
+  // Draw particles
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
     p.x += p.vx; p.y += p.vy; p.vy += 0.14;
@@ -2713,54 +2835,66 @@ function gameLoop(now) {
 }
 
 /* =========================================
-   13. INTERACTIVE 4-STEP TUTORIAL
+   13. INTERACTIVE 4-STEP TUTORIAL WITH REAL SCREEN HIGHLIGHT
    ========================================= */
 let tutStep = 0;
 const TUT_STEPS = [
   {
     title: '🐾 Bước 1/4: Kéo Để Nối',
-    pointer: '👇 Chỉ vào bàn cờ 5x5',
-    desc: 'Chạm và kéo để nối các bé Chibi giống nhau liền kề (ngang, dọc hoặc cả đường chéo!).',
+    targetId: 'boardFrame',
+    pos: 'top',
+    desc: 'Chạm và kéo để nối các bé Chibi giống nhau liền kề (ngang, dọc hoặc chéo) trên bàn cờ bên dưới!',
     demo: () => `
       <div class="tut-tile glow-demo" style="background:${CHARS[0].bg}">${getChibiSVG(0)}</div>
-      <div style="font-size:20px;font-weight:900;color:#ff9800;">➜</div>
+      <div style="font-size:18px;font-weight:900;color:#ff9800;">➜</div>
       <div class="tut-tile glow-demo" style="background:${CHARS[0].bg}">${getChibiSVG(0)}</div>
-      <div style="font-size:20px;font-weight:900;color:#ff9800;">➜</div>
+      <div style="font-size:18px;font-weight:900;color:#ff9800;">➜</div>
       <div class="tut-tile glow-demo" style="background:${CHARS[0].bg}">${getChibiSVG(0)}</div>
     `
   },
   {
     title: '🐣 Bước 2/4: Gộp Tiến Hóa',
-    pointer: '✨ Gộp 3 hình trở lên',
+    targetId: 'boardFrame',
+    pos: 'top',
     desc: 'Nối từ 3 hình trở lên rồi thả tay để gộp thành bé Chibi bậc cao hơn kèm điểm thưởng!',
     demo: () => `
       <div class="tut-tile" style="background:${CHARS[0].bg}">${getChibiSVG(0)}</div>
-      <div style="font-size:18px;font-weight:900;color:#ff6b9d;">×3</div>
-      <div style="font-size:22px;font-weight:900;color:#ff9800;">➔</div>
+      <div style="font-size:16px;font-weight:900;color:#ff6b9d;">×3</div>
+      <div style="font-size:20px;font-weight:900;color:#ff9800;">➔</div>
       <div class="tut-tile glow-demo" style="background:${CHARS[1].bg}">${getChibiSVG(1)}</div>
     `
   },
   {
     title: '🏆 Bước 3/4: Đạt Mục Tiêu',
-    pointer: '☝️ Nhìn thanh Mục Tiêu & Lượt phía trên',
-    desc: 'Hoàn thành mục tiêu của màn (điểm, tạo Chibi hoặc phá băng) trước khi hết lượt để nhận 1–3 sao!',
+    targetId: 'gameHud',
+    pos: 'bottom',
+    desc: 'Nhìn thanh Mục Tiêu & Lượt phía trên: hoàn thành mục tiêu trước khi hết lượt để nhận 1–3 sao!',
     demo: () => `
-      <div style="background:#fff9eb;border:2px solid #ffe4b5;border-radius:14px;padding:8px 12px;font-weight:900;color:#8c5a2b;">
+      <div style="background:#fff9eb;border:2px solid #ffe4b5;border-radius:12px;padding:7px 10px;font-weight:900;color:#8c5a2b;font-size:12.5px;">
         🏆 3.200 điểm  •  ⏳ 13 Lượt  •  ⭐⭐⭐
       </div>
     `
   },
   {
     title: '🌈 Bước 4/4: Cầu Vồng & Bom',
-    pointer: '🔥 Chuỗi dài 5+ ô siêu mạnh',
+    targetId: 'boardFrame',
+    pos: 'top',
     desc: 'Nối 5 ô tạo Cầu Vồng (nối mọi hình), nối 6+ ô tạo Bom (nổ tung vùng 3x3). Nối liên tiếp để tăng Combo x5!',
     demo: () => `
       <div class="tut-tile glow-demo" style="background:#e0f7fa">${getChibiSVG(0, 'rainbow')}</div>
-      <div style="font-size:16px;font-weight:900;color:#a87b8e;">&</div>
+      <div style="font-size:15px;font-weight:900;color:#a87b8e;">&</div>
       <div class="tut-tile glow-demo" style="background:#cfd8dc">${getChibiSVG(0, 'bomb')}</div>
     `
   }
 ];
+
+function clearTutorialHighlights() {
+  document.querySelectorAll('.tut-highlight').forEach(el => el.classList.remove('tut-highlight'));
+  const modal = document.getElementById('tutorialModal');
+  modal.classList.remove('pos-top', 'pos-bottom');
+  document.getElementById('tutArrowTop').style.display = 'none';
+  document.getElementById('tutArrowBottom').style.display = 'none';
+}
 
 function openTutorial(step = 0) {
   tutStep = step;
@@ -2770,11 +2904,25 @@ function openTutorial(step = 0) {
 }
 
 function renderTutorialStep() {
+  clearTutorialHighlights();
   const s = TUT_STEPS[tutStep];
   document.getElementById('tutTitle').textContent = s.title;
-  document.getElementById('tutPointer').textContent = s.pointer;
   document.getElementById('tutDesc').textContent = s.desc;
   document.getElementById('tutDemoBox').innerHTML = s.demo();
+
+  const inGame = document.getElementById('gameScreen').classList.contains('active');
+  if (inGame && s.targetId) {
+    const targetEl = document.getElementById(s.targetId);
+    if (targetEl) targetEl.classList.add('tut-highlight');
+    const modal = document.getElementById('tutorialModal');
+    if (s.pos === 'top') {
+      modal.classList.add('pos-top');
+      document.getElementById('tutArrowBottom').style.display = 'flex';
+    } else if (s.pos === 'bottom') {
+      modal.classList.add('pos-bottom');
+      document.getElementById('tutArrowTop').style.display = 'flex';
+    }
+  }
 
   const dots = document.getElementById('tutDots');
   dots.innerHTML = '';
@@ -2796,6 +2944,7 @@ function nextTutorialStep() {
 }
 
 function closeTutorial() {
+  clearTutorialHighlights();
   progressData.tutorialSeen = true;
   saveProgress();
   closeModal('tutorialModal');
