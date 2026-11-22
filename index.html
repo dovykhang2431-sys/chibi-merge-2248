@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ff9ecf">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Chibi Merge">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-512.png">
 <title>Chibi Merge 2248 - Giải Đố Nối Hình</title>
 <style>
   :root {
@@ -151,10 +158,10 @@
   .game-sub {
     font-size: 13px; font-weight: 800; color: #a86b82;
     background: rgba(255,255,255,0.82); padding: 3px 12px; border-radius: 14px;
-    margin-bottom: 8px; border: 1.5px solid #ffe0eb;
+    margin-bottom: 6px; border: 1.5px solid #ffe0eb;
   }
   .mascot-wrap {
-    width: 134px; height: 134px; margin: 4px 0 12px;
+    width: 126px; height: 126px; margin: 2px 0 10px;
     animation: mascotBounce 1.8s ease-in-out infinite;
     filter: drop-shadow(0 12px 16px rgba(255, 143, 0, 0.28));
   }
@@ -174,12 +181,16 @@
   }
 
   .btn-play-big {
-    width: 84%; max-width: 286px; padding: 15px 24px;
+    width: 84%; max-width: 286px; padding: 14px 24px;
     border-radius: 28px; font-size: 21px;
     background: linear-gradient(180deg, #ff7eb3 0%, #ff5c8d 100%);
     color: #fff;
     box-shadow: 0 7px 0 #d63d6c, 0 14px 24px rgba(255, 92, 141, 0.42);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+  }
+  .btn-install-home {
+    padding: 7px 18px; font-size: 13px; border-radius: 18px;
+    margin-bottom: 10px;
   }
 
   /* 7-Day Login Strip */
@@ -686,7 +697,7 @@
   .codex-card.locked-card { background: #f2edf0; border-color: #ddd; opacity: 0.78; }
   .codex-svg { width: 56px; height: 56px; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; }
 
-  /* Booster Picker - Out-of-stock (0): grey/dimmed body + BIG lock at top-right corner (never covers title), Buy button ALWAYS bright */
+  /* Booster Picker - Out-of-stock (0): grey/dimmed body + BIG lock at top-right corner, Buy button ALWAYS bright */
   .booster-pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
   .booster-pick {
     background: #fff; border: 2.5px solid #ffe0eb; border-radius: 18px;
@@ -724,6 +735,22 @@
   }
   .toggle-btn { padding: 6px 14px; font-size: 12.5px; border-radius: 14px; }
   .win-stars { text-align: center; font-size: 38px; margin: 4px 0 8px; letter-spacing: 6px; }
+
+  /* Install Guide Box */
+  .install-section {
+    background: #fff; border: 2px solid #ffe4ec; border-radius: 16px;
+    padding: 10px 12px; margin-bottom: 10px;
+  }
+  .install-section h3 {
+    margin: 0 0 6px; font-size: 14.5px; color: var(--primary-dark);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .install-step {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12.5px; font-weight: 700; margin-bottom: 5px; color: var(--text);
+  }
+  .install-step:last-child { margin-bottom: 0; }
+  .step-ico { font-size: 15px; flex-shrink: 0; }
 
   /* Interactive Tutorial with Real Screen Highlight & Graphic Arrows */
   .tut-highlight {
@@ -825,6 +852,7 @@
     <div class="game-sub">✨ Giải Đố Nối Hình Siêu Cute ✨</div>
     <div class="mascot-wrap" id="mascotBox"></div>
     <button class="chibi-btn btn-play-big" id="btnHomePlay">▶ CHƠI MÀN 1</button>
+    <button class="chibi-btn btn-sky btn-install-home" id="btnHomeInstall">📲 Cài App</button>
   </div>
 
   <!-- 7-Day Login Strip -->
@@ -930,6 +958,33 @@
 <!-- =========================
      MODALS
      ========================= -->
+<!-- Install Guide Modal -->
+<div class="modal-backdrop" id="installModal">
+  <div class="modal">
+    <h2>📲 Hướng Dẫn Cài App</h2>
+    <div class="modal-body">
+      <p style="text-align:center;font-weight:800;margin:0 0 10px;color:#8c5a2b;">
+        Cài <b>Chibi Merge 2248</b> ra màn hình chính để chơi toàn màn hình & không cần mạng!
+      </p>
+      <div class="install-section">
+        <h3>🤖 Điện thoại Android (Chrome)</h3>
+        <div class="install-step"><span class="step-ico">1️⃣</span><span>Bấm nút <b>⋮</b> (3 chấm góc trên-phải Chrome).</span></div>
+        <div class="install-step"><span class="step-ico">2️⃣</span><span>Chọn <b>"Cài đặt ứng dụng"</b> hoặc <b>"Thêm vào Màn hình chính"</b>.</span></div>
+        <div class="install-step"><span class="step-ico">💡</span><span>Nếu không thấy, hãy bấm trực tiếp nút <b>"📲 Cài App"</b> trên màn hình chính của game.</span></div>
+      </div>
+      <div class="install-section">
+        <h3>🍎 Điện thoại iPhone (Safari)</h3>
+        <div class="install-step"><span class="step-ico">1️⃣</span><span>Mở game bằng trình duyệt <b>Safari</b>, bấm nút <b>Chia sẻ</b> (biểu tượng ⬆️ ở thanh dưới).</span></div>
+        <div class="install-step"><span class="step-ico">2️⃣</span><span>Cuộn xuống chọn <b>"Thêm vào Màn hình chính"</b> (Add to Home Screen).</span></div>
+        <div class="install-step"><span class="step-ico">3️⃣</span><span>Bấm <b>Thêm</b> là xong!</span></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('installModal')">Đã Hiểu!</button>
+    </div>
+  </div>
+</div>
+
 <!-- Pre-Level Booster Select -->
 <div class="modal-backdrop" id="preLevelModal">
   <div class="modal">
@@ -1030,6 +1085,10 @@
         <span>📳 Rung Khi Chơi</span>
         <button class="chibi-btn toggle-btn" id="togVib" onclick="toggleSetting('vib')">BẬT</button>
       </div>
+      <div class="setting-row">
+        <span>📱 Cài đặt ứng dụng</span>
+        <button class="chibi-btn btn-sky toggle-btn" onclick="SFX.click(); closeModal('settingsModal'); openInstallGuide();">📲 Cài App</button>
+      </div>
     </div>
     <div class="btn-row">
       <button class="chibi-btn btn-primary" onclick="SFX.click(); closeModal('settingsModal')">Xong</button>
@@ -1088,6 +1147,42 @@
 </div>
 
 <script>
+/* =========================================
+   0. PWA SERVICE WORKER & INSTALL PROMPT
+   ========================================= */
+let deferredInstallPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
+
+function openInstallGuide() {
+  openModal('installModal');
+}
+
+async function handleInstallClick() {
+  SFX.click();
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    try {
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice.outcome === 'accepted') {
+        showToast('📲', 'Đang cài đặt Chibi Merge 2248!');
+      }
+    } catch (e) {}
+    deferredInstallPrompt = null;
+  } else {
+    openInstallGuide();
+  }
+}
+
 /* =========================================
    1. CHIBI SVG CHARACTERS & WORLDS DATA
    ========================================= */
@@ -1852,7 +1947,6 @@ function renderBoosterPicker() {
     const isOut = owned <= 0;
     const card = document.createElement('div');
     card.className = 'booster-pick' + (isPicked ? ' picked' : '') + (isOut ? ' out-of-stock' : '');
-    // Khi số lượng = 0: phần thân thẻ mờ xám + icon khóa 🔒 TO rõ ở góc trên-phải (không che tiêu đề); nút Mua LUÔN SÁNG màu cam-vàng
     card.innerHTML = `
       ${isPicked ? '<span class="picked-tag">✓ Đã chọn</span>' : ''}
       ${isOut ? '<span class="lock-big-overlay" title="Chưa sở hữu">🔒</span>' : ''}
@@ -3172,6 +3266,7 @@ document.getElementById('btnHomePlay').onclick = () => {
   SFX.click();
   openPreLevel(Math.min(progressData.unlocked, LEVELS.length));
 };
+document.getElementById('btnHomeInstall').onclick = handleInstallClick;
 document.getElementById('homeHeartsPill').onclick = () => { SFX.click(); openHeartModal(); };
 document.getElementById('btnHelpGame').onclick = () => { SFX.click(); openTutorial(0); };
 document.getElementById('btnHome').onclick = () => { SFX.click(); goHome(); };

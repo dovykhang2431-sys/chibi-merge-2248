@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#ffd6e8" />
+      <stop offset="100%" stop-color="#ff9ecf" />
+    </radialGradient>
+  </defs>
+  
+  <circle cx="256" cy="256" r="246" fill="url(#bgGrad)" stroke="#ffffff" stroke-width="16" />
+  
+  <circle cx="256" cy="292" r="168" fill="#ff8f00" stroke="#d84315" stroke-width="14" stroke-dasharray="36 16" />
+  <circle cx="256" cy="292" r="154" fill="#ff9800" />
+  
+  <polygon points="168,156 200,72 256,128 312,72 344,156" fill="#ffd700" stroke="#e65100" stroke-width="12" stroke-linejoin="round" />
+  <circle cx="200" cy="70" r="10" fill="#ff5c8d" />
+  <circle cx="256" cy="108" r="11" fill="#47b2f5" />
+  <circle cx="312" cy="70" r="10" fill="#ff5c8d" />
+  
+  <circle cx="256" cy="298" r="122" fill="#ffe082" stroke="#e65100" stroke-width="12" />
+  
+  <circle cx="204" cy="284" r="22" fill="#321e28" />
+  <circle cx="308" cy="284" r="22" fill="#321e28" />
+  <circle cx="196" cy="275" r="8" fill="#ffffff" />
+  <circle cx="300" cy="275" r="8" fill="#ffffff" />
+  
+  <ellipse cx="164" cy="322" rx="24" ry="14" fill="#ff7aa2" opacity="0.85" />
+  <ellipse cx="348" cy="322" rx="24" ry="14" fill="#ff7aa2" opacity="0.85" />
+  
+  <polygon points="238,304 274,304 256,324" fill="#5d4037" />
+  <path d="M226,334 Q256,364 286,334" fill="none" stroke="#321e28" stroke-width="12" stroke-linecap="round" />
+</svg>
