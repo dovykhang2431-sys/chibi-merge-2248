@@ -354,7 +354,6 @@
     35% { transform: translateY(-6px) rotate(-10deg) scale(1.2); }
     70% { transform: translateY(-3px) rotate(10deg) scale(1.16); }
   }
-  /* Speech bubble sits neatly beside the lion inside combo-bar-wrap, never overlapping HUD or board */
   .mascot-speech {
     position: absolute; left: 40px; top: 50%; transform: translateY(-50%);
     background: #fff; border: 2px solid #ff9800; color: #d86b00;
@@ -472,7 +471,6 @@
     50% { transform: translateY(-2.5px) scale(1.02, 0.98); }
   }
 
-  /* Tiles in chain */
   .tile.selected {
     transform: scale(1.14);
     border-color: #ffd700;
@@ -486,7 +484,6 @@
     50% { filter: brightness(1.18); }
   }
 
-  /* Active head tile being dragged: clearly lifted 1.35x with deep shadow */
   .tile.dragging-head {
     transform: scale(1.35) !important;
     border: 3px solid #fff176;
@@ -573,13 +570,13 @@
   .evo-item.active { opacity: 1; transform: scale(1.16); box-shadow: 0 2px 6px rgba(0,0,0,0.18); }
   .evo-arrow { font-size: 10px; color: #c49aa8; font-weight: 900; }
 
-  /* FX Layer & Bottom Toast */
+  /* FX Layer on top of all board tiles */
   #fxCanvas {
     position: fixed; inset: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 50;
+    pointer-events: none; z-index: 95;
   }
   .float-score {
-    position: fixed; pointer-events: none; z-index: 60;
+    position: fixed; pointer-events: none; z-index: 100;
     font-weight: 900; font-size: 24px; color: #ff477e;
     text-shadow: 0 2px 0 #fff, 0 4px 12px rgba(255,71,126,0.4);
     animation: floatUp 1s ease-out forwards;
@@ -689,7 +686,7 @@
   .codex-card.locked-card { background: #f2edf0; border-color: #ddd; opacity: 0.78; }
   .codex-svg { width: 56px; height: 56px; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; }
 
-  /* Booster Picker - Out-of-stock (0) clearly greyed/dimmed with big lock, Buy button stays bright */
+  /* Booster Picker - Out-of-stock (0): grey/dimmed body + BIG prominent lock icon, Buy button ALWAYS bright */
   .booster-pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
   .booster-pick {
     background: #fff; border: 2.5px solid #ffe0eb; border-radius: 18px;
@@ -700,15 +697,15 @@
     box-shadow: 0 0 0 2px rgba(255,152,0,0.3);
   }
   .booster-pick.out-of-stock {
-    background: #eae4e7; border-color: #cfc6ca; cursor: default;
+    background: #e9e2e6; border-color: #cfc6ca; cursor: default;
   }
   .booster-pick.out-of-stock .booster-card-body {
-    opacity: 0.5; filter: grayscale(0.85);
+    opacity: 0.48; filter: grayscale(0.9);
   }
-  .lock-corner-icon {
-    position: absolute; top: 5px; right: 7px;
-    font-size: 18px; z-index: 2;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+  .lock-big-overlay {
+    position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+    font-size: 32px; z-index: 3; pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.32));
   }
   .picked-tag {
     position: absolute; top: 5px; right: 6px;
@@ -716,8 +713,8 @@
     padding: 1px 6px; border-radius: 8px; z-index: 2;
   }
   .buy-btn-mini {
-    margin-top: 6px; padding: 4px 10px; font-size: 11px; border-radius: 12px;
-    position: relative; z-index: 3;
+    margin-top: 6px; padding: 5px 12px; font-size: 11.5px; border-radius: 12px;
+    position: relative; z-index: 4;
   }
 
   .setting-row {
@@ -1853,18 +1850,18 @@ function renderBoosterPicker() {
     const owned = progressData.boosters[b.id] || 0;
     const isPicked = pickedBoosters.includes(b.id);
     const isOut = owned <= 0;
-    const canAfford = progressData.coins >= b.price;
     const card = document.createElement('div');
     card.className = 'booster-pick' + (isPicked ? ' picked' : '') + (isOut ? ' out-of-stock' : '');
+    // Khi số lượng = 0: phần thân thẻ mờ xám + icon khóa 🔒 TO rõ ở giữa trên; nút Mua LUÔN SÁNG màu cam-vàng không bị khóa
     card.innerHTML = `
       ${isPicked ? '<span class="picked-tag">✓ Đã chọn</span>' : ''}
-      ${isOut ? '<span class="lock-corner-icon" title="Chưa sở hữu">🔒</span>' : ''}
+      ${isOut ? '<span class="lock-big-overlay" title="Chưa sở hữu">🔒</span>' : ''}
       <div class="booster-card-body">
         <div style="font-size:24px;">${b.icon}</div>
         <div style="font-weight:900;font-size:13px;">${b.name} (${owned})</div>
         <div style="font-size:10.5px;color:#8c6b7a;">${b.desc}</div>
       </div>
-      <button class="chibi-btn btn-gold buy-btn-mini ${canAfford ? '' : 'is-disabled'}" onclick="event.stopPropagation(); buyBooster('${b.id}')">${canAfford ? '' : '🔒 '}Mua ${b.price} 🪙</button>
+      <button class="chibi-btn btn-gold buy-btn-mini" onclick="event.stopPropagation(); buyBooster('${b.id}')">Mua ${b.price} 🪙</button>
     `;
     card.onclick = () => {
       if (isOut) {
@@ -2020,7 +2017,6 @@ function triggerMascotCheer(text) {
   void box.offsetWidth;
   box.classList.add('cheer');
 
-  // Đặt bong bóng khen ngay trong comboBarWrap (bên cạnh sư tử, giữa HUD và bàn cờ) để không đè lên thanh tiến độ
   wrap.querySelectorAll('.mascot-speech').forEach(s => s.remove());
   const sp = document.createElement('div');
   sp.className = 'mascot-speech';
@@ -2558,8 +2554,14 @@ function executeMerge() {
   const cy = tr.top + tr.height / 2;
   const burstColor = CHARS[newLv].line;
 
-  // Hiệu ứng tia sáng tỏa ra + hạt sao + chữ điểm bay
-  spawnLightBurst(cx, cy, len >= 5 ? 12 : 10, len >= 5 ? 86 : 68);
+  // Đảm bảo fxCanvas có kích thước chuẩn trước khi bắn tia sáng
+  if (fxCanvas.width !== window.innerWidth || fxCanvas.height !== window.innerHeight) {
+    fxCanvas.width = window.innerWidth;
+    fxCanvas.height = window.innerHeight;
+  }
+
+  // Hiệu ứng 10-12 tia sáng dài, đậm, nổi bật tỏa ra trong 0.85 giây + hạt sao + chữ điểm bay
+  spawnLightBurst(cx, cy, len >= 5 ? 12 : 10, len >= 5 ? 132 : 108);
   spawnParticles(cx, cy, len >= 5 ? 28 : 18, burstColor);
   showFloatingScore(cx, cy, `+${gained}`, reasons.join(' • '));
 
@@ -2662,17 +2664,17 @@ function checkEndState(timeUp = false) {
 }
 
 /* =========================================
-   12. PARTICLES, LIGHT RAYS, FIREWORKS & LOOP
+   12. PARTICLES, BOLD LIGHT RAYS, FIREWORKS & LOOP
    ========================================= */
 let particles = [];
 let lightBursts = [];
 
-function spawnLightBurst(x, y, rays = 10, maxR = 72) {
+function spawnLightBurst(x, y, rays = 12, maxR = 115) {
   lightBursts.push({
     x, y, rays, maxR,
     angle: Math.random() * Math.PI,
     life: 1,
-    duration: 600 // ~0.6 giây
+    duration: 850 // 0.85 giây rõ rệt
   });
 }
 
@@ -2783,35 +2785,49 @@ function gameLoop(now) {
 
   fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
 
-  // Draw radiating light rays (tia sáng vàng/trắng xoay nhẹ rồi mờ dần trong 0.6s)
+  // Vẽ 10-12 tia sáng dài, đậm, nổi bật tỏa ra từ ô vừa gộp (kéo dài 0.85 giây trên lớp trên cùng)
   for (let i = lightBursts.length - 1; i >= 0; i--) {
     const b = lightBursts[i];
     b.life -= dt / b.duration;
-    b.angle += 0.025;
+    b.angle += 0.018;
     if (b.life <= 0) { lightBursts.splice(i, 1); continue; }
 
     const progress = 1 - b.life;
-    const outerR = b.maxR * (0.45 + 0.65 * progress);
-    const innerR = 10 + 18 * progress;
+    const outerR = b.maxR * (0.55 + 0.55 * progress);
+    const innerR = 14 + 24 * progress;
+    const alpha = Math.min(1, b.life * 1.35);
 
     fxCtx.save();
     fxCtx.translate(b.x, b.y);
     fxCtx.rotate(b.angle);
-    fxCtx.globalAlpha = Math.max(0, b.life);
+    fxCtx.globalAlpha = alpha;
 
+    // Vòng lóe sáng ở tâm
+    const ringR = 22 + 38 * progress;
+    fxCtx.beginPath();
+    fxCtx.arc(0, 0, ringR, 0, Math.PI * 2);
+    fxCtx.strokeStyle = 'rgba(255, 215, 0, 0.85)';
+    fxCtx.lineWidth = 4 * b.life;
+    fxCtx.stroke();
+
+    // Các tia sáng thẳng tỏa ra
     for (let r = 0; r < b.rays; r++) {
       const a = (r * Math.PI * 2) / b.rays;
       fxCtx.save();
       fxCtx.rotate(a);
       fxCtx.beginPath();
-      fxCtx.moveTo(innerR, -2.2);
+      fxCtx.moveTo(innerR, -5.5 * b.life);
       fxCtx.lineTo(outerR, 0);
-      fxCtx.lineTo(innerR, 2.2);
+      fxCtx.lineTo(innerR, 5.5 * b.life);
       fxCtx.closePath();
-      fxCtx.fillStyle = r % 2 === 0 ? '#fff9c4' : '#ffd54f';
-      fxCtx.shadowColor = '#ffb300';
-      fxCtx.shadowBlur = 10;
+
+      fxCtx.fillStyle = r % 2 === 0 ? '#ffffff' : '#ffea00';
+      fxCtx.strokeStyle = '#ff8f00';
+      fxCtx.lineWidth = 1.6;
+      fxCtx.shadowColor = '#ff9800';
+      fxCtx.shadowBlur = 12;
       fxCtx.fill();
+      fxCtx.stroke();
       fxCtx.restore();
     }
     fxCtx.restore();
