@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Chibi Merge - Giải Đố Nối Hình</title>
+<title>Chibi Merge 2248 - Giải Đố Nối Hình</title>
 <style>
   :root {
     --bg1: #ffd6e0;
@@ -24,106 +24,246 @@
     color: var(--text);
     overflow: hidden;
     display: flex; justify-content: center; align-items: center;
-  }
-  #app {
-    width: 100%; max-width: 460px; height: 100%; max-height: 860px;
-    display: flex; flex-direction: column;
-    padding: 10px 14px 14px;
-    position: relative;
+    transition: background 0.4s ease;
   }
 
-  /* Header & Controls */
+  /* World Themes */
+  body.world-1 { --bg1: #ffd6e0; --bg2: #ffefd6; --bg3: #fff5f7; --primary: #ff6b9d; --primary-dark: #e04f80; }
+  body.world-2 { --bg1: #d4f5d9; --bg2: #ecfccb; --bg3: #f4fff6; --primary: #4caf50; --primary-dark: #2e7d32; }
+  body.world-3 { --bg1: #cceeff; --bg2: #e0f7fa; --bg3: #f0fbff; --primary: #29b6f6; --primary-dark: #0277bd; }
+  body.world-4 { --bg1: #f3d6ff; --bg2: #ffe0f0; --bg3: #fff5fc; --primary: #ba68c8; --primary-dark: #8e24aa; }
+  body.world-5 { --bg1: #ffe0a3; --bg2: #fff1c1; --bg3: #fffaf0; --primary: #ff9800; --primary-dark: #e65100; }
+
+  /* Floating background decor */
+  #bgDecor {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .float-bg-item {
+    position: absolute; opacity: 0.24;
+    animation: driftFloat linear infinite;
+  }
+  @keyframes driftFloat {
+    0% { transform: translateY(105vh) rotate(0deg); }
+    100% { transform: translateY(-15vh) rotate(360deg); }
+  }
+
+  .screen {
+    width: 100%; max-width: 460px; height: 100%; max-height: 880px;
+    display: none; flex-direction: column;
+    padding: 10px 14px 14px;
+    position: relative; z-index: 2;
+  }
+  .screen.active { display: flex; }
+
+  /* =========================
+     HOME SCREEN
+     ========================= */
+  .home-top {
+    display: flex; justify-content: space-between; align-items: center; gap: 6px;
+    background: var(--card); border-radius: 20px; padding: 8px 10px;
+    box-shadow: var(--shadow); margin-bottom: 10px;
+  }
+  .res-pill {
+    display: flex; align-items: center; gap: 4px;
+    background: #fff5f8; border: 2px solid #ffe0eb;
+    border-radius: 14px; padding: 4px 8px;
+    font-size: 12px; font-weight: 900; color: var(--text);
+    white-space: nowrap;
+  }
+  .res-pill.clickable { cursor: pointer; }
+  .res-pill small { font-size: 10px; color: #a87b8e; font-weight: 700; }
+
+  .home-hero {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; min-height: 0;
+  }
+  .game-logo {
+    font-size: 34px; font-weight: 900; line-height: 1.05;
+    background: linear-gradient(180deg, #ff5e92 0%, #ff9933 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 3px 0 #fff) drop-shadow(0 6px 14px rgba(255, 107, 157, 0.35));
+    margin: 0 0 6px;
+  }
+  .game-sub {
+    font-size: 13px; font-weight: 800; color: #a86b82;
+    background: rgba(255,255,255,0.75); padding: 3px 12px; border-radius: 12px;
+    margin-bottom: 10px;
+  }
+  .mascot-wrap {
+    width: 132px; height: 132px; margin: 4px 0 12px;
+    animation: mascotBounce 1.8s ease-in-out infinite;
+    filter: drop-shadow(0 12px 16px rgba(255, 143, 0, 0.28));
+  }
+  @keyframes mascotBounce {
+    0%, 100% { transform: translateY(0) scale(1, 1); }
+    45% { transform: translateY(-14px) scale(0.96, 1.05); }
+    55% { transform: translateY(-14px) scale(0.96, 1.05); }
+    90% { transform: translateY(2px) scale(1.04, 0.96); }
+  }
+  .mascot-eye {
+    transform-origin: center;
+    animation: blinkEye 3.6s infinite;
+  }
+  @keyframes blinkEye {
+    0%, 92%, 100% { transform: scaleY(1); }
+    96% { transform: scaleY(0.1); }
+  }
+
+  .btn-play-big {
+    width: 82%; max-width: 280px; padding: 15px 24px;
+    border: none; border-radius: 26px; cursor: pointer;
+    background: linear-gradient(135deg, #ff6b9d, #ff9a5a);
+    color: #fff; font-size: 22px; font-weight: 900;
+    box-shadow: 0 8px 0 #d94873, 0 14px 24px rgba(255, 107, 157, 0.42);
+    transition: transform 0.12s;
+    margin-bottom: 14px;
+  }
+  .btn-play-big:active { transform: translateY(4px); box-shadow: 0 4px 0 #d94873; }
+
+  /* 7-Day Login Bar on Home */
+  .login-strip {
+    width: 100%; background: var(--card); border-radius: 18px;
+    padding: 8px 10px; box-shadow: var(--shadow); margin-bottom: 10px;
+  }
+  .login-strip-head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; font-weight: 900; color: var(--primary-dark); margin-bottom: 6px;
+  }
+  .login-days {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+  }
+  .login-day {
+    background: #fff5f8; border: 2px solid #ffe0eb; border-radius: 11px;
+    padding: 4px 2px; text-align: center; font-size: 10px; font-weight: 800;
+    display: flex; flex-direction: column; align-items: center; gap: 1px;
+  }
+  .login-day.claimed { background: #e8f5e9; border-color: #a5d6a7; opacity: 0.78; }
+  .login-day.today {
+    background: linear-gradient(180deg, #fff3cd, #ffe082);
+    border-color: #ff9800; box-shadow: 0 2px 8px rgba(255,152,0,0.3);
+  }
+  .login-claim-btn {
+    border: none; border-radius: 8px; padding: 2px 6px; margin-top: 2px;
+    background: #ff6b9d; color: #fff; font-size: 10px; font-weight: 900; cursor: pointer;
+  }
+
+  /* Home Menu Grid */
+  .home-menu {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    width: 100%;
+  }
+  .menu-btn {
+    background: var(--card); border: 2px solid #ffe0eb; border-radius: 16px;
+    padding: 9px 6px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 11.5px; font-weight: 800; color: var(--text);
+    box-shadow: 0 4px 10px rgba(255,107,157,0.12);
+    position: relative; transition: transform 0.12s;
+  }
+  .menu-btn:active { transform: scale(0.94); }
+  .menu-btn span.ico { font-size: 20px; }
+  .red-dot {
+    position: absolute; top: 5px; right: 7px; width: 9px; height: 9px;
+    background: #ff3b30; border-radius: 50%; border: 2px solid #fff;
+  }
+
+  /* =========================
+     GAME SCREEN
+     ========================= */
   .top-bar {
     display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px; gap: 6px;
   }
   .level-badge {
-    background: linear-gradient(135deg, #ff7eb3, #ff758c);
-    color: #fff; font-weight: 800; font-size: 15px;
-    padding: 6px 14px; border-radius: 20px;
-    box-shadow: 0 4px 10px rgba(255, 117, 140, 0.35);
-    display: flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff; font-weight: 800; font-size: 13.5px;
+    padding: 6px 12px; border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    display: flex; align-items: center; gap: 5px;
+    white-space: nowrap;
   }
-  .icon-btns { display: flex; gap: 6px; }
+  .mini-coin {
+    background: var(--card); border: 2px solid #ffe0a3;
+    border-radius: 16px; padding: 4px 9px;
+    font-size: 12px; font-weight: 900; color: #b86b00;
+  }
+  .icon-btns { display: flex; gap: 5px; }
   .icon-btn {
-    width: 38px; height: 38px; border-radius: 50%; border: none;
+    width: 34px; height: 34px; border-radius: 50%; border: none;
     background: var(--card); color: var(--text);
-    font-size: 17px; cursor: pointer;
+    font-size: 15px; cursor: pointer;
     box-shadow: 0 3px 8px rgba(0,0,0,0.08);
     display: flex; align-items: center; justify-content: center;
-    transition: transform 0.12s, background 0.15s;
+    transition: transform 0.12s;
   }
   .icon-btn:active { transform: scale(0.9); }
 
   /* HUD */
   .hud {
-    background: var(--card); border-radius: 20px;
-    padding: 10px 14px; margin-bottom: 8px;
+    background: var(--card); border-radius: 18px;
+    padding: 8px 12px; margin-bottom: 6px;
     box-shadow: var(--shadow);
   }
   .hud-row {
     display: flex; justify-content: space-between; align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
   .stat-box {
     display: flex; flex-direction: column; align-items: center;
-    background: #fff5f8; border-radius: 14px; padding: 5px 10px;
-    min-width: 72px; border: 2px solid #ffe0eb;
+    background: #fff5f8; border-radius: 13px; padding: 4px 8px;
+    min-width: 66px; border: 2px solid #ffe0eb;
   }
-  .stat-label { font-size: 11px; font-weight: 700; color: #a87b8e; text-transform: uppercase; }
-  .stat-val { font-size: 19px; font-weight: 900; color: var(--primary-dark); line-height: 1.1; }
+  .stat-label { font-size: 10px; font-weight: 700; color: #a87b8e; text-transform: uppercase; }
+  .stat-val { font-size: 18px; font-weight: 900; color: var(--primary-dark); line-height: 1.1; }
   .stat-val.low { color: #e53935; animation: pulse 0.7s infinite; }
 
   .goal-box {
-    flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
-    background: #fff9eb; border-radius: 14px; padding: 5px 10px;
-    border: 2px solid #ffe4b5; min-height: 46px;
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+    background: #fff9eb; border-radius: 13px; padding: 4px 8px;
+    border: 2px solid #ffe4b5; min-height: 44px;
   }
-  .goal-icon { width: 34px; height: 34px; flex-shrink: 0; }
-  .goal-text { font-size: 13px; font-weight: 800; color: #8c5a2b; line-height: 1.2; }
+  .goal-icon { width: 30px; height: 30px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .goal-text { font-size: 12px; font-weight: 800; color: #8c5a2b; line-height: 1.2; }
 
-  /* Goal Progress Bar + Score Stars Row */
   .progress-wrap {
-    margin-top: 8px;
-    display: flex; align-items: center; gap: 10px;
+    margin-top: 6px; display: flex; align-items: center; gap: 8px;
   }
   .progress-col { flex: 1; }
   .progress-label-row {
     display: flex; justify-content: space-between;
-    font-size: 11px; font-weight: 700; color: #9c6f82; margin-bottom: 3px;
+    font-size: 10.5px; font-weight: 700; color: #9c6f82; margin-bottom: 2px;
   }
   .progress-bar-bg {
-    width: 100%; height: 11px; background: #f3dce4;
+    width: 100%; height: 10px; background: #f3dce4;
     border-radius: 10px; overflow: hidden;
   }
   .progress-fill {
     height: 100%; width: 0%; border-radius: 10px;
-    background: linear-gradient(90deg, #ff7eb3, #ffb347);
+    background: linear-gradient(90deg, var(--primary), var(--accent));
     transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .hud-stars {
-    display: flex; align-items: center; gap: 3px;
+    display: flex; align-items: center; gap: 2px;
     background: #fff8e6; border: 2px solid #ffe0a3;
-    padding: 4px 8px; border-radius: 12px;
+    padding: 3px 7px; border-radius: 11px;
   }
   .star-marker {
-    font-size: 17px; filter: grayscale(1) opacity(0.35);
+    font-size: 16px; filter: grayscale(1) opacity(0.35);
     transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s;
     display: inline-block;
   }
-  .star-marker.earned {
-    filter: none; transform: scale(1.22);
-  }
+  .star-marker.earned { filter: none; transform: scale(1.22); }
 
   /* Combo bar */
   .combo-bar-wrap {
-    height: 24px; margin-bottom: 6px;
+    height: 22px; margin-bottom: 4px;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 6px;
   }
   .combo-pill {
     background: linear-gradient(90deg, #ff6b9d, #ffb347);
-    color: #fff; font-weight: 900; font-size: 12px;
+    color: #fff; font-weight: 900; font-size: 11.5px;
     padding: 2px 10px; border-radius: 12px;
     visibility: hidden; opacity: 0; transform: scale(0.8);
     transition: opacity 0.18s, transform 0.18s;
@@ -147,19 +287,22 @@
     position: relative; min-height: 0;
   }
   .board-frame {
-    width: 100%; max-width: 410px; aspect-ratio: 1 / 1;
-    background: rgba(255, 255, 255, 0.72);
-    border-radius: 26px; padding: 10px;
-    box-shadow: 0 12px 30px rgba(255, 107, 157, 0.25), inset 0 0 0 3px rgba(255,255,255,0.9);
+    width: 100%; max-width: 390px; aspect-ratio: 1 / 1;
+    background: rgba(255, 255, 255, 0.76);
+    border-radius: 24px; padding: 9px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), inset 0 0 0 3px rgba(255,255,255,0.92);
     position: relative;
     touch-action: none;
+  }
+  .board-frame.targeting {
+    box-shadow: 0 0 0 4px #ff9800, 0 12px 28px rgba(255, 152, 0, 0.35);
   }
   .grid {
     width: 100%; height: 100%;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(5, 1fr);
-    gap: 8px;
+    gap: 7px;
     position: relative; z-index: 2;
   }
   #lineCanvas {
@@ -169,17 +312,17 @@
 
   /* Tile */
   .tile {
-    position: relative; border-radius: 18px;
+    position: relative; border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.08), 0 6px 12px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.08), 0 5px 10px rgba(0,0,0,0.05);
     transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.16s;
     overflow: hidden;
   }
   .tile svg { width: 88%; height: 88%; pointer-events: none; }
   .tile.selected {
     transform: scale(1.1);
-    box-shadow: 0 0 0 4px #ff6b9d, 0 8px 18px rgba(255, 107, 157, 0.45);
+    box-shadow: 0 0 0 4px var(--primary), 0 8px 18px rgba(255, 107, 157, 0.45);
     animation: wiggle 0.35s ease-in-out infinite;
     z-index: 4;
   }
@@ -187,11 +330,10 @@
   .tile.merged { animation: popMerge 0.36s cubic-bezier(0.34, 1.56, 0.64, 1); }
   .tile.locked { filter: saturate(0.75); }
 
-  /* Overlays on tile */
   .tile-overlay {
     position: absolute; inset: 0; pointer-events: none;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 18px;
+    border-radius: 16px;
   }
   .ice-2 {
     background: rgba(160, 230, 255, 0.58);
@@ -207,25 +349,53 @@
   }
   .badge-corner {
     position: absolute; top: 3px; right: 4px;
-    font-size: 13px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+    font-size: 12px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  }
+
+  /* In-Game Booster Bar */
+  .booster-bar {
+    display: flex; justify-content: center; align-items: center; gap: 8px;
+    margin-top: 7px;
+  }
+  .booster-btn {
+    flex: 1; max-width: 110px;
+    background: var(--card); border: 2px solid #ffd6e0; border-radius: 14px;
+    padding: 5px 8px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    font-size: 12px; font-weight: 800; color: var(--text);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    position: relative;
+  }
+  .booster-btn.active-mode {
+    background: #fff3cd; border-color: #ff9800;
+    box-shadow: 0 0 0 3px rgba(255,152,0,0.35);
+  }
+  .booster-btn.disabled { opacity: 0.45; cursor: not-allowed; }
+  .booster-count {
+    background: var(--primary); color: #fff; font-size: 10px; font-weight: 900;
+    padding: 1px 6px; border-radius: 10px;
+  }
+  .booster-hint {
+    text-align: center; font-size: 11.5px; font-weight: 800; color: #e65100;
+    min-height: 16px; margin-top: 3px;
   }
 
   /* Evolution preview bar */
   .evo-bar {
-    display: flex; justify-content: center; align-items: center; gap: 4px;
-    margin-top: 10px; background: rgba(255,255,255,0.75);
-    padding: 6px 10px; border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.12);
+    display: flex; justify-content: center; align-items: center; gap: 3px;
+    margin-top: 4px; background: rgba(255,255,255,0.78);
+    padding: 5px 8px; border-radius: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
   }
   .evo-item {
-    width: 30px; height: 30px; border-radius: 9px;
+    width: 28px; height: 28px; border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     opacity: 0.55; transition: transform 0.2s, opacity 0.2s;
   }
-  .evo-item.active { opacity: 1; transform: scale(1.18); box-shadow: 0 2px 8px rgba(255,107,157,0.35); }
+  .evo-item.active { opacity: 1; transform: scale(1.16); box-shadow: 0 2px 6px rgba(0,0,0,0.18); }
   .evo-arrow { font-size: 10px; color: #c49aa8; font-weight: 900; }
 
-  /* FX Layer */
+  /* FX Layer & Toast */
   #fxCanvas {
     position: fixed; inset: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 50;
@@ -244,38 +414,54 @@
   .big-combo {
     position: fixed; left: 50%; top: 44%; transform: translate(-50%, -50%);
     pointer-events: none; z-index: 65;
-    font-size: 34px; font-weight: 900;
+    font-size: 32px; font-weight: 900;
     background: linear-gradient(180deg, #ff5e92, #ff9900);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 3px 0 #fff) drop-shadow(0 6px 14px rgba(255,94,146,0.4));
     animation: comboPop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     white-space: nowrap;
   }
+  #toastBox {
+    position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+    z-index: 200; display: flex; flex-direction: column; gap: 6px;
+    width: 90%; max-width: 380px; pointer-events: none;
+  }
+  .toast-item {
+    background: linear-gradient(135deg, #fff9e6, #ffe0b2);
+    border: 3px solid #ffb347; border-radius: 18px;
+    padding: 10px 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 800; color: #5a3e4d;
+    animation: toastIn 0.3s ease-out;
+  }
+  @keyframes toastIn {
+    from { transform: translateY(-24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
 
-  /* Modals - Crisp, immediate visibility */
+  /* Modals */
   .modal-backdrop {
     position: fixed; inset: 0; background: rgba(58, 32, 48, 0.62);
     z-index: 120;
-    display: none; justify-content: center; align-items: center; padding: 18px;
+    display: none; justify-content: center; align-items: center; padding: 14px;
   }
   .modal-backdrop.open { display: flex; }
   .modal {
-    width: 100%; max-width: 390px; max-height: 86vh;
-    background: #fff9fb; border-radius: 28px;
-    padding: 20px; box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+    width: 100%; max-width: 410px; max-height: 88vh;
+    background: #fff9fb; border-radius: 26px;
+    padding: 18px; box-shadow: 0 18px 40px rgba(0,0,0,0.28);
     border: 4px solid #ffd6e0;
     display: flex; flex-direction: column; overflow: hidden;
-    opacity: 1;
   }
   .modal h2 {
-    margin: 0 0 10px; text-align: center; font-size: 22px;
+    margin: 0 0 8px; text-align: center; font-size: 20px;
     color: var(--primary-dark);
   }
-  .modal-body { overflow-y: auto; padding-right: 4px; font-size: 14px; line-height: 1.5; }
-  .btn-row { display: flex; gap: 10px; margin-top: 14px; justify-content: center; }
+  .modal-body { overflow-y: auto; padding-right: 4px; font-size: 13.5px; line-height: 1.45; }
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; justify-content: center; flex-wrap: wrap; }
   .btn {
-    border: none; border-radius: 16px; padding: 11px 20px;
-    font-size: 15px; font-weight: 800; cursor: pointer;
+    border: none; border-radius: 15px; padding: 10px 18px;
+    font-size: 14px; font-weight: 800; cursor: pointer;
     transition: transform 0.12s;
   }
   .btn:active { transform: scale(0.95); }
@@ -284,42 +470,95 @@
     color: #fff; box-shadow: 0 5px 14px rgba(255,107,157,0.35);
   }
   .btn-secondary { background: #ffe4ec; color: var(--primary-dark); }
+  .btn-gold { background: linear-gradient(135deg, #ffb347, #ff8f00); color: #fff; }
 
-  /* Level Map Grid */
+  /* World Map */
+  .world-section {
+    border-radius: 18px; padding: 10px; margin-bottom: 12px;
+    border: 2px solid rgba(255,255,255,0.8);
+  }
+  .world-header {
+    display: flex; align-items: center; justify-content: space-between;
+    font-weight: 900; font-size: 14px; margin-bottom: 8px;
+  }
   .map-toast {
-    min-height: 22px; margin-bottom: 6px;
-    text-align: center; font-size: 13px; font-weight: 800;
-    color: #d94862;
+    min-height: 20px; margin-bottom: 6px;
+    text-align: center; font-size: 12.5px; font-weight: 800; color: #d94862;
   }
   .map-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
-    padding: 6px 2px;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px;
   }
   .map-btn {
-    aspect-ratio: 1; border-radius: 18px; border: 3px solid #ffd6e0;
+    aspect-ratio: 1; border-radius: 14px; border: 2.5px solid #ffd6e0;
     background: #fff; display: flex; flex-direction: column;
     align-items: center; justify-content: center; cursor: pointer;
-    box-shadow: 0 4px 10px rgba(255,107,157,0.12);
-    transition: transform 0.12s;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    position: relative;
   }
-  .map-btn:active { transform: scale(0.93); }
-  .map-btn.unlocked { background: linear-gradient(145deg, #fff, #fff0f5); border-color: #ff8fab; color: var(--text); }
+  .map-btn.unlocked { background: #fff; border-color: #ff8fab; color: var(--text); }
   .map-btn.current { background: linear-gradient(145deg, #ff7eb3, #ff758c); color: #fff; border-color: #fff; }
-  .map-btn.locked-lv {
-    background: #eee6ea; border-color: #d8cdd2; color: #9c8c94;
-    cursor: pointer;
-  }
+  .map-btn.boss-lv { border-color: #ff9800; background: #fff8e1; }
+  .map-btn.boss-lv.current { background: linear-gradient(145deg, #ff9800, #ff5722); color: #fff; }
+  .map-btn.locked-lv { background: #eee6ea; border-color: #d8cdd2; color: #9c8c94; }
   .map-btn.locked-lv .map-num { opacity: 0.65; }
   .map-btn.shake { animation: shakeBtn 0.36s ease-in-out; }
-  .map-num { font-size: 18px; font-weight: 900; line-height: 1.1; }
-  .map-stars { font-size: 11px; margin-top: 2px; letter-spacing: 1px; }
+  .map-num { font-size: 15px; font-weight: 900; line-height: 1.1; }
+  .map-stars { font-size: 9px; margin-top: 1px; }
+  .boss-crown { position: absolute; top: -6px; font-size: 12px; }
 
-  .win-stars { text-align: center; font-size: 40px; margin: 6px 0 10px; letter-spacing: 6px; }
-  .help-item {
+  /* Cards for Quests, Achievements, Codex, Boosters, Settings */
+  .list-card {
     display: flex; align-items: center; gap: 10px;
-    background: #fff; padding: 8px 10px; border-radius: 14px; margin-bottom: 8px;
-    border: 1.5px solid #ffe4ec;
+    background: #fff; padding: 9px 11px; border-radius: 15px; margin-bottom: 8px;
+    border: 2px solid #ffe4ec;
   }
+  .list-card.done { background: #f1fbf2; border-color: #a5d6a7; }
+  .list-card-info { flex: 1; }
+  .list-card-title { font-weight: 900; font-size: 13.5px; color: var(--text); }
+  .list-card-desc { font-size: 11.5px; color: #8c6b7a; margin-top: 2px; }
+  .mini-bar { height: 6px; background: #f3dce4; border-radius: 6px; overflow: hidden; margin-top: 4px; }
+  .mini-bar-fill { height: 100%; background: linear-gradient(90deg, #ff6b9d, #ffb347); }
+
+  .codex-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+  }
+  .codex-card {
+    background: #fff; border: 2px solid #ffe0eb; border-radius: 16px;
+    padding: 10px 8px; text-align: center;
+  }
+  .codex-card.locked-card { background: #f2edf0; border-color: #ddd; opacity: 0.78; }
+  .codex-svg { width: 56px; height: 56px; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; }
+
+  .booster-pick-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px;
+  }
+  .booster-pick {
+    background: #fff; border: 2.5px solid #ffe0eb; border-radius: 16px;
+    padding: 8px; text-align: center; cursor: pointer;
+  }
+  .booster-pick.picked {
+    background: #fff8e1; border-color: #ff9800;
+    box-shadow: 0 0 0 2px rgba(255,152,0,0.25);
+  }
+  .buy-btn-mini {
+    margin-top: 5px; border: none; border-radius: 10px;
+    background: #ffe0a3; color: #7a4900; font-size: 11px; font-weight: 900;
+    padding: 4px 8px; cursor: pointer;
+  }
+
+  .setting-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #fff; padding: 11px 14px; border-radius: 15px;
+    margin-bottom: 8px; border: 2px solid #ffe4ec; font-weight: 800;
+  }
+  .toggle-btn {
+    border: none; border-radius: 14px; padding: 6px 14px;
+    font-weight: 900; font-size: 13px; cursor: pointer;
+  }
+  .toggle-btn.on { background: #6bcb77; color: #fff; }
+  .toggle-btn.off { background: #ddd; color: #666; }
+
+  .win-stars { text-align: center; font-size: 38px; margin: 4px 0 8px; letter-spacing: 6px; }
   .help-icon { width: 38px; height: 38px; flex-shrink: 0; }
 
   @keyframes wiggle {
@@ -355,17 +594,59 @@
   @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.14); } }
 </style>
 </head>
-<body>
+<body class="world-1">
+<div id="bgDecor"></div>
 <canvas id="fxCanvas"></canvas>
+<div id="toastBox"></div>
 
-<div id="app">
-  <!-- Top Bar -->
+<!-- =========================
+     SCREEN 1: HOME SCREEN
+     ========================= -->
+<div id="homeScreen" class="screen active">
+  <div class="home-top">
+    <div class="res-pill" title="Điểm cao nhất">🏆 <span id="homeHighScore">0</span></div>
+    <div class="res-pill" title="Tổng sao">⭐ <span id="homeStars">0/150</span></div>
+    <div class="res-pill" title="Số xu">🪙 <span id="homeCoins">0</span></div>
+    <div class="res-pill clickable" id="homeHeartsPill" title="Số tim (Bấm để mua thêm)">❤️ <span id="homeHearts">5/5</span></div>
+  </div>
+
+  <div class="home-hero">
+    <h1 class="game-logo">Chibi Merge<br>2248</h1>
+    <div class="game-sub">✨ Giải Đố Nối Hình Siêu Cute ✨</div>
+    <div class="mascot-wrap" id="mascotBox"></div>
+    <button class="btn-play-big" id="btnHomePlay">▶ CHƠI MÀN 1</button>
+  </div>
+
+  <!-- 7-Day Login Strip -->
+  <div class="login-strip">
+    <div class="login-strip-head">
+      <span>🎁 Thưởng Đăng Nhập 7 Ngày</span>
+      <span id="loginStreakLabel">Ngày 1/7</span>
+    </div>
+    <div class="login-days" id="loginDaysGrid"></div>
+  </div>
+
+  <!-- Home Menu -->
+  <div class="home-menu">
+    <button class="menu-btn" onclick="openMap()"><span class="ico">🗺️</span>Bản Đồ Màn</button>
+    <button class="menu-btn" id="btnDailyMenu" onclick="openDaily()"><span class="ico">📋</span>Nhiệm Vụ</button>
+    <button class="menu-btn" onclick="openCodex()"><span class="ico">📖</span>Sổ Tay Chibi</button>
+    <button class="menu-btn" onclick="openAchievements()"><span class="ico">🏅</span>Thành Tích</button>
+    <button class="menu-btn" onclick="openSettings()"><span class="ico">⚙️</span>Cài Đặt</button>
+    <button class="menu-btn" onclick="openHelp()"><span class="ico">❓</span>Hướng Dẫn</button>
+  </div>
+</div>
+
+<!-- =========================
+     SCREEN 2: GAME SCREEN
+     ========================= -->
+<div id="gameScreen" class="screen">
   <div class="top-bar">
     <div class="level-badge" id="levelBadge">🌸 Màn 1</div>
+    <div class="mini-coin">🪙 <span id="gameCoins">0</span></div>
     <div class="icon-btns">
+      <button class="icon-btn" id="btnHome" title="Màn hình chính">🏠</button>
       <button class="icon-btn" id="btnMap" title="Bản đồ màn">🗺️</button>
-      <button class="icon-btn" id="btnHelp" title="Hướng dẫn">❓</button>
-      <button class="icon-btn" id="btnSound" title="Âm thanh">🔊</button>
       <button class="icon-btn" id="btnPause" title="Tạm dừng">⏸️</button>
       <button class="icon-btn" id="btnRestart" title="Chơi lại">🔄</button>
     </div>
@@ -383,7 +664,7 @@
         <div class="goal-text" id="goalText">Mục tiêu</div>
       </div>
       <div class="stat-box">
-        <span class="stat-label">Lượt</span>
+        <span class="stat-label" id="movesLabel">Lượt</span>
         <span class="stat-val" id="movesVal">13</span>
       </div>
     </div>
@@ -421,25 +702,124 @@
     </div>
   </div>
 
+  <!-- In-game Boosters -->
+  <div class="booster-bar" id="inGameBoosterBar"></div>
+  <div class="booster-hint" id="boosterHint"></div>
+
   <!-- Evolution Chain Bar -->
   <div class="evo-bar" id="evoBar"></div>
 </div>
 
-<!-- Modal: Level Map -->
+<!-- =========================
+     MODALS
+     ========================= -->
+<!-- Pre-Level Booster Select -->
+<div class="modal-backdrop" id="preLevelModal">
+  <div class="modal">
+    <h2 id="preLvTitle">🌸 Màn 1</h2>
+    <div class="modal-body">
+      <div id="preLvGoal" style="text-align:center;font-weight:800;color:#8c5a2b;background:#fff9eb;padding:8px;border-radius:14px;border:2px solid #ffe4b5;margin-bottom:8px;"></div>
+      <div style="text-align:center;font-size:12.5px;font-weight:800;color:#a87b8e;">
+        Chọn tối đa 2 Booster mang vào màn (🪙 <span id="preLvCoins">0</span> xu)
+      </div>
+      <div class="booster-pick-grid" id="boosterPickGrid"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeModal('preLevelModal')">Hủy</button>
+      <button class="btn btn-primary" id="btnConfirmPlay">▶ Bắt Đầu!</button>
+    </div>
+  </div>
+</div>
+
+<!-- No Hearts Modal -->
+<div class="modal-backdrop" id="heartModal">
+  <div class="modal">
+    <h2>❤️ Hết Tim Rồi!</h2>
+    <div class="modal-body" style="text-align:center;">
+      <p id="heartModalDesc" style="font-weight:700;"></p>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeModal('heartModal')">Đợi Hồi</button>
+      <button class="btn btn-gold" id="btnBuyHeart">Mua 1 Tim (200 🪙)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Level Map (5 Worlds / 50 Levels) -->
 <div class="modal-backdrop" id="mapModal">
   <div class="modal">
-    <h2>🗺️ Bản Đồ 20 Màn Chơi</h2>
+    <h2>🗺️ Bản Đồ 5 Thế Giới (50 Màn)</h2>
     <div class="map-toast" id="mapToast"></div>
-    <div class="modal-body">
-      <div class="map-grid" id="mapGrid"></div>
-    </div>
+    <div class="modal-body" id="mapWorldsBody"></div>
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="closeMapModal()">Đóng</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Help -->
+<!-- Daily Quests -->
+<div class="modal-backdrop" id="dailyModal">
+  <div class="modal">
+    <h2>📋 Nhiệm Vụ Ngày</h2>
+    <div class="modal-body" id="dailyBody"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="closeModal('dailyModal')">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Codex -->
+<div class="modal-backdrop" id="codexModal">
+  <div class="modal">
+    <h2>📖 Sổ Tay Chibi (<span id="codexCount">0/8</span>)</h2>
+    <div class="modal-body">
+      <div style="text-align:center;font-size:12px;font-weight:800;color:#b86b00;margin-bottom:8px;">
+        Mở khóa đủ 8 bé Chibi để nhận thưởng 500 🪙!
+      </div>
+      <div class="codex-grid" id="codexGrid"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="closeModal('codexModal')">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Achievements -->
+<div class="modal-backdrop" id="achModal">
+  <div class="modal">
+    <h2>🏅 Thành Tích</h2>
+    <div class="modal-body" id="achBody"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="closeModal('achModal')">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal">
+    <h2>⚙️ Cài Đặt</h2>
+    <div class="modal-body">
+      <div class="setting-row">
+        <span>🎵 Nhạc Nền</span>
+        <button class="toggle-btn" id="togMusic" onclick="toggleSetting('music')">BẬT</button>
+      </div>
+      <div class="setting-row">
+        <span>🔊 Hiệu Ứng Âm Thanh</span>
+        <button class="toggle-btn" id="togSfx" onclick="toggleSetting('sfx')">BẬT</button>
+      </div>
+      <div class="setting-row">
+        <span>📳 Rung Khi Chơi</span>
+        <button class="toggle-btn" id="togVib" onclick="toggleSetting('vib')">BẬT</button>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="closeModal('settingsModal')">Xong</button>
+    </div>
+  </div>
+</div>
+
+<!-- Help -->
 <div class="modal-backdrop" id="helpModal">
   <div class="modal">
     <h2>🐾 Hướng Dẫn Cách Chơi</h2>
@@ -450,7 +830,7 @@
   </div>
 </div>
 
-<!-- Modal: Pause -->
+<!-- Pause -->
 <div class="modal-backdrop" id="pauseModal">
   <div class="modal">
     <h2>⏸️ Tạm Dừng</h2>
@@ -459,18 +839,20 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-primary" onclick="togglePause()">Tiếp Tục</button>
-      <button class="btn btn-secondary" onclick="closeModal('pauseModal'); startLevel(currentLevel);">Chơi Lại</button>
+      <button class="btn btn-secondary" onclick="closeModal('pauseModal'); openPreLevel(currentLevel);">Chơi Lại</button>
+      <button class="btn btn-secondary" onclick="closeModal('pauseModal'); goHome();">Trang Chủ</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Result (Win / Lose) -->
+<!-- Result (Win / Lose) -->
 <div class="modal-backdrop" id="resultModal">
   <div class="modal">
     <h2 id="resultTitle">🎉 Qua Màn!</h2>
     <div class="win-stars" id="resultStars">⭐⭐⭐</div>
     <div class="modal-body" style="text-align:center;">
-      <p id="resultDesc" style="margin:4px 0 10px; font-weight:700;"></p>
+      <p id="resultDesc" style="margin:4px 0 8px; font-weight:700;"></p>
+      <div id="resultRewardBox" style="font-weight:900;color:#d97706;margin-bottom:6px;"></div>
     </div>
     <div class="btn-row" id="resultBtns"></div>
   </div>
@@ -478,20 +860,35 @@
 
 <script>
 /* =========================================
-   1. CHIBI SVG CHARACTERS (8 LEVELS + SPECIALS)
+   1. CHIBI SVG CHARACTERS & WORLDS DATA
    ========================================= */
 const CHARS = [
-  { id: 0, name: 'Trứng',     bg: '#FFF3D6', line: '#F2C97D', basePts: 40 },
-  { id: 1, name: 'Gà con',    bg: '#FFE98A', line: '#F5B82E', basePts: 60 },
-  { id: 2, name: 'Vịt con',   bg: '#D6F5FF', line: '#5EC2E6', basePts: 85 },
-  { id: 3, name: 'Thỏ',       bg: '#FFD6EB', line: '#F285B9', basePts: 120 },
-  { id: 4, name: 'Mèo',       bg: '#FFE0C2', line: '#F29D52', basePts: 165 },
-  { id: 5, name: 'Cún',       bg: '#E6D6FF', line: '#A47CE6', basePts: 220 },
-  { id: 6, name: 'Gấu',       bg: '#E8D0C0', line: '#B58463', basePts: 300 },
-  { id: 7, name: 'Vua Sư Tử', bg: '#FFD180', line: '#FF8F00', basePts: 420 }
+  { id: 0, name: 'Trứng',     bg: '#FFF3D6', line: '#F2C97D', basePts: 40,  bio: 'Một quả trứng bé xíu, bên trong là điều kỳ diệu đang chờ nở!' },
+  { id: 1, name: 'Gà con',    bg: '#FFE98A', line: '#F5B82E', basePts: 60,  bio: 'Chíp chíp! Bé gà con vàng ươm luôn tràn đầy năng lượng mỗi sáng.' },
+  { id: 2, name: 'Vịt con',   bg: '#D6F5FF', line: '#5EC2E6', basePts: 85,  bio: 'Thích bơi lội tung tăng và hay kêu quạc quạc rủ bạn chơi cùng.' },
+  { id: 3, name: 'Thỏ',       bg: '#FFD6EB', line: '#F285B9', basePts: 120, bio: 'Đôi tai dài mềm mịn, nhảy tưng tưng mỗi khi thấy cà rốt.' },
+  { id: 4, name: 'Mèo',       bg: '#FFE0C2', line: '#F29D52', basePts: 165, bio: 'Hơi kiêu một chút nhưng lại mê được vuốt ve dưới cằm.' },
+  { id: 5, name: 'Cún',       bg: '#E6D6FF', line: '#A47CE6', basePts: 220, bio: 'Người bạn trung thành luôn vẫy đuôi chào đón bạn trở về.' },
+  { id: 6, name: 'Gấu',       bg: '#E8D0C0', line: '#B58463', basePts: 300, bio: 'Ôm cực kỳ ấm áp và sẵn sàng chia sẻ hũ mật ong ngọt lịm.' },
+  { id: 7, name: 'Vua Sư Tử', bg: '#FFD180', line: '#FF8F00', basePts: 420, bio: 'Vị vua oai phong nhưng siêu dễ thương của Vương Quốc Chibi!' }
 ];
 
-function getChibiSVG(level, special = null) {
+const WORLDS = [
+  { id: 1, name: 'Vườn Hoa',       icon: '🌸', range: [1, 10],  bg: '#fff0f5', decor: ['🌸','🌼','🌺','🌷'] },
+  { id: 2, name: 'Rừng Xanh',      icon: '🌿', range: [11, 20], bg: '#eefbe8', decor: ['🌿','🍃','🍀','🌱'] },
+  { id: 3, name: 'Biển Cả',        icon: '🌊', range: [21, 30], bg: '#e6f7ff', decor: ['🌊','🐚','🫧','⭐'] },
+  { id: 4, name: 'Thành Phố Kẹo',  icon: '🍬', range: [31, 40], bg: '#f9ebff', decor: ['🍬','🍭','🍩','🧁'] },
+  { id: 5, name: 'Vương Quốc Sư Tử', icon: '👑', range: [41, 50], bg: '#fff6e0', decor: ['👑','✨','☀️','🦁'] }
+];
+
+const BOOSTERS_INFO = {
+  hammer:  { id: 'hammer',  name: 'Búa',       icon: '🔨', price: 100, desc: 'Đập vỡ 1 ô bất kỳ' },
+  shuffle: { id: 'shuffle', name: 'Xáo Trộn',  icon: '🔀', price: 80,  desc: 'Xáo lại toàn bộ bàn cờ' },
+  rainbow: { id: 'rainbow', name: 'Cầu Vồng',  icon: '🌈', price: 150, desc: 'Biến 1 ô thành Cầu Vồng' },
+  plus3:   { id: 'plus3',   name: '+3 Lượt',   icon: '➕', price: 120, desc: 'Thêm 3 lượt (+15s màn giờ)' }
+};
+
+function getChibiSVG(level, special = null, isMascot = false) {
   if (special === 'rainbow') {
     return `<svg viewBox="0 0 100 100">
       <defs>
@@ -525,11 +922,14 @@ function getChibiSVG(level, special = null) {
     </svg>`;
   }
 
+  const eyeClass = isMascot ? ' class="mascot-eye"' : '';
   const face = `
-    <circle cx="37" cy="55" r="5" fill="#3a2630"/>
-    <circle cx="63" cy="55" r="5" fill="#3a2630"/>
-    <circle cx="35.3" cy="53.2" r="1.8" fill="#fff"/>
-    <circle cx="61.3" cy="53.2" r="1.8" fill="#fff"/>
+    <g${eyeClass}>
+      <circle cx="37" cy="55" r="5" fill="#3a2630"/>
+      <circle cx="63" cy="55" r="5" fill="#3a2630"/>
+      <circle cx="35.3" cy="53.2" r="1.8" fill="#fff"/>
+      <circle cx="61.3" cy="53.2" r="1.8" fill="#fff"/>
+    </g>
     <ellipse cx="28" cy="63" rx="5.5" ry="3.2" fill="#ff8fab" opacity="0.75"/>
     <ellipse cx="72" cy="63" rx="5.5" ry="3.2" fill="#ff8fab" opacity="0.75"/>
     <path d="M44 63 Q50 69 56 63" fill="none" stroke="#3a2630" stroke-width="3" stroke-linecap="round"/>
@@ -619,10 +1019,10 @@ function getChibiSVG(level, special = null) {
 }
 
 /* =========================================
-   2. WEB AUDIO SYNTHESIZER
+   2. WEB AUDIO + BGM + VIBRATION
    ========================================= */
 let audioCtx = null;
-let soundOn = true;
+let bgmTimer = null;
 
 function initAudio() {
   if (!audioCtx) {
@@ -630,10 +1030,11 @@ function initAudio() {
     if (AC) audioCtx = new AC();
   }
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  startBGM();
 }
 
 function playTone(freq, dur = 0.1, type = 'sine', vol = 0.14, slideTo = null) {
-  if (!soundOn) return;
+  if (!progressData.settings.sfx) return;
   initAudio();
   if (!audioCtx) return;
   const osc = audioCtx.createOscillator();
@@ -647,91 +1048,577 @@ function playTone(freq, dur = 0.1, type = 'sine', vol = 0.14, slideTo = null) {
   osc.start(); osc.stop(audioCtx.currentTime + dur);
 }
 
+const BGM_NOTES = [523, 659, 784, 659, 587, 698, 880, 698, 523, 659, 784, 1046, 880, 784, 659, 587];
+let bgmIdx = 0;
+function startBGM() {
+  if (bgmTimer || !progressData.settings.music) return;
+  bgmTimer = setInterval(() => {
+    if (!progressData.settings.music || !audioCtx || audioCtx.state !== 'running') return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(BGM_NOTES[bgmIdx % BGM_NOTES.length], audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.028, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.34);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.36);
+    bgmIdx++;
+  }, 420);
+}
+function stopBGM() {
+  if (bgmTimer) { clearInterval(bgmTimer); bgmTimer = null; }
+}
+
+function vibrate(ms = 18) {
+  if (progressData.settings.vib && navigator.vibrate) navigator.vibrate(ms);
+}
+
 const SFX = {
-  select: (step) => playTone(380 + step * 55, 0.08, 'triangle', 0.13),
-  locked: () => playTone(180, 0.12, 'sawtooth', 0.09, 130),
+  select: (step) => { playTone(380 + step * 55, 0.08, 'triangle', 0.13); vibrate(8); },
+  locked: () => { playTone(180, 0.12, 'sawtooth', 0.09, 130); vibrate(30); },
   merge: (combo) => {
     const base = 440 + Math.min(combo, 5) * 55;
     playTone(base, 0.12, 'sine', 0.16, base * 1.35);
     setTimeout(() => playTone(base * 1.5, 0.16, 'triangle', 0.14), 70);
+    vibrate(20);
   },
   bomb: () => {
     playTone(160, 0.32, 'sawtooth', 0.2, 42);
     setTimeout(() => playTone(100, 0.25, 'square', 0.12, 30), 60);
+    vibrate([30, 20, 40]);
   },
-  win: () => {
-    [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => playTone(f, 0.22, 'triangle', 0.16), i * 110));
-  },
-  lose: () => {
-    [392, 349, 311, 261].forEach((f, i) => setTimeout(() => playTone(f, 0.22, 'sine', 0.14), i * 130));
-  }
+  win: () => { [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => playTone(f, 0.22, 'triangle', 0.16), i * 110)); },
+  lose: () => { [392, 349, 311, 261].forEach((f, i) => setTimeout(() => playTone(f, 0.22, 'sine', 0.14), i * 130)); },
+  coin: () => { playTone(880, 0.09, 'sine', 0.13); setTimeout(() => playTone(1174, 0.14, 'sine', 0.13), 75); }
 };
 
 /* =========================================
-   3. 20 BALANCED LEVELS CONFIGURATION
-   (Mốc 3 sao khả thi khi chơi tốt + thưởng lượt dư)
+   3. 50 LEVELS GENERATOR (5 WORLDS + BOSS + TIMED + COLLECT2)
    ========================================= */
-const LEVELS = [
-  { id: 1,  moves: 13, maxSpawn: 3, goal: { type: 'score', target: 3200 },            stars: [2000, 3100, 3900],  locks: 0, ices: 0 },
-  { id: 2,  moves: 14, maxSpawn: 3, goal: { type: 'collect', level: 2, target: 4 },   stars: [2200, 3400, 4600],  locks: 0, ices: 0 },
-  { id: 3,  moves: 15, maxSpawn: 4, goal: { type: 'score', target: 4800 },            stars: [3000, 4600, 5600],  locks: 0, ices: 0 },
-  { id: 4,  moves: 16, maxSpawn: 4, goal: { type: 'collect', level: 3, target: 3 },   stars: [3400, 4800, 6200],  locks: 0, ices: 0 },
-  { id: 5,  moves: 17, maxSpawn: 4, goal: { type: 'ice', target: 4 },                 stars: [3800, 5400, 7000],  locks: 0, ices: 4 },
-  { id: 6,  moves: 17, maxSpawn: 4, goal: { type: 'collect', level: 4, target: 2 },   stars: [4200, 6000, 7800],  locks: 2, ices: 0 },
-  { id: 7,  moves: 18, maxSpawn: 4, goal: { type: 'score', target: 6800 },            stars: [4400, 6500, 7800],  locks: 2, ices: 2 },
-  { id: 8,  moves: 18, maxSpawn: 5, goal: { type: 'ice', target: 5 },                 stars: [4800, 7000, 9200],  locks: 2, ices: 5 },
-  { id: 9,  moves: 18, maxSpawn: 5, goal: { type: 'collect', level: 4, target: 3 },   stars: [5400, 7600, 10000], locks: 3, ices: 2 },
-  { id: 10, moves: 20, maxSpawn: 5, goal: { type: 'collect', level: 5, target: 2 },   stars: [6000, 8600, 11200], locks: 3, ices: 3 },
-  { id: 11, moves: 19, maxSpawn: 5, goal: { type: 'score', target: 9000 },            stars: [6000, 8600, 10200], locks: 3, ices: 4 },
-  { id: 12, moves: 20, maxSpawn: 5, goal: { type: 'ice', target: 6 },                 stars: [6800, 9600, 12600], locks: 4, ices: 6 },
-  { id: 13, moves: 20, maxSpawn: 5, goal: { type: 'collect', level: 5, target: 3 },   stars: [7400, 10500, 13800],locks: 4, ices: 3 },
-  { id: 14, moves: 20, maxSpawn: 6, goal: { type: 'score', target: 11500 },           stars: [7800, 11000, 13000],locks: 4, ices: 4 },
-  { id: 15, moves: 22, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 2 },   stars: [8800, 12400, 16200],locks: 4, ices: 5 },
-  { id: 16, moves: 21, maxSpawn: 6, goal: { type: 'ice', target: 7 },                 stars: [9400, 13200, 17400],locks: 5, ices: 7 },
-  { id: 17, moves: 22, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 3 },   stars: [10200, 14400, 18800],locks: 5, ices: 5 },
-  { id: 18, moves: 21, maxSpawn: 6, goal: { type: 'score', target: 15000 },           stars: [10500, 14500, 16800],locks: 5, ices: 6 },
-  { id: 19, moves: 23, maxSpawn: 6, goal: { type: 'ice', target: 8 },                 stars: [12000, 16800, 22000],locks: 6, ices: 8 },
-  { id: 20, moves: 25, maxSpawn: 6, goal: { type: 'collect', level: 7, target: 1 },   stars: [14000, 19500, 25500],locks: 6, ices: 6 }
+function buildLevels() {
+  const base20 = [
+    { id: 1,  moves: 13, maxSpawn: 3, goal: { type: 'score', target: 3200 },          stars: [2000, 3100, 3900],  locks: 0, ices: 0 },
+    { id: 2,  moves: 14, maxSpawn: 3, goal: { type: 'collect', level: 2, target: 4 }, stars: [2200, 3400, 4600],  locks: 0, ices: 0 },
+    { id: 3,  moves: 15, maxSpawn: 4, goal: { type: 'score', target: 4800 },          stars: [3000, 4600, 5600],  locks: 0, ices: 0 },
+    { id: 4,  moves: 16, maxSpawn: 4, goal: { type: 'collect', level: 3, target: 3 }, stars: [3400, 4800, 6200],  locks: 0, ices: 0 },
+    { id: 5,  moves: 17, maxSpawn: 4, goal: { type: 'ice', target: 4 },               stars: [3800, 5400, 7000],  locks: 0, ices: 4 },
+    { id: 6,  moves: 17, maxSpawn: 4, goal: { type: 'collect2', l1: 2, t1: 2, l2: 3, t2: 2 }, stars: [4000, 5600, 7200], locks: 2, ices: 0 },
+    { id: 7,  moves: 60, maxSpawn: 4, goal: { type: 'timed', target: 5000 },          stars: [3800, 5200, 6800],  locks: 1, ices: 2 },
+    { id: 8,  moves: 18, maxSpawn: 5, goal: { type: 'ice', target: 5 },               stars: [4800, 7000, 9200],  locks: 2, ices: 5 },
+    { id: 9,  moves: 18, maxSpawn: 5, goal: { type: 'collect', level: 4, target: 3 }, stars: [5400, 7600, 10000], locks: 3, ices: 2 },
+    { id: 10, moves: 14, maxSpawn: 5, goal: { type: 'score', target: 7500 },          stars: [5800, 7600, 8800],  locks: 3, ices: 3, boss: true },
+    { id: 11, moves: 19, maxSpawn: 5, goal: { type: 'score', target: 9000 },          stars: [6000, 8600, 10200], locks: 3, ices: 4 },
+    { id: 12, moves: 20, maxSpawn: 5, goal: { type: 'ice', target: 6 },               stars: [6800, 9600, 12600], locks: 4, ices: 6 },
+    { id: 13, moves: 20, maxSpawn: 5, goal: { type: 'collect2', l1: 3, t1: 2, l2: 4, t2: 2 }, stars: [7200, 10000, 13000], locks: 4, ices: 3 },
+    { id: 14, moves: 60, maxSpawn: 5, goal: { type: 'timed', target: 7500 },          stars: [6000, 8200, 10500], locks: 2, ices: 3 },
+    { id: 15, moves: 22, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 2 }, stars: [8800, 12400, 16200],locks: 4, ices: 5 },
+    { id: 16, moves: 21, maxSpawn: 6, goal: { type: 'ice', target: 7 },               stars: [9400, 13200, 17400],locks: 5, ices: 7 },
+    { id: 17, moves: 22, maxSpawn: 6, goal: { type: 'collect', level: 6, target: 3 }, stars: [10200, 14400, 18800],locks: 5, ices: 5 },
+    { id: 18, moves: 21, maxSpawn: 6, goal: { type: 'score', target: 15000 },         stars: [10500, 14500, 16800],locks: 5, ices: 6 },
+    { id: 19, moves: 23, maxSpawn: 6, goal: { type: 'ice', target: 8 },               stars: [12000, 16800, 22000],locks: 6, ices: 8 },
+    { id: 20, moves: 16, maxSpawn: 6, goal: { type: 'score', target: 14500 },         stars: [11000, 14600, 16500],locks: 5, ices: 5, boss: true }
+  ];
+
+  // Generate levels 21..50 with balanced progression
+  for (let id = 21; id <= 50; id++) {
+    const world = Math.ceil(id / 10);
+    const isBoss = id % 10 === 0;
+    const mod = id % 10;
+    const scale = 1 + (id - 20) * 0.045;
+    const maxSpawn = Math.min(6, 5 + (world >= 4 ? 1 : 0));
+    const locks = Math.min(7, 3 + Math.floor(id / 10));
+    const ices = Math.min(9, 4 + Math.floor(id / 10));
+
+    let lv;
+    if (isBoss) {
+      const target = Math.round((13000 + world * 2400) / 100) * 100;
+      lv = {
+        id, moves: 15 + Math.floor(world / 2), maxSpawn, boss: true,
+        goal: { type: 'score', target },
+        stars: [Math.round(target * 0.78), target, Math.round(target * 1.12)],
+        locks: Math.min(6, locks), ices: Math.min(6, ices)
+      };
+    } else if (mod === 4 || mod === 8) {
+      const target = Math.round((8500 * scale) / 100) * 100;
+      lv = {
+        id, moves: 60, maxSpawn,
+        goal: { type: 'timed', target },
+        stars: [Math.round(target * 0.8), Math.round(target * 1.05), Math.round(target * 1.25)],
+        locks: Math.max(2, locks - 2), ices: Math.max(2, ices - 2)
+      };
+    } else if (mod === 2 || mod === 6) {
+      const l1 = Math.min(5, 3 + Math.floor(world / 2));
+      const l2 = Math.min(6, l1 + 1);
+      const baseStar = Math.round((11000 * scale) / 100) * 100;
+      lv = {
+        id, moves: 21 + Math.floor(world / 2), maxSpawn,
+        goal: { type: 'collect2', l1, t1: 2 + (world >= 4 ? 1 : 0), l2, t2: 2 },
+        stars: [Math.round(baseStar * 0.72), baseStar, Math.round(baseStar * 1.28)],
+        locks, ices: Math.max(3, ices - 1)
+      };
+    } else if (mod === 3 || mod === 7) {
+      const baseStar = Math.round((11500 * scale) / 100) * 100;
+      lv = {
+        id, moves: 22, maxSpawn,
+        goal: { type: 'ice', target: ices },
+        stars: [Math.round(baseStar * 0.72), baseStar, Math.round(baseStar * 1.28)],
+        locks, ices
+      };
+    } else if (mod === 5 || mod === 9) {
+      const colLv = id >= 45 ? 7 : Math.min(6, 4 + Math.floor(world / 2));
+      const target = colLv === 7 ? 1 : (2 + (world >= 4 ? 1 : 0));
+      const baseStar = Math.round((12000 * scale) / 100) * 100;
+      lv = {
+        id, moves: 23, maxSpawn,
+        goal: { type: 'collect', level: colLv, target },
+        stars: [Math.round(baseStar * 0.72), baseStar, Math.round(baseStar * 1.28)],
+        locks, ices
+      };
+    } else {
+      const target = Math.round((13500 * scale) / 100) * 100;
+      lv = {
+        id, moves: 21, maxSpawn,
+        goal: { type: 'score', target },
+        stars: [Math.round(target * 0.75), Math.round(target * 0.96), Math.round(target * 1.14)],
+        locks, ices
+      };
+    }
+    base20.push(lv);
+  }
+  return base20;
+}
+const LEVELS = buildLevels();
+
+/* =========================================
+   4. ACHIEVEMENTS, DAILY QUESTS & 7-DAY LOGIN
+   ========================================= */
+const ACHIEVEMENTS = [
+  { id: 'newbie',   name: 'Tay Mới',            desc: 'Qua màn 1',                        icon: '🌱', reward: 50 },
+  { id: 'merge100', name: 'Gộp 100 Lần',        desc: 'Gộp tổng cộng 100 lần',            icon: '✨', reward: 100 },
+  { id: 'lion1',    name: 'Vua Sư Tử Đầu Tiên', desc: 'Tạo Vua Sư Tử lần đầu tiên',       icon: '🦁', reward: 150 },
+  { id: 'chain10',  name: 'Chuỗi 10 Ô',         desc: 'Nối chuỗi 10 ô trong 1 lần kéo',   icon: '🔗', reward: 150 },
+  { id: 'stars10',  name: 'Ngôi Sao Vàng',      desc: 'Đạt 3 sao ở 10 màn',               icon: '🌟', reward: 200 },
+  { id: 'streak5',  name: 'Thắng 5 Màn Liên Tiếp', desc: 'Thắng 5 màn liên tiếp không thua', icon: '🔥', reward: 200 },
+  { id: 'ice50',    name: 'Phá Băng',           desc: 'Phá tổng cộng 50 ô Băng',          icon: '❄️', reward: 100 },
+  { id: 'combo5',   name: 'Bậc Thầy Combo',     desc: 'Đạt Combo x5',                     icon: '⚡', reward: 150 }
+];
+
+const DAILY_POOL = [
+  { id: 'dq_merge',   type: 'merges',   target: 30, text: 'Gộp 30 lần',             reward: 60 },
+  { id: 'dq_lion',    type: 'lions',    target: 2,  text: 'Tạo 2 Vua Sư Tử',        reward: 100 },
+  { id: 'dq_3star',   type: 'stars3',   target: 2,  text: 'Đạt 3 sao 2 màn',        reward: 90 },
+  { id: 'dq_rainbow', type: 'rainbows', target: 5,  text: 'Tạo 5 ô Cầu Vồng',       reward: 80 },
+  { id: 'dq_ice',     type: 'ices',     target: 10, text: 'Phá 10 ô Băng',          reward: 70 },
+  { id: 'dq_play',    type: 'plays',    target: 5,  text: 'Chơi 5 màn bất kỳ',      reward: 50 }
+];
+
+const LOGIN_REWARDS = [
+  { day: 1, icon: '🪙', label: '100 xu',   apply: () => addCoins(100) },
+  { day: 2, icon: '🔨', label: '1 Búa',    apply: () => { progressData.boosters.hammer++; } },
+  { day: 3, icon: '🪙', label: '200 xu',   apply: () => addCoins(200) },
+  { day: 4, icon: '🌈', label: '1 C.Vồng', apply: () => { progressData.boosters.rainbow++; } },
+  { day: 5, icon: '🪙', label: '300 xu',   apply: () => addCoins(300) },
+  { day: 6, icon: '🔀', label: '1 Xáo',    apply: () => { progressData.boosters.shuffle++; } },
+  { day: 7, icon: '🎁', label: 'Rương Lớn', apply: () => {
+    addCoins(500);
+    progressData.boosters.hammer++;
+    progressData.boosters.shuffle++;
+    progressData.boosters.rainbow++;
+    progressData.boosters.plus3++;
+  }}
 ];
 
 /* =========================================
-   4. GAME STATE & STORAGE
+   5. SAVE DATA (BACKWARD-COMPATIBLE MIGRATION)
+   ========================================= */
+const SAVE_KEY = 'chibiMergeSave_v1';
+const MAX_HEARTS = 5;
+const HEART_REGEN_MS = 10 * 60 * 1000; // 10 phút
+
+function getTodayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function getYesterdayStr() {
+  const d = new Date(Date.now() - 86400000);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function loadProgress() {
+  let raw = {};
+  try { raw = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); } catch (e) { raw = {}; }
+
+  // Preserve old unlocked & stars, initialize new fields with defaults
+  const data = {
+    unlocked: typeof raw.unlocked === 'number' ? Math.max(1, raw.unlocked) : 1,
+    stars: raw.stars && typeof raw.stars === 'object' ? raw.stars : {},
+    coins: typeof raw.coins === 'number' ? raw.coins : 0,
+    hearts: typeof raw.hearts === 'number' ? raw.hearts : MAX_HEARTS,
+    lastHeartTime: typeof raw.lastHeartTime === 'number' ? raw.lastHeartTime : Date.now(),
+    highScore: typeof raw.highScore === 'number' ? raw.highScore : 0,
+    boosters: Object.assign({ hammer: 0, shuffle: 0, rainbow: 0, plus3: 0 }, raw.boosters || {}),
+    achievements: raw.achievements && typeof raw.achievements === 'object' ? raw.achievements : {},
+    codex: Array.isArray(raw.codex) ? raw.codex : [],
+    codexRewarded: !!raw.codexRewarded,
+    stats: Object.assign({ merges: 0, ices: 0, winStreak: 0, maxChain: 0, maxCombo: 0, lions: 0 }, raw.stats || {}),
+    settings: Object.assign({ music: true, sfx: true, vib: true }, raw.settings || {}),
+    daily: raw.daily || { date: '', quests: [] },
+    login: raw.login || { streak: 0, lastClaimDate: '' }
+  };
+  return data;
+}
+
+let progressData = loadProgress();
+
+function saveProgress() {
+  localStorage.setItem(SAVE_KEY, JSON.stringify(progressData));
+}
+
+function addCoins(amount) {
+  progressData.coins += amount;
+  saveProgress();
+  updateHomeUI();
+  document.getElementById('gameCoins').textContent = progressData.coins.toLocaleString('vi-VN');
+}
+
+function regenHearts() {
+  if (progressData.hearts >= MAX_HEARTS) {
+    progressData.hearts = MAX_HEARTS;
+    progressData.lastHeartTime = Date.now();
+    return;
+  }
+  const now = Date.now();
+  const elapsed = now - progressData.lastHeartTime;
+  if (elapsed >= HEART_REGEN_MS) {
+    const gained = Math.floor(elapsed / HEART_REGEN_MS);
+    progressData.hearts = Math.min(MAX_HEARTS, progressData.hearts + gained);
+    progressData.lastHeartTime = progressData.hearts >= MAX_HEARTS ? now : progressData.lastHeartTime + gained * HEART_REGEN_MS;
+    saveProgress();
+  }
+}
+
+function ensureDailyQuests() {
+  const today = getTodayStr();
+  if (progressData.daily.date !== today || !progressData.daily.quests.length) {
+    const pool = [...DAILY_POOL];
+    shuffle(pool);
+    progressData.daily = {
+      date: today,
+      quests: pool.slice(0, 3).map(q => ({ ...q, progress: 0, claimed: false }))
+    };
+    saveProgress();
+  }
+}
+
+function updateDailyProgress(type, amount = 1) {
+  ensureDailyQuests();
+  let changed = false;
+  progressData.daily.quests.forEach(q => {
+    if (q.type === type && !q.claimed) {
+      q.progress = Math.min(q.target, q.progress + amount);
+      changed = true;
+    }
+  });
+  if (changed) saveProgress();
+}
+
+function checkLoginStreakReset() {
+  const today = getTodayStr();
+  const yest = getYesterdayStr();
+  const last = progressData.login.lastClaimDate;
+  if (last && last !== today && last !== yest) {
+    progressData.login.streak = 0;
+    saveProgress();
+  }
+}
+
+function claimLoginReward() {
+  const today = getTodayStr();
+  if (progressData.login.lastClaimDate === today) return;
+  checkLoginStreakReset();
+  const nextDay = (progressData.login.streak % 7) + 1;
+  const reward = LOGIN_REWARDS[nextDay - 1];
+  reward.apply();
+  progressData.login.streak = nextDay;
+  progressData.login.lastClaimDate = today;
+  saveProgress();
+  SFX.coin();
+  showToast('🎁', `Nhận thưởng Ngày ${nextDay}: ${reward.label}!`);
+  updateHomeUI();
+}
+
+function unlockCodex(level) {
+  if (level < 0 || level >= CHARS.length) return;
+  if (!progressData.codex.includes(level)) {
+    progressData.codex.push(level);
+    showToast('📖', `Mở khóa Sổ Tay: ${CHARS[level].name}!`);
+    if (progressData.codex.length === CHARS.length && !progressData.codexRewarded) {
+      progressData.codexRewarded = true;
+      addCoins(500);
+      showToast('🎉', 'Đủ bộ 8 Chibi! Thưởng 500 🪙!');
+    }
+    saveProgress();
+  }
+}
+
+function checkAchievements() {
+  const s = progressData.stats;
+  const stars3Count = Object.values(progressData.stars).filter(v => v >= 3).length;
+  const checks = {
+    newbie: progressData.unlocked >= 2 || (progressData.stars[1] || 0) >= 1,
+    merge100: s.merges >= 100,
+    lion1: s.lions >= 1,
+    chain10: s.maxChain >= 10,
+    stars10: stars3Count >= 10,
+    streak5: s.winStreak >= 5,
+    ice50: s.ices >= 50,
+    combo5: s.maxCombo >= 5
+  };
+  ACHIEVEMENTS.forEach(a => {
+    if (!progressData.achievements[a.id] && checks[a.id]) {
+      progressData.achievements[a.id] = true;
+      progressData.coins += a.reward;
+      SFX.coin();
+      showToast(a.icon, `Thành tích "${a.name}"! +${a.reward} 🪙`);
+    }
+  });
+  saveProgress();
+}
+
+/* =========================================
+   6. GAMEPLAY STATE & UI NAVIGATION
    ========================================= */
 const SIZE = 5;
-let progressData = JSON.parse(localStorage.getItem('chibiMergeSave_v1') || '{"unlocked":1,"stars":{}}');
-
 let currentLevel = Math.min(progressData.unlocked, LEVELS.length);
 let board = [];
 let score = 0;
 let movesLeft = 13;
 let goalCount = 0;
+let goalCount2 = 0;
 let isPaused = false;
 let isGameOver = false;
+let isTimedLevel = false;
+let timeRemainingMs = 0;
 
-// Dragging state
+// Dragging & Combo
 let isDragging = false;
 let chain = [];
 let chainType = null;
-
-// Combo state (0 = chưa có combo, 1 = x1, 2..5 = x2..x5)
 let combo = 0;
 let comboTime = 0;
 const COMBO_MAX_TIME = 5500;
 let lastFrameTime = performance.now();
 
-/* =========================================
-   5. INITIALIZATION & LEVEL START
-   ========================================= */
+// Boosters for current level
+let pendingLevel = 1;
+let pickedBoosters = [];
+let activeBoosterMode = null; // 'hammer' | 'rainbow' | null
+
 const gridEl = document.getElementById('grid');
 const lineCanvas = document.getElementById('lineCanvas');
 const lineCtx = lineCanvas.getContext('2d');
 const fxCanvas = document.getElementById('fxCanvas');
 const fxCtx = fxCanvas.getContext('2d');
 
-function saveProgress() {
-  localStorage.setItem('chibiMergeSave_v1', JSON.stringify(progressData));
+function applyWorldTheme(lvNum) {
+  const worldId = Math.ceil(lvNum / 10);
+  document.body.className = `world-${worldId}`;
+  renderBgDecor(worldId);
 }
 
+function renderBgDecor(worldId) {
+  const box = document.getElementById('bgDecor');
+  box.innerHTML = '';
+  const w = WORLDS[worldId - 1];
+  for (let i = 0; i < 12; i++) {
+    const el = document.createElement('div');
+    el.className = 'float-bg-item';
+    el.style.left = (Math.random() * 94) + '%';
+    el.style.fontSize = (18 + Math.random() * 18) + 'px';
+    el.style.animationDuration = (14 + Math.random() * 14) + 's';
+    el.style.animationDelay = (-Math.random() * 20) + 's';
+    if (i % 3 === 0) {
+      el.style.width = '32px'; el.style.height = '32px';
+      el.innerHTML = getChibiSVG(i % CHARS.length);
+    } else {
+      el.textContent = w.decor[i % w.decor.length];
+    }
+    box.appendChild(el);
+  }
+}
+
+function goHome() {
+  isPaused = true;
+  document.getElementById('gameScreen').classList.remove('active');
+  document.getElementById('homeScreen').classList.add('active');
+  applyWorldTheme(1);
+  updateHomeUI();
+}
+
+function showGameScreen() {
+  document.getElementById('homeScreen').classList.remove('active');
+  document.getElementById('gameScreen').classList.add('active');
+  resizeCanvases();
+}
+
+function updateHomeUI() {
+  regenHearts();
+  ensureDailyQuests();
+  checkLoginStreakReset();
+
+  const totalStars = Object.values(progressData.stars).reduce((a, b) => a + b, 0);
+  document.getElementById('homeHighScore').textContent = progressData.highScore.toLocaleString('vi-VN');
+  document.getElementById('homeStars').textContent = `${totalStars}/${LEVELS.length * 3}`;
+  document.getElementById('homeCoins').textContent = progressData.coins.toLocaleString('vi-VN');
+
+  const hEl = document.getElementById('homeHearts');
+  if (progressData.hearts < MAX_HEARTS) {
+    const leftMs = Math.max(0, HEART_REGEN_MS - (Date.now() - progressData.lastHeartTime));
+    const m = Math.floor(leftMs / 60000);
+    const s = Math.floor((leftMs % 60000) / 1000);
+    hEl.innerHTML = `${progressData.hearts}/${MAX_HEARTS} <small>${m}:${String(s).padStart(2,'0')}</small>`;
+  } else {
+    hEl.textContent = `${progressData.hearts}/${MAX_HEARTS}`;
+  }
+
+  const nextLv = Math.min(progressData.unlocked, LEVELS.length);
+  document.getElementById('btnHomePlay').textContent = `▶ CHƠI MÀN ${nextLv}`;
+
+  // Daily quest red dot
+  const hasClaimable = progressData.daily.quests.some(q => !q.claimed && q.progress >= q.target);
+  const dailyBtn = document.getElementById('btnDailyMenu');
+  dailyBtn.querySelectorAll('.red-dot').forEach(d => d.remove());
+  if (hasClaimable) {
+    const dot = document.createElement('span');
+    dot.className = 'red-dot';
+    dailyBtn.appendChild(dot);
+  }
+
+  // 7-day login strip
+  const today = getTodayStr();
+  const claimedToday = progressData.login.lastClaimDate === today;
+  const currentDayNum = claimedToday ? progressData.login.streak : ((progressData.login.streak % 7) + 1);
+  document.getElementById('loginStreakLabel').textContent = `Chuỗi: ${progressData.login.streak}/7 ngày`;
+
+  const grid = document.getElementById('loginDaysGrid');
+  grid.innerHTML = '';
+  LOGIN_REWARDS.forEach(r => {
+    const div = document.createElement('div');
+    const isClaimed = r.day < currentDayNum || (r.day === currentDayNum && claimedToday);
+    const isToday = r.day === currentDayNum && !claimedToday;
+    div.className = 'login-day' + (isClaimed ? ' claimed' : '') + (isToday ? ' today' : '');
+    div.innerHTML = `<div>N${r.day}</div><div style="font-size:15px;">${r.icon}</div>` +
+      (isClaimed ? `<div style="color:#2e7d32;">✓</div>` :
+        (isToday ? `<button class="login-claim-btn" onclick="claimLoginReward()">Nhận</button>` : `<div style="font-size:9px;">${r.label}</div>`));
+    grid.appendChild(div);
+  });
+}
+
+/* =========================================
+   7. PRE-LEVEL BOOSTER SELECT & HEARTS CHECK
+   ========================================= */
+function openPreLevel(lvNum) {
+  regenHearts();
+  if (progressData.hearts <= 0) {
+    openHeartModal();
+    return;
+  }
+  pendingLevel = lvNum;
+  pickedBoosters = [];
+  const cfg = LEVELS[lvNum - 1];
+  const world = WORLDS[Math.ceil(lvNum / 10) - 1];
+  document.getElementById('preLvTitle').textContent = `${world.icon} Màn ${cfg.id}${cfg.boss ? ' (BOSS 👑)' : ''}`;
+  document.getElementById('preLvGoal').textContent = formatGoalText(cfg);
+  renderBoosterPicker();
+  openModal('preLevelModal');
+}
+
+function formatGoalText(cfg) {
+  if (cfg.goal.type === 'score') return `🏆 Đạt ${cfg.goal.target.toLocaleString('vi-VN')} điểm trong ${cfg.moves} lượt`;
+  if (cfg.goal.type === 'timed') return `⏱️ Đạt ${cfg.goal.target.toLocaleString('vi-VN')} điểm trong 60 giây`;
+  if (cfg.goal.type === 'collect') return `🐾 Tạo ${cfg.goal.target} ${CHARS[cfg.goal.level].name} trong ${cfg.moves} lượt`;
+  if (cfg.goal.type === 'collect2') return `🐾 Tạo ${cfg.goal.t1} ${CHARS[cfg.goal.l1].name} & ${cfg.goal.t2} ${CHARS[cfg.goal.l2].name}`;
+  if (cfg.goal.type === 'ice') return `❄️ Phá ${cfg.goal.target} ô Băng trong ${cfg.moves} lượt`;
+  return '';
+}
+
+function renderBoosterPicker() {
+  document.getElementById('preLvCoins').textContent = progressData.coins.toLocaleString('vi-VN');
+  const grid = document.getElementById('boosterPickGrid');
+  grid.innerHTML = '';
+  Object.values(BOOSTERS_INFO).forEach(b => {
+    const owned = progressData.boosters[b.id] || 0;
+    const isPicked = pickedBoosters.includes(b.id);
+    const card = document.createElement('div');
+    card.className = 'booster-pick' + (isPicked ? ' picked' : '');
+    card.innerHTML = `
+      <div style="font-size:24px;">${b.icon}</div>
+      <div style="font-weight:900;font-size:13px;">${b.name} (${owned})</div>
+      <div style="font-size:10.5px;color:#8c6b7a;">${b.desc}</div>
+      <button class="buy-btn-mini" onclick="event.stopPropagation(); buyBooster('${b.id}')">Mua ${b.price} 🪙</button>
+    `;
+    card.onclick = () => {
+      if (isPicked) {
+        pickedBoosters = pickedBoosters.filter(x => x !== b.id);
+      } else {
+        if (owned <= 0) { showToast('💡', `Bạn chưa có ${b.name}, hãy bấm Mua bằng xu!`); return; }
+        if (pickedBoosters.length >= 2) { showToast('💡', 'Chỉ được mang tối đa 2 Booster!'); return; }
+        pickedBoosters.push(b.id);
+      }
+      renderBoosterPicker();
+    };
+    grid.appendChild(card);
+  });
+}
+
+function buyBooster(id) {
+  const b = BOOSTERS_INFO[id];
+  if (progressData.coins < b.price) {
+    showToast('🪙', `Không đủ xu! Cần ${b.price} xu.`);
+    SFX.locked();
+    return;
+  }
+  progressData.coins -= b.price;
+  progressData.boosters[id] = (progressData.boosters[id] || 0) + 1;
+  saveProgress();
+  SFX.coin();
+  renderBoosterPicker();
+  updateHomeUI();
+}
+
+function openHeartModal() {
+  regenHearts();
+  const leftMs = Math.max(0, HEART_REGEN_MS - (Date.now() - progressData.lastHeartTime));
+  const m = Math.floor(leftMs / 60000);
+  const s = Math.floor((leftMs % 60000) / 1000);
+  document.getElementById('heartModalDesc').textContent =
+    progressData.hearts >= MAX_HEARTS
+      ? 'Tim của bạn đã đầy (5/5)!'
+      : `Bạn đang có ${progressData.hearts}/${MAX_HEARTS} tim. Hồi 1 tim sau ${m} phút ${s} giây, hoặc mua ngay bằng 200 xu.`;
+  openModal('heartModal');
+}
+
+document.getElementById('btnBuyHeart').onclick = () => {
+  if (progressData.hearts >= MAX_HEARTS) { showToast('❤️', 'Tim đã đầy rồi!'); closeModal('heartModal'); return; }
+  if (progressData.coins < 200) { showToast('🪙', 'Bạn cần 200 xu để mua 1 tim!'); SFX.locked(); return; }
+  progressData.coins -= 200;
+  progressData.hearts = Math.min(MAX_HEARTS, progressData.hearts + 1);
+  saveProgress();
+  SFX.coin();
+  showToast('❤️', 'Đã mua +1 Tim!');
+  closeModal('heartModal');
+  updateHomeUI();
+};
+
+document.getElementById('btnConfirmPlay').onclick = () => {
+  closeModal('preLevelModal');
+  showGameScreen();
+  startLevel(pendingLevel);
+};
+
+/* =========================================
+   8. LEVEL START, BOARD & BOOSTERS IN-GAME
+   ========================================= */
 function buildEvoBar() {
   const bar = document.getElementById('evoBar');
   bar.innerHTML = '';
@@ -755,29 +1642,33 @@ function buildEvoBar() {
 function startLevel(lvNum) {
   currentLevel = lvNum;
   const cfg = LEVELS[lvNum - 1];
+  applyWorldTheme(lvNum);
+  updateDailyProgress('plays', 1);
+
   score = 0;
+  isTimedLevel = cfg.goal.type === 'timed';
   movesLeft = cfg.moves;
+  timeRemainingMs = isTimedLevel ? 60000 : 0;
   goalCount = 0;
+  goalCount2 = 0;
   combo = 0;
   comboTime = 0;
   isPaused = false;
   isGameOver = false;
   chain = [];
   chainType = null;
+  activeBoosterMode = null;
 
   updateComboUI();
+  renderInGameBoosters();
 
-  // Create 5x5 board
   board = [];
   for (let r = 0; r < SIZE; r++) {
     const row = [];
-    for (let c = 0; c < SIZE; c++) {
-      row.push(createTile(randLevel(cfg.maxSpawn)));
-    }
+    for (let c = 0; c < SIZE; c++) row.push(createTile(randLevel(cfg.maxSpawn)));
     board.push(row);
   }
 
-  // Place locks & ices randomly
   const coords = [];
   for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) coords.push([r, c]);
   shuffle(coords);
@@ -794,6 +1685,66 @@ function startLevel(lvNum) {
   renderBoard(true);
   updateHUD();
   resizeCanvases();
+}
+
+function renderInGameBoosters() {
+  const bar = document.getElementById('inGameBoosterBar');
+  const hint = document.getElementById('boosterHint');
+  bar.innerHTML = '';
+  hint.textContent = activeBoosterMode === 'hammer' ? '🔨 Bấm vào 1 ô bất kỳ để đập vỡ!' :
+                     activeBoosterMode === 'rainbow' ? '🌈 Bấm vào 1 ô bất kỳ để biến thành Cầu Vồng!' : '';
+  document.getElementById('boardFrame').classList.toggle('targeting', !!activeBoosterMode);
+
+  if (pickedBoosters.length === 0) {
+    bar.innerHTML = `<div style="font-size:11px;font-weight:700;color:#a87b8e;">Không mang Booster</div>`;
+    return;
+  }
+  pickedBoosters.forEach(id => {
+    const b = BOOSTERS_INFO[id];
+    const count = progressData.boosters[id] || 0;
+    const btn = document.createElement('button');
+    btn.className = 'booster-btn' + (activeBoosterMode === id ? ' active-mode' : '') + (count <= 0 ? ' disabled' : '');
+    btn.innerHTML = `<span>${b.icon} ${b.name}</span><span class="booster-count">${count}</span>`;
+    btn.onclick = () => useBoosterClick(id);
+    bar.appendChild(btn);
+  });
+}
+
+function useBoosterClick(id) {
+  if (isPaused || isGameOver) return;
+  if ((progressData.boosters[id] || 0) <= 0) return;
+
+  if (id === 'shuffle') {
+    progressData.boosters.shuffle--;
+    saveProgress();
+    const flat = [];
+    for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) flat.push(board[r][c]);
+    shuffle(flat);
+    for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+      board[r][c] = flat[r * SIZE + c];
+      board[r][c].anim = 'fall';
+    }
+    SFX.merge(3);
+    renderBoard();
+    renderInGameBoosters();
+    return;
+  }
+
+  if (id === 'plus3') {
+    progressData.boosters.plus3--;
+    saveProgress();
+    if (isTimedLevel) timeRemainingMs += 15000;
+    else movesLeft += 3;
+    SFX.coin();
+    showBigCombo(isTimedLevel ? '+15 GIÂY!' : '+3 LƯỢT!');
+    updateHUD();
+    renderInGameBoosters();
+    return;
+  }
+
+  // hammer or rainbow -> toggle target mode
+  activeBoosterMode = activeBoosterMode === id ? null : id;
+  renderInGameBoosters();
 }
 
 function createTile(level, special = null) {
@@ -816,7 +1767,7 @@ function shuffle(arr) {
 }
 
 /* =========================================
-   6. RENDERING & HUD
+   9. RENDERING & HUD
    ========================================= */
 function renderBoard(initial = false) {
   gridEl.innerHTML = '';
@@ -872,7 +1823,6 @@ function updateComboUI() {
   const pill = document.getElementById('comboPill');
   const bg = document.getElementById('comboTimerBg');
   const fill = document.getElementById('comboTimerFill');
-  // Hiện rõ ngay từ COMBO x1 sau lần gộp đầu tiên
   if (combo >= 1 && comboTime > 0) {
     pill.textContent = `COMBO x${combo}`;
     pill.classList.add('active');
@@ -887,35 +1837,49 @@ function updateComboUI() {
 
 function updateHUD() {
   const cfg = LEVELS[currentLevel - 1];
-  document.getElementById('levelBadge').textContent = `🌸 Màn ${cfg.id}`;
+  const world = WORLDS[Math.ceil(cfg.id / 10) - 1];
+  document.getElementById('levelBadge').textContent = `${world.icon} Màn ${cfg.id}${cfg.boss ? ' 👑' : ''}`;
+  document.getElementById('gameCoins').textContent = progressData.coins.toLocaleString('vi-VN');
   document.getElementById('scoreVal').textContent = score.toLocaleString('vi-VN');
-  const mvEl = document.getElementById('movesVal');
-  mvEl.textContent = movesLeft;
-  mvEl.classList.toggle('low', movesLeft <= 4);
 
-  // Goal text & exact goal progress percentage
+  const mvLabel = document.getElementById('movesLabel');
+  const mvEl = document.getElementById('movesVal');
+  if (isTimedLevel) {
+    mvLabel.textContent = 'Giây';
+    const sec = Math.ceil(timeRemainingMs / 1000);
+    mvEl.textContent = sec + 's';
+    mvEl.classList.toggle('low', sec <= 10);
+  } else {
+    mvLabel.textContent = 'Lượt';
+    mvEl.textContent = movesLeft;
+    mvEl.classList.toggle('low', movesLeft <= 4);
+  }
+
   const gIcon = document.getElementById('goalIcon');
   const gText = document.getElementById('goalText');
   let goalPct = 0;
 
-  if (cfg.goal.type === 'score') {
-    gIcon.innerHTML = `<div style="font-size:26px;text-align:center;">🏆</div>`;
-    gText.textContent = `Đạt ${Math.min(score, cfg.goal.target).toLocaleString('vi-VN')} / ${cfg.goal.target.toLocaleString('vi-VN')} điểm`;
+  if (cfg.goal.type === 'score' || cfg.goal.type === 'timed') {
+    gIcon.innerHTML = `<div style="font-size:24px;">${cfg.goal.type === 'timed' ? '⏱️' : '🏆'}</div>`;
+    gText.textContent = `${Math.min(score, cfg.goal.target).toLocaleString('vi-VN')} / ${cfg.goal.target.toLocaleString('vi-VN')}`;
     goalPct = Math.min(100, (score / cfg.goal.target) * 100);
   } else if (cfg.goal.type === 'collect') {
     gIcon.innerHTML = getChibiSVG(cfg.goal.level);
-    gText.textContent = `Tạo ${CHARS[cfg.goal.level].name}: ${Math.min(goalCount, cfg.goal.target)} / ${cfg.goal.target}`;
+    gText.textContent = `${CHARS[cfg.goal.level].name}: ${Math.min(goalCount, cfg.goal.target)}/${cfg.goal.target}`;
     goalPct = Math.min(100, (goalCount / cfg.goal.target) * 100);
+  } else if (cfg.goal.type === 'collect2') {
+    gIcon.innerHTML = `<div style="font-size:22px;">🎯</div>`;
+    gText.textContent = `${CHARS[cfg.goal.l1].name} ${Math.min(goalCount, cfg.goal.t1)}/${cfg.goal.t1} • ${CHARS[cfg.goal.l2].name} ${Math.min(goalCount2, cfg.goal.t2)}/${cfg.goal.t2}`;
+    goalPct = Math.min(100, ((Math.min(goalCount, cfg.goal.t1) + Math.min(goalCount2, cfg.goal.t2)) / (cfg.goal.t1 + cfg.goal.t2)) * 100);
   } else if (cfg.goal.type === 'ice') {
-    gIcon.innerHTML = `<div style="font-size:26px;text-align:center;">❄️</div>`;
-    gText.textContent = `Phá băng: ${Math.min(goalCount, cfg.goal.target)} / ${cfg.goal.target}`;
+    gIcon.innerHTML = `<div style="font-size:24px;">❄️</div>`;
+    gText.textContent = `Phá băng: ${Math.min(goalCount, cfg.goal.target)}/${cfg.goal.target}`;
     goalPct = Math.min(100, (goalCount / cfg.goal.target) * 100);
   }
 
   document.getElementById('progressFill').style.width = goalPct + '%';
   document.getElementById('progressPct').textContent = Math.floor(goalPct) + '%';
 
-  // 3 Stars light up in real time based on score milestones
   for (let i = 0; i < 3; i++) {
     const sEl = document.getElementById('star' + (i + 1));
     sEl.classList.toggle('earned', score >= cfg.stars[i]);
@@ -923,7 +1887,7 @@ function updateHUD() {
 }
 
 /* =========================================
-   7. POINTER / DRAG INTERACTION
+   10. POINTER / DRAG & BOOSTER TARGETING
    ========================================= */
 const boardFrame = document.getElementById('boardFrame');
 
@@ -933,6 +1897,35 @@ boardFrame.addEventListener('pointerdown', (e) => {
   const cell = e.target.closest('.tile');
   if (!cell) return;
   const r = +cell.dataset.r, c = +cell.dataset.c;
+
+  // Handle Hammer / Rainbow Booster targeting
+  if (activeBoosterMode) {
+    const cfg = LEVELS[currentLevel - 1];
+    if (activeBoosterMode === 'hammer') {
+      progressData.boosters.hammer--;
+      saveProgress();
+      if (board[r][c].ice > 0 && cfg.goal.type === 'ice') goalCount++;
+      board[r][c] = null;
+      spawnParticlesAtCell(r, c, 18, '#ff9800');
+      SFX.bomb();
+      applyGravity(cfg.maxSpawn);
+    } else if (activeBoosterMode === 'rainbow') {
+      progressData.boosters.rainbow--;
+      saveProgress();
+      board[r][c].special = 'rainbow';
+      board[r][c].locked = false;
+      board[r][c].anim = 'merge';
+      spawnParticlesAtCell(r, c, 18, '#ff6b9d');
+      SFX.coin();
+    }
+    activeBoosterMode = null;
+    renderBoard();
+    renderInGameBoosters();
+    updateHUD();
+    checkEndState();
+    return;
+  }
+
   const tile = board[r][c];
   if (tile.locked) return;
 
@@ -951,7 +1944,6 @@ window.addEventListener('pointermove', (e) => {
   if (!cell) return;
   const r = +cell.dataset.r, c = +cell.dataset.c;
 
-  // Backtrack
   if (chain.length >= 2) {
     const prev = chain[chain.length - 2];
     if (prev.r === r && prev.c === c) {
@@ -964,7 +1956,6 @@ window.addEventListener('pointermove', (e) => {
   }
 
   if (chain.some(p => p.r === r && p.c === c)) return;
-
   const last = chain[chain.length - 1];
   if (Math.abs(last.r - r) > 1 || Math.abs(last.c - c) > 1) return;
 
@@ -1024,7 +2015,7 @@ function drawChainLine() {
 }
 
 /* =========================================
-   8. MERGE, TRANSPARENT SCORING, GRAVITY & WIN/LOSE
+   11. MERGE, STATS, CODEX, GRAVITY & WIN/LOSE
    ========================================= */
 function finishDrag() {
   if (!isDragging) return;
@@ -1037,7 +2028,6 @@ function finishDrag() {
     chain = [];
     return;
   }
-
   executeMerge();
 }
 
@@ -1046,17 +2036,21 @@ function executeMerge() {
   const len = chain.length;
   const lastPos = chain[len - 1];
 
-  // Combo: starts at x1 on first merge, +1 per consecutive merge within 5.5s (max x5)
   combo = comboTime > 0 ? Math.min(5, combo + 1) : 1;
   comboTime = COMBO_MAX_TIME;
   updateComboUI();
 
-  // Evolution step: 3-4 -> +1, 5-6 -> +2, 7+ -> +3
+  // Stats & Quests
+  progressData.stats.merges++;
+  progressData.stats.maxChain = Math.max(progressData.stats.maxChain, len);
+  progressData.stats.maxCombo = Math.max(progressData.stats.maxCombo, combo);
+  updateDailyProgress('merges', 1);
+
   const baseLv = chainType !== null ? chainType : 0;
+  unlockCodex(baseLv);
   const evoStep = len >= 7 ? 3 : (len >= 5 ? 2 : 1);
   const newLv = Math.min(CHARS.length - 1, baseLv + evoStep);
 
-  // Check bombs in chain
   const bombs = chain.filter(p => board[p.r][p.c].special === 'bomb');
   const chainKeys = new Set(chain.map(p => `${p.r},${p.c}`));
   const toClear = new Set(chainKeys);
@@ -1089,7 +2083,7 @@ function executeMerge() {
     });
   });
 
-  // Process cleared cells (Ice takes 2 hits)
+  // Process cleared cells
   let bombExtraCleared = 0;
   toClear.forEach(key => {
     const [r, c] = key.split(',').map(Number);
@@ -1102,6 +2096,8 @@ function executeMerge() {
     } else {
       if (t.ice === 1) {
         t.ice = 0;
+        progressData.stats.ices++;
+        updateDailyProgress('ices', 1);
         if (cfg.goal.type === 'ice') goalCount++;
         spawnParticlesAtCell(r, c, 10, '#80d8ff');
       }
@@ -1110,37 +2106,50 @@ function executeMerge() {
     }
   });
 
-  // Target cell becomes evolved character (or special if chain >= 5)
   const targetTile = board[lastPos.r][lastPos.c];
   if (targetTile && targetTile.ice > 0) {
     targetTile.ice -= 1;
-    if (targetTile.ice === 0 && cfg.goal.type === 'ice') goalCount++;
+    if (targetTile.ice === 0) {
+      progressData.stats.ices++;
+      updateDailyProgress('ices', 1);
+      if (cfg.goal.type === 'ice') goalCount++;
+    }
   }
 
   let spawnedSpecial = null;
   if (len >= 6) spawnedSpecial = 'bomb';
-  else if (len === 5) spawnedSpecial = 'rainbow';
+  else if (len === 5) {
+    spawnedSpecial = 'rainbow';
+    updateDailyProgress('rainbows', 1);
+  }
 
   const newTile = createTile(newLv, spawnedSpecial);
   newTile.anim = 'merge';
   if (targetTile && targetTile.ice > 0) newTile.ice = targetTile.ice;
   board[lastPos.r][lastPos.c] = newTile;
 
-  // Goal: collect
-  if (cfg.goal.type === 'collect' && !spawnedSpecial && newLv >= cfg.goal.level) {
-    goalCount++;
+  if (!spawnedSpecial) {
+    unlockCodex(newLv);
+    if (newLv === 7) {
+      progressData.stats.lions++;
+      updateDailyProgress('lions', 1);
+    }
+    if (cfg.goal.type === 'collect' && newLv >= cfg.goal.level) goalCount++;
+    if (cfg.goal.type === 'collect2') {
+      if (newLv === cfg.goal.l1) goalCount++;
+      if (newLv === cfg.goal.l2) goalCount2++;
+    }
   }
 
-  // CONSISTENT & TRANSPARENT SCORING FORMULA
+  // Transparent scoring
   const baseScore = CHARS[baseLv].basePts * len * combo;
   const longBonus = len >= 5 ? (len - 4) * 120 : 0;
   const bombBonus = bombExtraCleared * 40;
   const gained = baseScore + longBonus + bombBonus;
 
   score += gained;
-  movesLeft--;
+  if (!isTimedLevel) movesLeft--;
 
-  // Transparent breakdown label
   const reasons = [];
   if (combo >= 2) reasons.push(`Combo x${combo}`);
   if (longBonus > 0) reasons.push(`Thưởng chuỗi ${len}! +${longBonus}`);
@@ -1151,12 +2160,10 @@ function executeMerge() {
   spawnParticles(tr.left + tr.width / 2, tr.top + tr.height / 2, len >= 5 ? 24 : 14);
   showFloatingScore(tr.left + tr.width / 2, tr.top + tr.height / 2, `+${gained}`, reasons.join(' • '));
 
-  if (len >= 5) {
-    showBigCombo(`THƯỞNG CHUỖI ${len}! +${longBonus}`);
-  } else if (combo >= 2) {
-    showBigCombo(`COMBO x${combo}!`);
-  }
+  if (len >= 5) showBigCombo(`THƯỞNG CHUỖI ${len}! +${longBonus}`);
+  else if (combo >= 2) showBigCombo(`COMBO x${combo}!`);
 
+  checkAchievements();
   applyGravity(cfg.maxSpawn);
   renderBoard();
   updateHUD();
@@ -1184,39 +2191,78 @@ function applyGravity(maxSpawn) {
   }
 }
 
-function checkEndState() {
+function checkEndState(timeUp = false) {
+  if (isGameOver) return;
   const cfg = LEVELS[currentLevel - 1];
   let won = false;
   if (cfg.goal.type === 'score' && score >= cfg.goal.target) won = true;
+  if (cfg.goal.type === 'timed' && timeUp && score >= cfg.goal.target) won = true;
   if (cfg.goal.type === 'collect' && goalCount >= cfg.goal.target) won = true;
+  if (cfg.goal.type === 'collect2' && goalCount >= cfg.goal.t1 && goalCount2 >= cfg.goal.t2) won = true;
   if (cfg.goal.type === 'ice' && goalCount >= cfg.goal.target) won = true;
 
   if (won) {
     isGameOver = true;
-    const moveBonus = movesLeft * 120;
+    const moveBonus = isTimedLevel ? 0 : movesLeft * 120;
     score += moveBonus;
+    if (score > progressData.highScore) progressData.highScore = score;
     updateHUD();
+
     const earnedStars = score >= cfg.stars[2] ? 3 : (score >= cfg.stars[1] ? 2 : 1);
     const prevStars = progressData.stars[cfg.id] || 0;
     progressData.stars[cfg.id] = Math.max(prevStars, earnedStars);
     if (cfg.id >= progressData.unlocked && cfg.id < LEVELS.length) {
       progressData.unlocked = cfg.id + 1;
     }
+    if (earnedStars === 3) updateDailyProgress('stars3', 1);
+    progressData.stats.winStreak++;
+
+    // Coin rewards
+    const starCoins = earnedStars * 50;
+    let rewardText = `+${starCoins} 🪙`;
+    progressData.coins += starCoins;
+
+    // Boss chest
+    if (cfg.boss) {
+      const bossCoins = 250;
+      const bKeys = Object.keys(BOOSTERS_INFO);
+      const randB = bKeys[Math.floor(Math.random() * bKeys.length)];
+      progressData.coins += bossCoins;
+      progressData.boosters[randB]++;
+      rewardText += ` • 🎁 Rương Boss: +${bossCoins} 🪙 & 1 ${BOOSTERS_INFO[randB].icon} ${BOOSTERS_INFO[randB].name}!`;
+    }
+
     saveProgress();
+    checkAchievements();
     SFX.win();
     launchFireworks();
-    setTimeout(() => showResult(true, earnedStars, moveBonus), 450);
-  } else if (movesLeft <= 0) {
+    setTimeout(() => showResult(true, earnedStars, moveBonus, rewardText), 420);
+  } else if ((!isTimedLevel && movesLeft <= 0) || (isTimedLevel && timeUp)) {
     isGameOver = true;
+    progressData.stats.winStreak = 0;
+    if (progressData.hearts > 0) {
+      if (progressData.hearts === MAX_HEARTS) progressData.lastHeartTime = Date.now();
+      progressData.hearts--;
+    }
+    saveProgress();
     SFX.lose();
-    setTimeout(() => showResult(false, 0, 0), 350);
+    setTimeout(() => showResult(false, 0, 0, 'Mất 1 ❤️ Tim'), 320);
   }
 }
 
 /* =========================================
-   9. PARTICLES, FIREWORKS & FLOATING TEXT
+   12. PARTICLES, FIREWORKS, TOAST & LOOP
    ========================================= */
 let particles = [];
+
+function showToast(icon, msg) {
+  const box = document.getElementById('toastBox');
+  const item = document.createElement('div');
+  item.className = 'toast-item';
+  item.innerHTML = `<span style="font-size:20px;">${icon}</span><span>${msg}</span>`;
+  box.appendChild(item);
+  setTimeout(() => item.remove(), 3200);
+}
 
 function spawnParticlesAtCell(r, c, count, color = null) {
   const el = gridEl.children[r * SIZE + c];
@@ -1232,14 +2278,11 @@ function spawnParticles(x, y, count = 14, fixedColor = null) {
     const angle = Math.random() * Math.PI * 2;
     const speed = 2.2 + Math.random() * 5.2;
     particles.push({
-      x, y,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - 1.8,
+      x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 1.8,
       size: 6 + Math.random() * 7,
       color: fixedColor || colors[Math.floor(Math.random() * colors.length)],
       shape: shapes[Math.floor(Math.random() * shapes.length)],
-      life: 1,
-      decay: 0.02 + Math.random() * 0.018
+      life: 1, decay: 0.02 + Math.random() * 0.018
     });
   }
 }
@@ -1247,9 +2290,7 @@ function spawnParticles(x, y, count = 14, fixedColor = null) {
 function launchFireworks() {
   for (let i = 0; i < 5; i++) {
     setTimeout(() => {
-      const x = window.innerWidth * (0.2 + Math.random() * 0.6);
-      const y = window.innerHeight * (0.2 + Math.random() * 0.4);
-      spawnParticles(x, y, 28);
+      spawnParticles(window.innerWidth * (0.2 + Math.random() * 0.6), window.innerHeight * (0.2 + Math.random() * 0.4), 28);
     }, i * 200);
   }
 }
@@ -1293,15 +2334,30 @@ function drawStar(ctx, x, y, r) {
   ctx.closePath(); ctx.fill();
 }
 
+let secTick = 0;
 function gameLoop(now) {
   const dt = now - lastFrameTime;
   lastFrameTime = now;
 
-  // Combo countdown
-  if (!isPaused && !isGameOver && comboTime > 0) {
-    comboTime = Math.max(0, comboTime - dt);
-    if (comboTime === 0) combo = 0;
-    updateComboUI();
+  // Periodic heart timer refresh on home screen
+  secTick += dt;
+  if (secTick >= 1000) {
+    secTick = 0;
+    if (document.getElementById('homeScreen').classList.contains('active')) updateHomeUI();
+  }
+
+  // In-game timers
+  if (document.getElementById('gameScreen').classList.contains('active') && !isPaused && !isGameOver) {
+    if (comboTime > 0) {
+      comboTime = Math.max(0, comboTime - dt);
+      if (comboTime === 0) combo = 0;
+      updateComboUI();
+    }
+    if (isTimedLevel && timeRemainingMs > 0) {
+      timeRemainingMs = Math.max(0, timeRemainingMs - dt);
+      updateHUD();
+      if (timeRemainingMs === 0) checkEndState(true);
+    }
   }
 
   // Particles
@@ -1323,25 +2379,25 @@ function gameLoop(now) {
 }
 
 /* =========================================
-   10. MODALS & UI BUTTONS
+   13. MODALS: MAP, DAILY, CODEX, ACH, SETTINGS, RESULT
    ========================================= */
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 function closeMapModal() {
   closeModal('mapModal');
-  // Nếu màn hiện tại đã kết thúc (hết lượt / đã thắng), mở lại hộp thoại kết quả để không bị kẹt ở bàn cờ 0 lượt
-  if (isGameOver) {
+  if (document.getElementById('gameScreen').classList.contains('active') && isGameOver) {
     openModal('resultModal');
   }
 }
 
-function showResult(won, stars, moveBonus = 0) {
+function showResult(won, stars, moveBonus = 0, rewardText = '') {
   document.getElementById('resultTitle').textContent = won ? `🎉 Qua Màn ${currentLevel}!` : '😿 Hết Lượt Rồi!';
   document.getElementById('resultStars').textContent = won ? ('⭐'.repeat(stars) + '☆'.repeat(3 - stars)) : '💔';
   document.getElementById('resultDesc').textContent = won
     ? `Điểm tổng: ${score.toLocaleString('vi-VN')}${moveBonus > 0 ? ` (gồm +${moveBonus.toLocaleString('vi-VN')} thưởng lượt dư)` : ''}`
-    : `Bạn đạt ${score.toLocaleString('vi-VN')} điểm nhưng chưa hoàn thành mục tiêu. Thử lại nhé!`;
+    : `Bạn đạt ${score.toLocaleString('vi-VN')} điểm nhưng chưa hoàn thành mục tiêu.`;
+  document.getElementById('resultRewardBox').textContent = rewardText;
 
   const btns = document.getElementById('resultBtns');
   btns.innerHTML = '';
@@ -1349,76 +2405,186 @@ function showResult(won, stars, moveBonus = 0) {
   const retry = document.createElement('button');
   retry.className = 'btn ' + (won ? 'btn-secondary' : 'btn-primary');
   retry.textContent = 'Chơi Lại';
-  retry.onclick = () => { closeModal('resultModal'); startLevel(currentLevel); };
+  retry.onclick = () => { closeModal('resultModal'); openPreLevel(currentLevel); };
   btns.appendChild(retry);
 
   if (won && currentLevel < LEVELS.length) {
     const next = document.createElement('button');
     next.className = 'btn btn-primary';
     next.textContent = 'Màn Tiếp Theo ➡️';
-    next.onclick = () => { closeModal('resultModal'); startLevel(currentLevel + 1); };
+    next.onclick = () => { closeModal('resultModal'); openPreLevel(currentLevel + 1); };
     btns.appendChild(next);
-  } else {
-    const mapBtn = document.createElement('button');
-    mapBtn.className = 'btn ' + (won ? 'btn-primary' : 'btn-secondary');
-    mapBtn.textContent = 'Bản Đồ Màn';
-    mapBtn.onclick = () => { closeModal('resultModal'); openMap(); };
-    btns.appendChild(mapBtn);
   }
+  const mapBtn = document.createElement('button');
+  mapBtn.className = 'btn btn-secondary';
+  mapBtn.textContent = 'Bản Đồ';
+  mapBtn.onclick = () => { closeModal('resultModal'); openMap(); };
+  btns.appendChild(mapBtn);
+
   openModal('resultModal');
 }
 
 let toastTimer = null;
 function openMap() {
-  const grid = document.getElementById('mapGrid');
+  const body = document.getElementById('mapWorldsBody');
   const toast = document.getElementById('mapToast');
   toast.textContent = '';
-  grid.innerHTML = '';
+  body.innerHTML = '';
 
-  LEVELS.forEach(lv => {
-    const unlocked = lv.id <= progressData.unlocked;
-    const st = progressData.stars[lv.id] || 0;
-    const btn = document.createElement('button');
-    btn.className = 'map-btn ' + (lv.id === currentLevel ? 'current' : (unlocked ? 'unlocked' : 'locked-lv'));
+  WORLDS.forEach(w => {
+    const sec = document.createElement('div');
+    sec.className = 'world-section';
+    sec.style.background = w.bg;
+    sec.innerHTML = `<div class="world-header"><span>${w.icon} Thế Giới ${w.id}: ${w.name}</span><span>Màn ${w.range[0]}–${w.range[1]}</span></div>`;
+    const grid = document.createElement('div');
+    grid.className = 'map-grid';
 
-    btn.innerHTML = `<div class="map-num">${lv.id}</div>
-      <div class="map-stars">${unlocked ? ('⭐'.repeat(st) + '☆'.repeat(3 - st)) : '🔒'}</div>`;
+    for (let id = w.range[0]; id <= w.range[1]; id++) {
+      const lv = LEVELS[id - 1];
+      const unlocked = lv.id <= progressData.unlocked;
+      const st = progressData.stars[lv.id] || 0;
+      const btn = document.createElement('button');
+      btn.className = 'map-btn ' + (lv.boss ? 'boss-lv ' : '') + (lv.id === currentLevel ? 'current' : (unlocked ? 'unlocked' : 'locked-lv'));
+      btn.innerHTML = (lv.boss ? `<span class="boss-crown">👑</span>` : '') +
+        `<div class="map-num">${lv.id}</div>` +
+        `<div class="map-stars">${unlocked ? ('⭐'.repeat(st) + '☆'.repeat(3 - st)) : '🔒'}</div>`;
 
-    if (unlocked) {
-      btn.onclick = () => { closeModal('mapModal'); startLevel(lv.id); };
-    } else {
-      btn.onclick = () => {
-        SFX.locked();
-        btn.classList.remove('shake');
-        void btn.offsetWidth;
-        btn.classList.add('shake');
-        toast.textContent = `🔒 Hoàn thành màn ${lv.id - 1} để mở khóa màn này!`;
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => { toast.textContent = ''; }, 2600);
-      };
+      if (unlocked) {
+        btn.onclick = () => { closeModal('mapModal'); openPreLevel(lv.id); };
+      } else {
+        btn.onclick = () => {
+          SFX.locked();
+          btn.classList.remove('shake');
+          void btn.offsetWidth;
+          btn.classList.add('shake');
+          toast.textContent = `🔒 Hoàn thành màn ${lv.id - 1} để mở khóa màn này!`;
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(() => { toast.textContent = ''; }, 2600);
+        };
+      }
+      grid.appendChild(btn);
     }
-    grid.appendChild(btn);
+    sec.appendChild(grid);
+    body.appendChild(sec);
   });
   openModal('mapModal');
 }
 
+function openDaily() {
+  ensureDailyQuests();
+  const body = document.getElementById('dailyBody');
+  body.innerHTML = '';
+  progressData.daily.quests.forEach((q, idx) => {
+    const done = q.progress >= q.target;
+    const card = document.createElement('div');
+    card.className = 'list-card' + (q.claimed ? ' done' : '');
+    const pct = Math.min(100, (q.progress / q.target) * 100);
+    card.innerHTML = `
+      <div class="list-card-info">
+        <div class="list-card-title">${q.text} (${q.progress}/${q.target})</div>
+        <div class="list-card-desc">Thưởng: ${q.reward} 🪙</div>
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div>
+        ${q.claimed ? `<span style="font-weight:900;color:#2e7d32;">Đã nhận ✓</span>` :
+          (done ? `<button class="btn btn-gold" style="padding:6px 12px;font-size:12px;" onclick="claimDaily(${idx})">Nhận</button>` :
+            `<span style="font-size:11px;font-weight:800;color:#aaa;">Chưa xong</span>`)}
+      </div>
+    `;
+    body.appendChild(card);
+  });
+  openModal('dailyModal');
+}
+
+function claimDaily(idx) {
+  const q = progressData.daily.quests[idx];
+  if (!q || q.claimed || q.progress < q.target) return;
+  q.claimed = true;
+  addCoins(q.reward);
+  SFX.coin();
+  showToast('📋', `Hoàn thành nhiệm vụ! +${q.reward} 🪙`);
+  openDaily();
+}
+
+function openCodex() {
+  document.getElementById('codexCount').textContent = `${progressData.codex.length}/8`;
+  const grid = document.getElementById('codexGrid');
+  grid.innerHTML = '';
+  CHARS.forEach(c => {
+    const unlocked = progressData.codex.includes(c.id);
+    const card = document.createElement('div');
+    card.className = 'codex-card' + (unlocked ? '' : ' locked-card');
+    card.innerHTML = `
+      <div class="codex-svg">${unlocked ? getChibiSVG(c.id) : '<div style="font-size:34px;font-weight:900;color:#aaa;">?</div>'}</div>
+      <div style="font-weight:900;font-size:13.5px;">${unlocked ? c.name : '???'}</div>
+      <div style="font-size:11px;color:#8c6b7a;margin-top:3px;">${unlocked ? c.bio : 'Tạo nhân vật này trong màn chơi để mở khóa!'}</div>
+    `;
+    grid.appendChild(card);
+  });
+  openModal('codexModal');
+}
+
+function openAchievements() {
+  const body = document.getElementById('achBody');
+  body.innerHTML = '';
+  ACHIEVEMENTS.forEach(a => {
+    const done = !!progressData.achievements[a.id];
+    const card = document.createElement('div');
+    card.className = 'list-card' + (done ? ' done' : '');
+    card.innerHTML = `
+      <div style="font-size:26px;">${a.icon}</div>
+      <div class="list-card-info">
+        <div class="list-card-title">${a.name}</div>
+        <div class="list-card-desc">${a.desc} • Thưởng ${a.reward} 🪙</div>
+      </div>
+      <div style="font-weight:900;font-size:12px;color:${done ? '#2e7d32' : '#aaa'};">${done ? 'Đã đạt ✓' : 'Chưa đạt'}</div>
+    `;
+    body.appendChild(card);
+  });
+  openModal('achModal');
+}
+
+function openSettings() {
+  ['music', 'sfx', 'vib'].forEach(k => {
+    const btn = document.getElementById('tog' + k.charAt(0).toUpperCase() + k.slice(1));
+    const on = !!progressData.settings[k];
+    btn.textContent = on ? 'BẬT' : 'TẮT';
+    btn.className = 'toggle-btn ' + (on ? 'on' : 'off');
+  });
+  openModal('settingsModal');
+}
+
+function toggleSetting(k) {
+  progressData.settings[k] = !progressData.settings[k];
+  saveProgress();
+  if (k === 'music') {
+    if (progressData.settings.music) { initAudio(); startBGM(); }
+    else stopBGM();
+  }
+  openSettings();
+}
+
 function openHelp() {
   document.getElementById('helpBody').innerHTML = `
-    <div class="help-item">
+    <div class="list-card">
       <div class="help-icon">${getChibiSVG(1)}</div>
-      <div><b>Nối 3+ hình giống nhau</b> (ngang, dọc, chéo) để gộp thành bé Chibi cấp cao hơn. Điểm = Điểm cơ bản × Số ô × Combo.</div>
+      <div><b>Nối 3+ hình giống nhau</b> (ngang, dọc, chéo) để gộp thành bé Chibi cấp cao hơn.</div>
     </div>
-    <div class="help-item">
+    <div class="list-card">
       <div class="help-icon">${getChibiSVG(0, 'rainbow')}</div>
-      <div><b>Ô Cầu Vồng (nối 5 ô):</b> Nối được với mọi nhân vật Chibi, kèm thưởng chuỗi dài!</div>
+      <div><b>Ô Cầu Vồng (nối 5 ô):</b> Nối được với mọi Chibi, kèm thưởng chuỗi dài!</div>
     </div>
-    <div class="help-item">
+    <div class="list-card">
       <div class="help-icon">${getChibiSVG(0, 'bomb')}</div>
-      <div><b>Ô Bom (nối 6+ ô):</b> Khi nối vào chuỗi sẽ nổ tung vùng 3x3 xung quanh!</div>
+      <div><b>Ô Bom (nối 6+ ô):</b> Nổ tung vùng 3x3 khi tham gia chuỗi nối!</div>
     </div>
-    <div class="help-item">
-      <div class="help-icon" style="font-size:26px;text-align:center;">🔒❄️</div>
-      <div><b>Ô Khóa:</b> Nối hình ngay kế bên để mở khóa.<br><b>Ô Băng:</b> Cần gộp 2 lần mới phá vỡ hoàn toàn.</div>
+    <div class="list-card">
+      <div class="help-icon" style="font-size:24px;text-align:center;">🔒❄️</div>
+      <div><b>Ô Khóa:</b> Nối hình kế bên để mở. <b>Ô Băng:</b> Cần gộp 2 lần mới vỡ.</div>
+    </div>
+    <div class="list-card">
+      <div class="help-icon" style="font-size:24px;text-align:center;">🔨🔀</div>
+      <div><b>Booster & Tim:</b> Mua Booster bằng xu trước khi vào màn. Thua mất 1 ❤️ (hồi mỗi 10 phút).</div>
     </div>
   `;
   openModal('helpModal');
@@ -1431,14 +2597,18 @@ function togglePause() {
   else closeModal('pauseModal');
 }
 
-document.getElementById('btnMap').onclick = openMap;
-document.getElementById('btnHelp').onclick = openHelp;
-document.getElementById('btnPause').onclick = togglePause;
-document.getElementById('btnRestart').onclick = () => startLevel(currentLevel);
-document.getElementById('btnSound').onclick = (e) => {
-  soundOn = !soundOn;
-  e.target.textContent = soundOn ? '🔊' : '🔇';
+/* =========================================
+   14. BUTTON BINDINGS & BOOT
+   ========================================= */
+document.getElementById('btnHomePlay').onclick = () => {
+  initAudio();
+  openPreLevel(Math.min(progressData.unlocked, LEVELS.length));
 };
+document.getElementById('homeHeartsPill').onclick = openHeartModal;
+document.getElementById('btnHome').onclick = goHome;
+document.getElementById('btnMap').onclick = openMap;
+document.getElementById('btnPause').onclick = togglePause;
+document.getElementById('btnRestart').onclick = () => openPreLevel(currentLevel);
 
 function resizeCanvases() {
   const rect = boardFrame.getBoundingClientRect();
@@ -1449,9 +2619,12 @@ function resizeCanvases() {
 }
 window.addEventListener('resize', resizeCanvases);
 
-// Boot
+// Boot on Home Screen
 buildEvoBar();
-startLevel(currentLevel);
+renderBgDecor(1);
+document.getElementById('mascotBox').innerHTML = getChibiSVG(7, null, true);
+updateHomeUI();
+resizeCanvases();
 requestAnimationFrame(gameLoop);
 </script>
 </body>
