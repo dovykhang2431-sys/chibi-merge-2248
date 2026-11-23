@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chibi-merge-v3';
+const CACHE_NAME = 'chibi-merge-v4';
 const ASSETS = [
   './',
   './index.html',
