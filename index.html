@@ -1729,7 +1729,7 @@ function buildLevels() {
     const maxSpawn = world >= 6 ? 7 : Math.min(6, 5 + (world >= 4 ? 1 : 0));
     const locks = Math.min(7, 3 + Math.floor(id / 10));
     const ices = Math.min(9, 4 + Math.floor(id / 10));
-    // V5.1-1: Mô hình cân bằng riêng cho màn 51–100 (giữ nguyên tuyệt đối màn 1–50)
+    // V5.2-1: Cân bằng lại màn 51–100 theo số liệu chơi thật (màn 1–50 giữ nguyên tuyệt đối)
     const t51 = id > 50 ? (id - 51) / 49 : 0;
     const round100 = (n) => Math.round(n / 100) * 100;
 
@@ -1739,7 +1739,7 @@ function buildLevels() {
       lv = {
         id: 100, moves, maxSpawn: 7, boss: true,
         goal: { type: 'collect', level: 9, target: 1 },
-        stars: [round100(moves * 1100), round100(moves * 1350), round100(moves * 1580)],
+        stars: [round100(moves * 620), round100(moves * 760), round100(moves * 900)],
         locks: 7, ices: 7
       };
     } else if (isBoss) {
@@ -1753,15 +1753,15 @@ function buildLevels() {
           locks: Math.min(6, locks), ices: Math.min(6, ices)
         };
       } else {
-        const ppm = 1220 + t51 * 240; // ~1.260/lượt (màn 60) -> ~1.410/lượt (màn 90)
+        const ppm = 660 + t51 * 140; // ~686/lượt (màn 60) -> ~771/lượt (màn 90)
         const target = round100(moves * ppm);
         lv = {
           id, moves, maxSpawn, boss: true,
           goal: { type: 'score', target },
           stars: [
-            round100(moves * Math.min(1100, ppm * 0.80)),
+            round100(moves * Math.min(620, ppm * 0.82)),
             round100(target),
-            round100(moves * Math.min(1600, ppm * 1.12))
+            round100(moves * Math.min(900, ppm * 1.15))
           ],
           locks: Math.min(6, locks), ices: Math.min(6, ices)
         };
@@ -1776,12 +1776,12 @@ function buildLevels() {
           locks: Math.max(2, locks - 2), ices: Math.max(2, ices - 2)
         };
       } else {
-        // Màn tính giờ 60s: 20.000 (~333/s) ở màn 54 -> 26.500 (~442/s) ở màn 98
-        const target = round100(19600 + t51 * 7200);
+        // Màn tính giờ 60s: 11.300 (~188/s) ở màn 54 -> 15.300 (~255/s) ở màn 98
+        const target = round100(11000 + t51 * 4500);
         lv = {
           id, moves: 60, maxSpawn,
           goal: { type: 'timed', target },
-          stars: [round100(target * 0.82), round100(target * 1.02), round100(target * 1.18)],
+          stars: [round100(target * 0.82), round100(target * 1.02), round100(target * 1.20)],
           locks: Math.max(2, locks - 2), ices: Math.max(2, ices - 2)
         };
       }
@@ -1807,9 +1807,9 @@ function buildLevels() {
           locks, ices: Math.max(3, ices - 1)
         };
       } else {
-        const s1 = 860 + t51 * 220;
-        const s2 = 1100 + t51 * 240;
-        const s3 = 1320 + t51 * 250;
+        const s1 = 500 + t51 * 120;
+        const s2 = 640 + t51 * 140;
+        const s3 = 760 + t51 * 140;
         lv = {
           id, moves, maxSpawn,
           goal: { type: 'collect2', l1, t1, l2, t2 },
@@ -1828,9 +1828,9 @@ function buildLevels() {
           locks, ices
         };
       } else {
-        const s1 = 720 + t51 * 180;
-        const s2 = 940 + t51 * 210;
-        const s3 = 1160 + t51 * 240;
+        const s1 = 440 + t51 * 120;
+        const s2 = 560 + t51 * 140;
+        const s3 = 680 + t51 * 160;
         lv = {
           id, moves, maxSpawn,
           goal: { type: 'ice', target: ices },
@@ -1858,9 +1858,9 @@ function buildLevels() {
           locks, ices
         };
       } else {
-        const s1 = 880 + t51 * 220;
-        const s2 = 1120 + t51 * 240;
-        const s3 = 1350 + t51 * 240;
+        const s1 = 520 + t51 * 100;
+        const s2 = 650 + t51 * 130;
+        const s3 = 780 + t51 * 120;
         lv = {
           id, moves, maxSpawn,
           goal: { type: 'collect', level: colLv, target },
@@ -1879,16 +1879,16 @@ function buildLevels() {
           locks, ices
         };
       } else {
-        // Màn điểm thường: ~1.120/lượt (màn 51) -> ~1.430/lượt (màn 91)
-        const ppm = 1120 + t51 * 380;
+        // Màn điểm thường: 13.000 (~619/lượt, màn 51) -> 16.100 (~767/lượt, màn 91)
+        const ppm = 620 + t51 * 180;
         const target = round100(moves * ppm);
         lv = {
           id, moves, maxSpawn,
           goal: { type: 'score', target },
           stars: [
-            round100(moves * Math.min(1100, ppm * 0.82)),
-            round100(moves * Math.min(1420, ppm * 1.03)),
-            round100(moves * Math.min(1600, ppm * 1.18))
+            round100(moves * Math.min(620, ppm * 0.85)),
+            round100(moves * Math.min(790, ppm * 1.03)),
+            round100(moves * Math.min(900, ppm * 1.18))
           ],
           locks, ices
         };
@@ -2501,6 +2501,8 @@ let isPaused = false;
 let isGameOver = false;
 let isTimedLevel = false;
 let isEndlessMode = false;
+let endlessTier6Bonuses = 0;
+let endlessTier9Bonuses = 0;
 let timeRemainingMs = 0;
 
 let isDragging = false;
@@ -2650,7 +2652,7 @@ function openPreLevel(lvNum) {
   pickedBoosters = (progressData.lastPickedBoosters || []).filter(id => (progressData.boosters[id] || 0) > 0).slice(0, 2);
   if (lvNum === 0) {
     document.getElementById('preLvTitle').textContent = '♾️ Vô Hạn';
-    document.getElementById('preLvGoal').textContent = '♾️ 30 lượt • Không tốn tim • Bậc 6+ thêm 3 lượt, bậc 9/10 thêm 8 lượt!';
+    document.getElementById('preLvGoal').textContent = '♾️ 30 lượt • Không tốn tim • +3 lượt (5 lần đầu bậc 6+), +8 lượt (2 lần đầu bậc 9/10)!';
   } else {
     const cfg = LEVELS[lvNum - 1];
     const world = WORLDS[Math.ceil(lvNum / 10) - 1];
@@ -2971,6 +2973,8 @@ function resumeSavedSession(sess) {
 function startEndless() {
   isEndlessMode = true;
   isTimedLevel = false;
+  endlessTier6Bonuses = 0;
+  endlessTier9Bonuses = 0;
   applyWorldTheme(71);
   updateDailyProgress('plays', 1);
 
@@ -3731,11 +3735,17 @@ function executeMerge() {
     }
     if (isEndlessMode) {
       if (newLv >= 8) {
-        movesLeft += 8;
-        showToast('♾️', '+8 Lượt (Thần Thú)!');
+        if (endlessTier9Bonuses < 2) {
+          endlessTier9Bonuses++;
+          movesLeft += 8;
+          showToast('♾️', `+8 Lượt (Thần Thú ${endlessTier9Bonuses}/2)!`);
+        }
       } else if (newLv >= 5) {
-        movesLeft += 3;
-        showToast('♾️', '+3 Lượt!');
+        if (endlessTier6Bonuses < 5) {
+          endlessTier6Bonuses++;
+          movesLeft += 3;
+          showToast('♾️', `+3 Lượt (${endlessTier6Bonuses}/5)!`);
+        }
       }
     } else {
       if (cfg.goal.type === 'collect' && newLv >= cfg.goal.level) goalCount++;
