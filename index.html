@@ -44,6 +44,40 @@
   body.world-3 { --bg1: #b5e6ff; --bg2: #d6f6ff; --bg3: #effbff; --primary: #29b6f6; --primary-dark: #0277bd; }
   body.world-4 { --bg1: #ecc4ff; --bg2: #ffd6ec; --bg3: #fff4fc; --primary: #ba68c8; --primary-dark: #8e24aa; }
   body.world-5 { --bg1: #ffd480; --bg2: #ffecb3; --bg3: #fffaf0; --primary: #ff9800; --primary-dark: #d86b00; }
+  /* World 6-10 Themes */
+  body.world-6  { --bg1: #cbeaff; --bg2: #e8f7ff; --bg3: #f7fcff; --primary: #42a5f5; --primary-dark: #1565c0; }
+  body.world-7  { --bg1: #ffe0a8; --bg2: #fff2cc; --bg3: #fffaf0; --primary: #f59f00; --primary-dark: #c77700; }
+  body.world-8  { --bg1: #d9c8ff; --bg2: #e8dcff; --bg3: #f7f4ff; --primary: #7e57c2; --primary-dark: #512da8; }
+  body.world-9  { --bg1: #d4f1ff; --bg2: #ffe6f2; --bg3: #f9fdff; --primary: #5ec2f2; --primary-dark: #268fc4; }
+  body.world-10 { --bg1: #ffc4b0; --bg2: #ffe0b2; --bg3: #fff5f0; --primary: #ff5722; --primary-dark: #bf360c; }
+
+  /* Nút Vô Hạn ♾️ trải đều hàng 3 (cân lưới 7 nút: 3 + 3 + 1 full-width) */
+  .menu-btn.m-infinity {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    gap: 8px;
+    padding: 9px 14px;
+    font-size: 13.5px;
+    background: linear-gradient(180deg, #ff9a76 0%, #ff5c8d 100%);
+    box-shadow: 0 4px 0 #c93b6b, 0 6px 14px rgba(255, 92, 141, 0.32);
+  }
+  .menu-btn.m-infinity span.ico { font-size: 19px; }
+
+  /* Đồng bộ kích thước & viền nút top-bar và nút Cài Đặt */
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 15px;
+    font-size: 16px; line-height: 1;
+    border: 2.5px solid rgba(255,255,255,0.95);
+  }
+  .setting-row .toggle-btn,
+  .setting-block .toggle-btn {
+    min-width: 78px;
+    border-radius: 16px;
+    border: 2.5px solid rgba(255,255,255,0.95);
+    padding: 6px 12px;
+    font-size: 12.5px;
+  }
 
   /* Light performance mode */
   body.perf-light #bgDecor { display: none; }
@@ -953,7 +987,8 @@
 <div id="homeScreen" class="screen active">
   <div class="home-top">
     <div class="res-pill player-pill" id="homePlayerPill" title="Xem Hồ Sơ">🐾 <span id="homePlayerName">Người Chơi</span></div>
-    <div class="res-pill" title="Tổng sao">⭐ <span id="homeStars">0/150</span></div>
+    <div class="res-pill" title="Tổng sao">⭐ <span id="homeStars">0/300</span></div>
+    <div class="res-pill" title="Điểm cao Vô Hạn">♾️ <span id="homeEndlessBest">0</span></div>
     <div class="res-pill" title="Số xu">🪙 <span id="homeCoins">0</span></div>
     <div class="res-pill clickable" id="homeHeartsPill" title="Số tim (Bấm để mua thêm)">❤️ <span id="homeHearts">5/5</span></div>
   </div>
@@ -986,6 +1021,7 @@
     <button class="chibi-btn menu-btn m-sky" onclick="SFX.click(); openAchievements()"><span class="ico">🏅</span>Thành Tích</button>
     <button class="chibi-btn menu-btn m-lav" onclick="SFX.click(); openSettings()"><span class="ico">⚙️</span>Cài Đặt</button>
     <button class="chibi-btn menu-btn m-peach" onclick="SFX.click(); openTutorial(0)"><span class="ico">❓</span>Hướng Dẫn</button>
+    <button class="chibi-btn menu-btn m-infinity" id="btnInfinityMode" onclick="openInfinityMode();"><span class="ico">♾️</span><span id="btnInfinityLabel">Vô Hạn</span></button>
   </div>
 </div>
 
@@ -1097,12 +1133,13 @@
         <button class="chibi-btn btn-lav" style="margin-top:6px;padding:5px 12px;font-size:12px;" onclick="SFX.click(); closeModal('profileModal'); openNameModal(true);">✏️ Đổi Tên</button>
       </div>
       <div class="profile-grid">
-        <div class="profile-stat"><div class="p-lbl">⭐ Tổng Sao</div><div class="p-val" id="profStars">0/150</div></div>
+        <div class="profile-stat"><div class="p-lbl">⭐ Tổng Sao</div><div class="p-val" id="profStars">0/300</div></div>
         <div class="profile-stat"><div class="p-lbl">🏆 Điểm Cao Nhất</div><div class="p-val" id="profHighScore">0</div></div>
-        <div class="profile-stat"><div class="p-lbl">🗺️ Màn Đã Qua</div><div class="p-val" id="profLevels">0/50</div></div>
+        <div class="profile-stat"><div class="p-lbl">♾️ Vô Hạn Cao Nhất</div><div class="p-val" id="profEndlessBest">0</div></div>
+        <div class="profile-stat"><div class="p-lbl">🗺️ Màn Đã Qua</div><div class="p-val" id="profLevels">0/100</div></div>
         <div class="profile-stat"><div class="p-lbl">🪙 Tổng Xu</div><div class="p-val" id="profCoins">0</div></div>
-        <div class="profile-stat"><div class="p-lbl">🏅 Thành Tích</div><div class="p-val" id="profAch">0/8</div></div>
-        <div class="profile-stat"><div class="p-lbl">📖 Chibi Sưu Tầm</div><div class="p-val" id="profCodex">0/8</div></div>
+        <div class="profile-stat"><div class="p-lbl">🏅 Thành Tích</div><div class="p-val" id="profAch">0/11</div></div>
+        <div class="profile-stat" style="grid-column:1/-1;"><div class="p-lbl">📖 Chibi Sưu Tầm</div><div class="p-val" id="profCodex">0/10</div></div>
       </div>
     </div>
     <div class="btn-row">
@@ -1190,7 +1227,7 @@
 <!-- Level Map (5 Worlds / 50 Levels) -->
 <div class="modal-backdrop" id="mapModal">
   <div class="modal">
-    <h2>🗺️ Bản Đồ 5 Thế Giới (50 Màn)</h2>
+    <h2>🗺️ Bản Đồ 10 Thế Giới (100 Màn)</h2>
     <div class="map-toast" id="mapToast"></div>
     <div class="modal-body" id="mapWorldsBody"></div>
     <div class="btn-row">
@@ -1213,10 +1250,10 @@
 <!-- Codex -->
 <div class="modal-backdrop" id="codexModal">
   <div class="modal">
-    <h2>📖 Sổ Tay Chibi (<span id="codexCount">0/8</span>)</h2>
+    <h2>📖 Sổ Tay Chibi (<span id="codexCount">0/10</span>)</h2>
     <div class="modal-body">
       <div style="text-align:center;font-size:12px;font-weight:800;color:#b86b00;margin-bottom:8px;">
-        Mở khóa đủ 8 bé Chibi để nhận thưởng 500 🪙!
+        Mở khóa đủ 10 bé Chibi để nhận thưởng 500 🪙!
       </div>
       <div class="codex-grid" id="codexGrid"></div>
     </div>
@@ -1317,7 +1354,7 @@
     </div>
     <div class="btn-row">
       <button class="chibi-btn btn-primary" onclick="SFX.click(); togglePause()">▶ Tiếp Tục</button>
-      <button class="chibi-btn btn-gold" onclick="SFX.click(); closeModal('pauseModal'); clearActiveSession(); openPreLevel(currentLevel);">🔄 Chơi Lại</button>
+      <button class="chibi-btn btn-gold" onclick="SFX.click(); closeModal('pauseModal'); clearActiveSession(); openPreLevel(isEndlessMode ? 0 : currentLevel);">🔄 Chơi Lại</button>
       <button class="chibi-btn btn-lav" onclick="SFX.click(); closeModal('pauseModal'); openSettings();">⚙️ Cài Đặt</button>
       <button class="chibi-btn btn-peach" onclick="SFX.click(); closeModal('pauseModal'); goHome();">🏠 Về Màn Hình Chính</button>
     </div>
@@ -1385,7 +1422,9 @@ const CHARS = [
   { id: 4, name: 'Mèo',       short: 'Mèo',   bg: '#C8F7DC', line: '#2E9E60', basePts: 165, bio: 'Hơi kiêu một chút nhưng lại mê được vuốt ve dưới cằm.' },
   { id: 5, name: 'Cún',       short: 'Cún',   bg: '#DCC4FF', line: '#7E57C2', basePts: 220, bio: 'Người bạn trung thành luôn vẫy đuôi chào đón bạn trở về.' },
   { id: 6, name: 'Gấu',       short: 'Gấu',   bg: '#E2BEA8', line: '#794C35', basePts: 300, bio: 'Ôm cực kỳ ấm áp và sẵn sàng chia sẻ hũ mật ong ngọt lịm.' },
-  { id: 7, name: 'Vua Sư Tử', short: 'Sư Tử', bg: '#FFC45C', line: '#D84315', basePts: 420, bio: 'Vị vua oai phong nhưng siêu dễ thương của Vương Quốc Chibi!' }
+  { id: 7, name: 'Vua Sư Tử', short: 'Sư Tử', bg: '#FFC45C', line: '#D84315', basePts: 420, bio: 'Vị vua oai phong nhưng siêu dễ thương của Vương Quốc Chibi!' },
+  { id: 8, name: 'Sư Tử Hoàng Kim', short: 'Hoàng Kim', bg: '#FFE082', line: '#B8860B', basePts: 600, bio: 'Bộ bờm vàng kim tỏa sáng rực rỡ cùng chiếc vương miện quyền năng nhất!' },
+  { id: 9, name: 'Phượng Hoàng Lửa', short: 'Phượng', bg: '#FFCCBC', line: '#D84315', basePts: 900, bio: 'Thần thú huyền thoại tung cánh rực lửa mang lại may mắn cho cả vương quốc!' }
 ];
 
 const WORLDS = [
@@ -1393,10 +1432,15 @@ const WORLDS = [
   { id: 2, name: 'Rừng Xanh',        icon: '🌿', range: [11, 20], bg: '#eefbe8', decor: ['🌿','🍃','🍀','🌱','🍄'] },
   { id: 3, name: 'Biển Cả',          icon: '🌊', range: [21, 30], bg: '#e6f7ff', decor: ['🌊','🫧','🐚','🐠','⭐'] },
   { id: 4, name: 'Thành Phố Kẹo',    icon: '🍬', range: [31, 40], bg: '#f9ebff', decor: ['🍬','🍭','🍩','🧁','🍓'] },
-  { id: 5, name: 'Vương Quốc Sư Tử', icon: '👑', range: [41, 50], bg: '#fff6e0', decor: ['👑','✨','☀️','⭐','🦁'] }
+  { id: 5, name: 'Vương Quốc Sư Tử', icon: '👑', range: [41, 50], bg: '#fff6e0', decor: ['👑','✨','☀️','⭐','🦁'] },
+  { id: 6,  name: 'Núi Tuyết',            icon: '❄️', range: [51, 60],  bg: '#eaf6ff', decor: ['❄️','☃️','🏔️','🧊','🌨️'] },
+  { id: 7,  name: 'Sa Mạc Vàng',          icon: '🏜️', range: [61, 70],  bg: '#fff5e0', decor: ['🏜️','🌵','🐪','🏺','🌅'] },
+  { id: 8,  name: 'Vũ Trụ Sao',           icon: '🌌', range: [71, 80],  bg: '#efeaff', decor: ['🌌','🪐','🚀','🌙','☄️'] },
+  { id: 9,  name: 'Lâu Đài Mây',          icon: '☁️', range: [81, 90],  bg: '#f0f8ff', decor: ['☁️','🌈','🏰','🕊️','🎈'] },
+  { id: 10, name: 'Vương Quốc Thần Thú',  icon: '🔥', range: [91, 100], bg: '#ffede6', decor: ['🔥','🐉','🦅','💎','⚡'] }
 ];
 
-const ICE_HINT_LEVELS = [5, 12, 23, 33, 43];
+const ICE_HINT_LEVELS = [5, 12, 23, 33, 43, 55, 62, 73, 83, 93];
 
 const BOOSTERS_INFO = {
   hammer:  { id: 'hammer',  name: 'Búa',       icon: '🔨', price: 100, desc: 'Đập vỡ 1 ô bất kỳ' },
@@ -1534,6 +1578,44 @@ function getChibiSVG(level, special = null, isMascot = false) {
         ${face}
         <polygon points="45,59 55,59 50,64" fill="#5d4037"/>
       </svg>`;
+    case 8:
+      return `<svg viewBox="0 0 100 100">
+        <defs>
+          <radialGradient id="goldMane" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stop-color="#fff176"/>
+            <stop offset="65%" stop-color="#ffca28"/>
+            <stop offset="100%" stop-color="#d49400"/>
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="60" r="39" fill="url(#goldMane)" stroke="#b8860b" stroke-width="4" stroke-dasharray="11 3.5"/>
+        <circle cx="50" cy="60" r="35" fill="#ffd54f" stroke="#c78c00" stroke-width="2.5"/>
+        <polygon points="24,30 33,8 44,21 50,5 56,21 67,8 76,30" fill="#ffeb3b" stroke="#b8860b" stroke-width="3.5" stroke-linejoin="round"/>
+        <circle cx="50" cy="18" r="3.4" fill="#ff4081" stroke="#fff" stroke-width="1"/>
+        <circle cx="35" cy="22" r="2.6" fill="#29b6f6" stroke="#fff" stroke-width="1"/>
+        <circle cx="65" cy="22" r="2.6" fill="#29b6f6" stroke="#fff" stroke-width="1"/>
+        <circle cx="50" cy="60" r="26.5" fill="#fff3b0" stroke="#b8860b" stroke-width="3.2"/>
+        <path d="M14 26 L16 21 L18 26 L23 28 L18 30 L16 35 L14 30 L9 28 Z" fill="#fff9c4" stroke="#d49400" stroke-width="1.2"/>
+        <path d="M84 22 L85.5 18 L87 22 L91 23.5 L87 25 L85.5 29 L84 25 L80 23.5 Z" fill="#fff9c4" stroke="#d49400" stroke-width="1.2"/>
+        ${face}
+        <polygon points="45,59 55,59 50,64" fill="#8d5524"/>
+      </svg>`;
+    case 9:
+      return `<svg viewBox="0 0 100 100">
+        <defs>
+          <linearGradient id="fireWing" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffeb3b"/>
+            <stop offset="50%" stop-color="#ff7043"/>
+            <stop offset="100%" stop-color="#d84315"/>
+          </linearGradient>
+        </defs>
+        <path d="M22 60 Q4 44 10 28 Q20 36 25 46 Q10 52 14 70 Q22 72 28 66 Z" fill="url(#fireWing)" stroke="#bf360c" stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M78 60 Q96 44 90 28 Q80 36 75 46 Q90 52 86 70 Q78 72 72 66 Z" fill="url(#fireWing)" stroke="#bf360c" stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M36 30 Q36 12 46 22 Q50 4 56 22 Q66 12 64 30 Z" fill="url(#fireWing)" stroke="#bf360c" stroke-width="3.2" stroke-linejoin="round"/>
+        <circle cx="50" cy="58" r="31" fill="#ffe0b2" stroke="#d84315" stroke-width="4"/>
+        <path d="M34 36 Q50 28 66 36" fill="none" stroke="#ff7043" stroke-width="3.5" stroke-linecap="round"/>
+        ${face}
+        <polygon points="44,58 56,58 50,66" fill="#ff6d00" stroke="#bf360c" stroke-width="1.8" stroke-linejoin="round"/>
+      </svg>`;
   }
 }
 
@@ -1639,17 +1721,25 @@ function buildLevels() {
     { id: 20, moves: 16, maxSpawn: 6, goal: { type: 'score', target: 14500 },         stars: [10500, 14000, 15800],locks: 5, ices: 5, boss: true }
   ];
 
-  for (let id = 21; id <= 50; id++) {
+  for (let id = 21; id <= 100; id++) {
     const world = Math.ceil(id / 10);
     const isBoss = id % 10 === 0;
     const mod = id % 10;
     const scale = 1 + (id - 20) * 0.045;
-    const maxSpawn = Math.min(6, 5 + (world >= 4 ? 1 : 0));
+    const maxSpawn = world >= 6 ? 7 : Math.min(6, 5 + (world >= 4 ? 1 : 0));
     const locks = Math.min(7, 3 + Math.floor(id / 10));
     const ices = Math.min(9, 4 + Math.floor(id / 10));
 
     let lv;
-    if (isBoss) {
+    if (id === 100) {
+      const baseStar = Math.round((16000 * scale) / 100) * 100;
+      lv = {
+        id: 100, moves: 26, maxSpawn: 7, boss: true,
+        goal: { type: 'collect', level: 9, target: 1 },
+        stars: [Math.round(baseStar * 0.72), baseStar, Math.round(baseStar * 1.25)],
+        locks: 7, ices: 7
+      };
+    } else if (isBoss) {
       const target = Math.round((13000 + world * 2400) / 100) * 100;
       lv = {
         id, moves: 15 + Math.floor(world / 2), maxSpawn, boss: true,
@@ -1666,12 +1756,21 @@ function buildLevels() {
         locks: Math.max(2, locks - 2), ices: Math.max(2, ices - 2)
       };
     } else if (mod === 2 || mod === 6) {
-      const l1 = Math.min(5, 3 + Math.floor(world / 2));
-      const l2 = Math.min(6, l1 + 1);
+      let l1, l2, t1, t2;
+      if (world >= 9) {
+        l1 = 8; l2 = 9; t1 = 1; t2 = 1;
+      } else if (world >= 6) {
+        l1 = 7; l2 = 8; t1 = 1; t2 = 1;
+      } else {
+        l1 = Math.min(5, 3 + Math.floor(world / 2));
+        l2 = Math.min(6, l1 + 1);
+        t1 = 2 + (world >= 4 ? 1 : 0);
+        t2 = 2;
+      }
       const baseStar = Math.round((9000 * scale) / 100) * 100;
       lv = {
         id, moves: 22 + Math.floor(world / 2), maxSpawn,
-        goal: { type: 'collect2', l1, t1: 2 + (world >= 4 ? 1 : 0), l2, t2: 2 },
+        goal: { type: 'collect2', l1, t1, l2, t2 },
         stars: [Math.round(baseStar * 0.7), baseStar, Math.round(baseStar * 1.25)],
         locks, ices: Math.max(3, ices - 1)
       };
@@ -1684,11 +1783,18 @@ function buildLevels() {
         locks, ices
       };
     } else if (mod === 5 || mod === 9) {
-      const colLv = id >= 45 ? 7 : Math.min(6, 4 + Math.floor(world / 2));
-      const target = colLv === 7 ? 1 : (colLv === 6 ? 2 : 3);
+      let colLv, target;
+      if (world >= 9) {
+        colLv = 9; target = 1;
+      } else if (world >= 6) {
+        colLv = 8; target = world >= 8 ? 2 : 1;
+      } else {
+        colLv = id >= 45 ? 7 : Math.min(6, 4 + Math.floor(world / 2));
+        target = colLv === 7 ? 1 : (colLv === 6 ? 2 : 3);
+      }
       const baseStar = Math.round((10200 * scale) / 100) * 100;
       lv = {
-        id, moves: 24, maxSpawn,
+        id, moves: world >= 6 ? 26 : 24, maxSpawn,
         goal: { type: 'collect', level: colLv, target },
         stars: [Math.round(baseStar * 0.7), baseStar, Math.round(baseStar * 1.25)],
         locks, ices
@@ -1719,7 +1825,10 @@ const ACHIEVEMENTS = [
   { id: 'stars10',  name: 'Ngôi Sao Vàng',         desc: 'Đạt 3 sao ở 10 màn',               icon: '🌟', reward: 200 },
   { id: 'streak5',  name: 'Thắng 5 Màn Liên Tiếp', desc: 'Thắng 5 màn liên tiếp không thua', icon: '🔥', reward: 200 },
   { id: 'ice50',    name: 'Phá Băng',              desc: 'Phá tổng cộng 50 ô Băng',          icon: '❄️', reward: 100 },
-  { id: 'combo5',   name: 'Bậc Thầy Combo',        desc: 'Đạt Combo x5',                     icon: '⚡', reward: 150 }
+  { id: 'combo5',    name: 'Bậc Thầy Combo',          desc: 'Đạt Combo x5',                       icon: '⚡', reward: 150 },
+  { id: 'goldlion1', name: 'Sư Tử Hoàng Kim',         desc: 'Tạo Sư Tử Hoàng Kim lần đầu tiên',   icon: '👑', reward: 150 },
+  { id: 'phoenix1',  name: 'Phượng Hoàng Lửa',        desc: 'Tạo Phượng Hoàng Lửa lần đầu tiên',  icon: '🔥', reward: 200 },
+  { id: 'clear100',  name: 'Chinh Phục Màn 100',      desc: 'Hoàn thành màn 100',                 icon: '🏆', reward: 300 }
 ];
 
 const DAILY_POOL = [
@@ -1728,7 +1837,9 @@ const DAILY_POOL = [
   { id: 'dq_3star',   type: 'stars3',   target: 2,  text: 'Đạt 3 sao 2 màn',   reward: 90 },
   { id: 'dq_rainbow', type: 'rainbows', target: 5,  text: 'Tạo 5 ô Cầu Vồng',  reward: 80 },
   { id: 'dq_ice',     type: 'ices',     target: 10, text: 'Phá 10 ô Băng',     reward: 70 },
-  { id: 'dq_play',    type: 'plays',    target: 5,  text: 'Chơi 5 màn bất kỳ', reward: 50 }
+  { id: 'dq_play',     type: 'plays',     target: 5,  text: 'Chơi 5 màn bất kỳ',      reward: 50 },
+  { id: 'dq_goldlion', type: 'goldlions', target: 1,  text: 'Tạo 1 Sư Tử Hoàng Kim',  reward: 100, minCap: 8 },
+  { id: 'dq_phoenix',  type: 'phoenixes', target: 1,  text: 'Tạo 1 Phượng Hoàng Lửa', reward: 120, minCap: 9 }
 ];
 
 const LOGIN_REWARDS = [
@@ -1786,13 +1897,14 @@ function loadProgress() {
     hearts: typeof raw.hearts === 'number' ? raw.hearts : MAX_HEARTS,
     lastHeartTime: typeof raw.lastHeartTime === 'number' ? raw.lastHeartTime : Date.now(),
     highScore: typeof raw.highScore === 'number' ? raw.highScore : 0,
+    endlessBest: typeof raw.endlessBest === 'number' ? raw.endlessBest : 0,
     boosters: Object.assign({ hammer: 0, shuffle: 0, rainbow: 0, plus3: 0 }, raw.boosters || {}),
     lastPickedBoosters: Array.isArray(raw.lastPickedBoosters) ? raw.lastPickedBoosters.slice(0, 2) : [],
     activeSession: raw.activeSession && typeof raw.activeSession === 'object' ? raw.activeSession : null,
     achievements: raw.achievements && typeof raw.achievements === 'object' ? raw.achievements : {},
     codex: Array.isArray(raw.codex) ? raw.codex : [],
     codexRewarded: !!raw.codexRewarded,
-    stats: Object.assign({ merges: 0, ices: 0, winStreak: 0, maxChain: 0, maxCombo: 0, lions: 0 }, raw.stats || {}),
+    stats: Object.assign({ merges: 0, ices: 0, winStreak: 0, maxChain: 0, maxCombo: 0, lions: 0, goldlions: 0, phoenixes: 0 }, raw.stats || {}),
     settings: Object.assign({ music: true, sfx: true, vib: true, perf }, rawSettings, { perf }),
     daily: raw.daily || { date: '', quests: [] },
     login: raw.login || { streak: 0, lastClaimDate: '' },
@@ -1801,6 +1913,18 @@ function loadProgress() {
 }
 
 let progressData = loadProgress();
+
+function getMaxEvoCap() {
+  const passed51 = progressData.unlocked > 51 || (progressData.stars[51] || 0) >= 1;
+  const passed81 = progressData.unlocked > 81 || (progressData.stars[81] || 0) >= 1;
+  if (passed81) return 9;
+  if (passed51) return 8;
+  return 7;
+}
+
+function isEndlessUnlocked() {
+  return progressData.unlocked > 50 || (progressData.stars[50] || 0) >= 1;
+}
 let saveIndTimer = null;
 
 function showSaveIndicator() {
@@ -1819,7 +1943,7 @@ function saveProgress(silent = false) {
 }
 
 function saveActiveSession() {
-  if (!document.getElementById('gameScreen').classList.contains('active') || isGameOver) return;
+  if (!document.getElementById('gameScreen').classList.contains('active') || isGameOver || isEndlessMode) return;
   progressData.activeSession = {
     lv: currentLevel,
     score,
@@ -1879,6 +2003,7 @@ function openProfile() {
   document.getElementById('profName').textContent = getDisplayName();
   document.getElementById('profStars').textContent = `${totalStars}/${LEVELS.length * 3}`;
   document.getElementById('profHighScore').textContent = progressData.highScore.toLocaleString('vi-VN');
+  document.getElementById('profEndlessBest').textContent = (progressData.endlessBest || 0).toLocaleString('vi-VN');
   document.getElementById('profLevels').textContent = `${passedCount}/${LEVELS.length}`;
   document.getElementById('profCoins').textContent = progressData.coins.toLocaleString('vi-VN');
   document.getElementById('profAch').textContent = `${achCount}/${ACHIEVEMENTS.length}`;
@@ -1895,7 +2020,7 @@ function generateRecoveryCode() {
   let aMask = 0;
   ACHIEVEMENTS.forEach((a, idx) => { if (progressData.achievements[a.id]) aMask |= (1 << idx); });
   let xMask = 0;
-  progressData.codex.forEach(lv => { if (lv >= 0 && lv < 8) xMask |= (1 << lv); });
+  progressData.codex.forEach(lv => { if (lv >= 0 && lv < CHARS.length) xMask |= (1 << lv); });
 
   const dq = (progressData.daily && Array.isArray(progressData.daily.quests))
     ? progressData.daily.quests.map(q => [DAILY_POOL.findIndex(p => p.id === q.id), q.progress || 0, q.claimed ? 1 : 0])
@@ -1909,6 +2034,7 @@ function generateRecoveryCode() {
     c: progressData.coins,
     h: progressData.hearts,
     hs: progressData.highScore,
+    eb: progressData.endlessBest || 0,
     b: [
       progressData.boosters.hammer || 0,
       progressData.boosters.shuffle || 0,
@@ -2023,6 +2149,7 @@ function applyRecoveryCode() {
   progressData.hearts = Math.max(0, Math.min(MAX_HEARTS, Number(payload.h) || MAX_HEARTS));
   progressData.lastHeartTime = Date.now();
   progressData.highScore = Math.max(0, Number(payload.hs) || 0);
+  progressData.endlessBest = Math.max(0, Number(payload.eb) || 0);
 
   if (Array.isArray(payload.b) && payload.b.length >= 4) {
     progressData.boosters = {
@@ -2162,7 +2289,8 @@ function regenHearts() {
 function ensureDailyQuests() {
   const today = getTodayStr();
   if (progressData.daily.date !== today || !progressData.daily.quests.length) {
-    const pool = [...DAILY_POOL];
+    const cap = getMaxEvoCap();
+    const pool = DAILY_POOL.filter(q => !q.minCap || cap >= q.minCap);
     shuffle(pool);
     progressData.daily = {
       date: today,
@@ -2217,7 +2345,7 @@ function unlockCodex(level) {
     if (progressData.codex.length === CHARS.length && !progressData.codexRewarded) {
       progressData.codexRewarded = true;
       addCoins(500);
-      showToast('🎉', 'Đủ bộ 8 Chibi! Thưởng 500 🪙!');
+      showToast('🎉', 'Đủ bộ 10 Chibi! Thưởng 500 🪙!');
     }
     saveProgress();
   }
@@ -2234,7 +2362,10 @@ function checkAchievements() {
     stars10: stars3Count >= 10,
     streak5: s.winStreak >= 5,
     ice50: s.ices >= 50,
-    combo5: s.maxCombo >= 5
+    combo5: s.maxCombo >= 5,
+    goldlion1: (s.goldlions || 0) >= 1,
+    phoenix1: (s.phoenixes || 0) >= 1,
+    clear100: (progressData.stars[100] || 0) >= 1
   };
   let anyUnlocked = false;
   ACHIEVEMENTS.forEach(a => {
@@ -2265,6 +2396,7 @@ let goalCount2 = 0;
 let isPaused = false;
 let isGameOver = false;
 let isTimedLevel = false;
+let isEndlessMode = false;
 let timeRemainingMs = 0;
 
 let isDragging = false;
@@ -2337,6 +2469,14 @@ function updateHomeUI() {
   const totalStars = Object.values(progressData.stars).reduce((a, b) => a + b, 0);
   document.getElementById('homePlayerName').textContent = getDisplayName();
   document.getElementById('homeStars').textContent = `${totalStars}/${LEVELS.length * 3}`;
+  document.getElementById('homeEndlessBest').textContent = (progressData.endlessBest || 0).toLocaleString('vi-VN');
+  const infBtn = document.getElementById('btnInfinityMode');
+  const infLbl = document.getElementById('btnInfinityLabel');
+  if (infBtn && infLbl) {
+    const unlockedInf = isEndlessUnlocked();
+    infBtn.classList.toggle('is-disabled', !unlockedInf);
+    infLbl.textContent = unlockedInf ? 'Vô Hạn' : '🔒 Vô Hạn (Qua màn 50 để mở)';
+  }
   document.getElementById('homeCoins').textContent = progressData.coins.toLocaleString('vi-VN');
 
   const hEl = document.getElementById('homeHearts');
@@ -2384,19 +2524,35 @@ function updateHomeUI() {
 /* =========================================
    7. PRE-LEVEL BOOSTER SELECT (PERSISTED) & HEARTS CHECK
    ========================================= */
-function openPreLevel(lvNum) {
-  regenHearts();
-  if (progressData.hearts <= 0) {
-    openHeartModal();
+function openInfinityMode() {
+  if (!isEndlessUnlocked()) {
+    SFX.locked();
+    showToast('🔒', 'Qua màn 50 để mở chế độ Vô Hạn!');
     return;
   }
+  SFX.click();
+  openPreLevel(0);
+}
+
+function openPreLevel(lvNum) {
+  if (lvNum !== 0) {
+    regenHearts();
+    if (progressData.hearts <= 0) {
+      openHeartModal();
+      return;
+    }
+  }
   pendingLevel = lvNum;
-  // Giữ lại lựa chọn booster từ màn trước nếu vẫn còn số lượng > 0
   pickedBoosters = (progressData.lastPickedBoosters || []).filter(id => (progressData.boosters[id] || 0) > 0).slice(0, 2);
-  const cfg = LEVELS[lvNum - 1];
-  const world = WORLDS[Math.ceil(lvNum / 10) - 1];
-  document.getElementById('preLvTitle').textContent = `${world.icon} Màn ${cfg.id}${cfg.boss ? ' (BOSS 👑)' : ''}`;
-  document.getElementById('preLvGoal').textContent = formatGoalText(cfg);
+  if (lvNum === 0) {
+    document.getElementById('preLvTitle').textContent = '♾️ Vô Hạn';
+    document.getElementById('preLvGoal').textContent = '♾️ 30 lượt • Không tốn tim • Bậc 6+ thêm 3 lượt, bậc 9/10 thêm 8 lượt!';
+  } else {
+    const cfg = LEVELS[lvNum - 1];
+    const world = WORLDS[Math.ceil(lvNum / 10) - 1];
+    document.getElementById('preLvTitle').textContent = `${world.icon} Màn ${cfg.id}${cfg.boss ? ' (BOSS 👑)' : ''}`;
+    document.getElementById('preLvGoal').textContent = formatGoalText(cfg);
+  }
   renderBoosterPicker();
   openModal('preLevelModal');
 }
@@ -2504,7 +2660,8 @@ document.getElementById('btnConfirmPlay').onclick = () => {
   saveProgress(true);
   closeModal('preLevelModal');
   showGameScreen();
-  startLevel(pendingLevel);
+  if (pendingLevel === 0) startEndless();
+  else startLevel(pendingLevel);
 };
 
 /* =========================================
@@ -2608,8 +2765,8 @@ function shuffleMovableTiles() {
 
 // Đảm bảo bàn luôn có nước đi VÀ băng không bao giờ bị cô lập (soft-lock) ở màn băng
 function ensurePlayableBoard(showNotice = true) {
-  const cfg = LEVELS[currentLevel - 1];
-  const needIceCheck = cfg.goal.type === 'ice' && hasAnyIceOnBoard();
+  const cfg = isEndlessMode ? null : LEVELS[currentLevel - 1];
+  const needIceCheck = !isEndlessMode && cfg.goal.type === 'ice' && hasAnyIceOnBoard();
 
   const valid = hasValidMove(false);
   const iceReachable = !needIceCheck || hasValidMove(true);
@@ -2702,7 +2859,47 @@ function resumeSavedSession(sess) {
   showToast('▶️', `Tiếp tục Màn ${currentLevel} đang chơi dở!`);
 }
 
+function startEndless() {
+  isEndlessMode = true;
+  isTimedLevel = false;
+  applyWorldTheme(71);
+  updateDailyProgress('plays', 1);
+
+  score = 0;
+  movesLeft = 30;
+  timeRemainingMs = 0;
+  goalCount = 0;
+  goalCount2 = 0;
+  combo = 0;
+  comboTime = 0;
+  isPaused = false;
+  isGameOver = false;
+  isDragging = false;
+  chain = [];
+  chainType = null;
+  activeBoosterMode = null;
+
+  document.getElementById('boardFrame').classList.remove('board-locked');
+  document.getElementById('iceHintBanner').classList.remove('show');
+
+  updateComboUI();
+  renderInGameBoosters();
+
+  board = [];
+  for (let r = 0; r < SIZE; r++) {
+    const row = [];
+    for (let c = 0; c < SIZE; c++) row.push(createTile(randLevel(5, { id: 15 })));
+    board.push(row);
+  }
+
+  ensurePlayableBoard(false);
+  renderBoard(true);
+  updateHUD();
+  resizeCanvases();
+}
+
 function startLevel(lvNum) {
+  isEndlessMode = false;
   currentLevel = lvNum;
   const cfg = LEVELS[lvNum - 1];
   applyWorldTheme(lvNum);
@@ -2845,14 +3042,24 @@ function createTile(level, special = null) {
 
 function randLevel(maxSpawn, cfg = null) {
   const lvId = cfg ? cfg.id : currentLevel;
+  const safeMax = Math.min(7, maxSpawn);
   const r = Math.random();
-  if (lvId >= 15 && maxSpawn >= 5) {
+  if (lvId >= 51 && safeMax >= 7) {
+    if (r < 0.16) return 0;
+    if (r < 0.32) return 1;
+    if (r < 0.50) return 2;
+    if (r < 0.68) return 3;
+    if (r < 0.83) return 4;
+    if (r < 0.93) return 5;
+    return 6;
+  }
+  if (lvId >= 15 && safeMax >= 5) {
     if (r < 0.20) return 0;
     if (r < 0.40) return 1;
     if (r < 0.60) return 2;
-    if (r < 0.78) return Math.min(3, maxSpawn - 1);
-    if (r < 0.91) return Math.min(4, maxSpawn - 1);
-    return Math.min(5, maxSpawn - 1);
+    if (r < 0.78) return Math.min(3, safeMax - 1);
+    if (r < 0.91) return Math.min(4, safeMax - 1);
+    return Math.min(5, safeMax - 1);
   }
   if (lvId >= 9 && maxSpawn >= 5) {
     if (r < 0.32) return 0;
@@ -2955,6 +3162,25 @@ function updateComboUI() {
 }
 
 function updateHUD() {
+  if (isEndlessMode) {
+    document.getElementById('levelBadge').textContent = '♾️ Vô Hạn';
+    syncCoinsUI();
+    document.getElementById('scoreVal').textContent = score.toLocaleString('vi-VN');
+    document.getElementById('movesLabel').textContent = 'Lượt';
+    const mvEl = document.getElementById('movesVal');
+    mvEl.textContent = movesLeft;
+    mvEl.classList.toggle('low', movesLeft <= 4);
+    document.getElementById('goalIcon').innerHTML = '<div style="font-size:24px;">♾️</div>';
+    document.getElementById('goalText').textContent = `Kỷ lục: ${Math.max(score, progressData.endlessBest || 0).toLocaleString('vi-VN')}`;
+    const best = Math.max(1000, progressData.endlessBest || 5000);
+    const pct = Math.min(100, (score / best) * 100);
+    const fillEl = document.getElementById('progressFill');
+    fillEl.style.width = pct + '%';
+    fillEl.classList.toggle('sparkle', pct >= 70);
+    document.getElementById('progressPct').textContent = Math.floor(pct) + '%';
+    for (let i = 1; i <= 3; i++) document.getElementById('star' + i).classList.remove('earned');
+    return;
+  }
   const cfg = LEVELS[currentLevel - 1];
   const world = WORLDS[Math.ceil(cfg.id / 10) - 1];
   document.getElementById('levelBadge').textContent = `${world.icon} Màn ${cfg.id}${cfg.boss ? ' 👑' : ''}`;
@@ -3060,11 +3286,11 @@ boardFrame.addEventListener('pointerdown', (e) => {
   const { r, c } = pos;
 
   if (activeBoosterMode) {
-    const cfg = LEVELS[currentLevel - 1];
+    const cfg = isEndlessMode ? { id: 15, maxSpawn: 5, goal: { type: 'endless' } } : LEVELS[currentLevel - 1];
     if (activeBoosterMode === 'hammer') {
       progressData.boosters.hammer--;
       saveProgress();
-      if (board[r][c].ice > 0 && cfg.goal.type === 'ice') goalCount++;
+      if (!isEndlessMode && board[r][c].ice > 0 && cfg.goal.type === 'ice') goalCount++;
       board[r][c] = null;
       spawnParticlesAtCell(r, c, 12, '#ff9800');
       SFX.bomb();
@@ -3201,7 +3427,7 @@ function updateDragPreview() {
 
   const baseLv = chainType !== null ? chainType : 0;
   const evoStep = len >= 7 ? 3 : (len >= 5 ? 2 : 1);
-  const newLv = Math.min(CHARS.length - 1, baseLv + evoStep);
+  const newLv = Math.min(getMaxEvoCap(), baseLv + evoStep);
   const previewSpecial = len >= 6 ? 'bomb' : (len === 5 ? 'rainbow' : null);
 
   const nextCombo = comboTime > 0 ? Math.min(5, combo + 1) : 1;
@@ -3276,7 +3502,7 @@ function finishDrag() {
 
 function executeMerge() {
   if (isGameOver || isPaused) return;
-  const cfg = LEVELS[currentLevel - 1];
+  const cfg = isEndlessMode ? { id: 15, maxSpawn: 5, goal: { type: 'endless' } } : LEVELS[currentLevel - 1];
   const len = chain.length;
 
   let mergePos = chain[len - 1];
@@ -3301,7 +3527,7 @@ function executeMerge() {
   const baseLv = chainType !== null ? chainType : 0;
   unlockCodex(baseLv);
   const evoStep = len >= 7 ? 3 : (len >= 5 ? 2 : 1);
-  const newLv = Math.min(CHARS.length - 1, baseLv + evoStep);
+  const newLv = Math.min(getMaxEvoCap(), baseLv + evoStep);
 
   const bombs = chain.filter(p => board[p.r][p.c].special === 'bomb');
   const chainKeys = new Set(chain.map(p => `${p.r},${p.c}`));
@@ -3387,11 +3613,27 @@ function executeMerge() {
     if (newLv === 7) {
       progressData.stats.lions++;
       updateDailyProgress('lions', 1);
+    } else if (newLv === 8) {
+      progressData.stats.goldlions = (progressData.stats.goldlions || 0) + 1;
+      updateDailyProgress('goldlions', 1);
+    } else if (newLv === 9) {
+      progressData.stats.phoenixes = (progressData.stats.phoenixes || 0) + 1;
+      updateDailyProgress('phoenixes', 1);
     }
-    if (cfg.goal.type === 'collect' && newLv >= cfg.goal.level) goalCount++;
-    if (cfg.goal.type === 'collect2') {
-      if (newLv === cfg.goal.l1) goalCount++;
-      if (newLv === cfg.goal.l2) goalCount2++;
+    if (isEndlessMode) {
+      if (newLv >= 8) {
+        movesLeft += 8;
+        showToast('♾️', '+8 Lượt (Thần Thú)!');
+      } else if (newLv >= 5) {
+        movesLeft += 3;
+        showToast('♾️', '+3 Lượt!');
+      }
+    } else {
+      if (cfg.goal.type === 'collect' && newLv >= cfg.goal.level) goalCount++;
+      if (cfg.goal.type === 'collect2') {
+        if (newLv === cfg.goal.l1) goalCount++;
+        if (newLv === cfg.goal.l2) goalCount2++;
+      }
     }
   }
 
@@ -3475,6 +3717,24 @@ function lockBoardOnEnd() {
 
 function checkEndState(timeUp = false) {
   if (isGameOver) return;
+  if (isEndlessMode) {
+    if (movesLeft <= 0) {
+      lockBoardOnEnd();
+      if (score > (progressData.endlessBest || 0)) progressData.endlessBest = score;
+      if (score > progressData.highScore) progressData.highScore = score;
+      const endlessCoins = Math.min(200, Math.floor(score / 1000));
+      progressData.coins += endlessCoins;
+      saveProgress();
+      checkAchievements();
+      updateHUD();
+      syncCoinsUI();
+      updateHomeUI();
+      SFX.win();
+      launchFireworks();
+      setTimeout(() => showEndlessResult(endlessCoins), 360);
+    }
+    return;
+  }
   const cfg = LEVELS[currentLevel - 1];
   let won = false;
   if (cfg.goal.type === 'score' && score >= cfg.goal.target) won = true;
@@ -3915,6 +4175,31 @@ function closeMapModal() {
   }
 }
 
+function showEndlessResult(endlessCoins) {
+  document.getElementById('resultTitle').textContent = '♾️ Kết Thúc Vô Hạn!';
+  document.getElementById('resultStars').textContent = '♾️✨';
+  document.getElementById('resultDesc').textContent =
+    `Điểm lượt này: ${score.toLocaleString('vi-VN')} • Kỷ lục Vô Hạn: ${(progressData.endlessBest || 0).toLocaleString('vi-VN')}`;
+  document.getElementById('resultRewardBox').textContent = `Thưởng: +${endlessCoins} 🪙 (Không tốn tim)`;
+
+  const btns = document.getElementById('resultBtns');
+  btns.innerHTML = '';
+
+  const retry = document.createElement('button');
+  retry.className = 'chibi-btn btn-primary';
+  retry.textContent = '🔄 Chơi Lại Vô Hạn';
+  retry.onclick = () => { SFX.click(); closeModal('resultModal'); openPreLevel(0); };
+  btns.appendChild(retry);
+
+  const homeBtn = document.createElement('button');
+  homeBtn.className = 'chibi-btn btn-peach';
+  homeBtn.textContent = '🏠 Về Màn Hình Chính';
+  homeBtn.onclick = () => { SFX.click(); closeModal('resultModal'); goHome(); };
+  btns.appendChild(homeBtn);
+
+  openModal('resultModal');
+}
+
 function showResult(won, stars, moveBonus = 0, rewardText = '') {
   const loseTitle = isTimedLevel ? '⏰ Hết Giờ Rồi!' : '😿 Hết Lượt Rồi!';
   document.getElementById('resultTitle').textContent = won ? `🎉 Qua Màn ${currentLevel}!` : loseTitle;
@@ -4047,7 +4332,7 @@ function claimDaily(idx) {
 }
 
 function openCodex() {
-  document.getElementById('codexCount').textContent = `${progressData.codex.length}/8`;
+  document.getElementById('codexCount').textContent = `${progressData.codex.length}/${CHARS.length}`;
   const grid = document.getElementById('codexGrid');
   grid.innerHTML = '';
   CHARS.forEach(c => {
@@ -4153,7 +4438,7 @@ document.getElementById('btnHelpGame').onclick = () => { SFX.click(); openTutori
 document.getElementById('btnHome').onclick = () => { SFX.click(); goHome(); };
 document.getElementById('btnMap').onclick = () => { SFX.click(); openMap(); };
 document.getElementById('btnPause').onclick = () => { SFX.click(); togglePause(); };
-document.getElementById('btnRestart').onclick = () => { SFX.click(); clearActiveSession(); openPreLevel(currentLevel); };
+document.getElementById('btnRestart').onclick = () => { SFX.click(); clearActiveSession(); openPreLevel(isEndlessMode ? 0 : currentLevel); };
 
 function resizeCanvases() {
   const rect = boardFrame.getBoundingClientRect();
