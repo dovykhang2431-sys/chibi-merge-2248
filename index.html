@@ -1354,7 +1354,7 @@
     </div>
     <div class="btn-row">
       <button class="chibi-btn btn-primary" onclick="SFX.click(); togglePause()">▶ Tiếp Tục</button>
-      <button class="chibi-btn btn-gold" onclick="SFX.click(); closeModal('pauseModal'); clearActiveSession(); openPreLevel(isEndlessMode ? 0 : currentLevel);">🔄 Chơi Lại</button>
+      <button class="chibi-btn btn-gold" onclick="SFX.click(); closeModal('pauseModal'); syncEndlessBestIfNeeded(); clearActiveSession(); openPreLevel(isEndlessMode ? 0 : currentLevel);">🔄 Chơi Lại</button>
       <button class="chibi-btn btn-lav" onclick="SFX.click(); closeModal('pauseModal'); openSettings();">⚙️ Cài Đặt</button>
       <button class="chibi-btn btn-peach" onclick="SFX.click(); closeModal('pauseModal'); goHome();">🏠 Về Màn Hình Chính</button>
     </div>
@@ -1729,33 +1729,64 @@ function buildLevels() {
     const maxSpawn = world >= 6 ? 7 : Math.min(6, 5 + (world >= 4 ? 1 : 0));
     const locks = Math.min(7, 3 + Math.floor(id / 10));
     const ices = Math.min(9, 4 + Math.floor(id / 10));
+    // V5.1-1: Mô hình cân bằng riêng cho màn 51–100 (giữ nguyên tuyệt đối màn 1–50)
+    const t51 = id > 50 ? (id - 51) / 49 : 0;
+    const round100 = (n) => Math.round(n / 100) * 100;
 
     let lv;
     if (id === 100) {
-      const baseStar = Math.round((16000 * scale) / 100) * 100;
+      const moves = 26;
       lv = {
-        id: 100, moves: 26, maxSpawn: 7, boss: true,
+        id: 100, moves, maxSpawn: 7, boss: true,
         goal: { type: 'collect', level: 9, target: 1 },
-        stars: [Math.round(baseStar * 0.72), baseStar, Math.round(baseStar * 1.25)],
+        stars: [round100(moves * 1100), round100(moves * 1350), round100(moves * 1580)],
         locks: 7, ices: 7
       };
     } else if (isBoss) {
-      const target = Math.round((13000 + world * 2400) / 100) * 100;
-      lv = {
-        id, moves: 15 + Math.floor(world / 2), maxSpawn, boss: true,
-        goal: { type: 'score', target },
-        stars: [Math.round(target * 0.76), Math.round(target * 0.96), Math.round(target * 1.10)],
-        locks: Math.min(6, locks), ices: Math.min(6, ices)
-      };
+      const moves = 15 + Math.floor(world / 2);
+      if (id <= 50) {
+        const target = Math.round((13000 + world * 2400) / 100) * 100;
+        lv = {
+          id, moves, maxSpawn, boss: true,
+          goal: { type: 'score', target },
+          stars: [Math.round(target * 0.76), Math.round(target * 0.96), Math.round(target * 1.10)],
+          locks: Math.min(6, locks), ices: Math.min(6, ices)
+        };
+      } else {
+        const ppm = 1220 + t51 * 240; // ~1.260/lượt (màn 60) -> ~1.410/lượt (màn 90)
+        const target = round100(moves * ppm);
+        lv = {
+          id, moves, maxSpawn, boss: true,
+          goal: { type: 'score', target },
+          stars: [
+            round100(moves * Math.min(1100, ppm * 0.80)),
+            round100(target),
+            round100(moves * Math.min(1600, ppm * 1.12))
+          ],
+          locks: Math.min(6, locks), ices: Math.min(6, ices)
+        };
+      }
     } else if (mod === 4 || mod === 8) {
-      const target = Math.round((8500 * scale) / 100) * 100;
-      lv = {
-        id, moves: 60, maxSpawn,
-        goal: { type: 'timed', target },
-        stars: [Math.round(target * 0.78), Math.round(target * 1.02), Math.round(target * 1.22)],
-        locks: Math.max(2, locks - 2), ices: Math.max(2, ices - 2)
-      };
+      if (id <= 50) {
+        const target = Math.round((8500 * scale) / 100) * 100;
+        lv = {
+          id, moves: 60, maxSpawn,
+          goal: { type: 'timed', target },
+          stars: [Math.round(target * 0.78), Math.round(target * 1.02), Math.round(target * 1.22)],
+          locks: Math.max(2, locks - 2), ices: Math.max(2, ices - 2)
+        };
+      } else {
+        // Màn tính giờ 60s: 20.000 (~333/s) ở màn 54 -> 26.500 (~442/s) ở màn 98
+        const target = round100(19600 + t51 * 7200);
+        lv = {
+          id, moves: 60, maxSpawn,
+          goal: { type: 'timed', target },
+          stars: [round100(target * 0.82), round100(target * 1.02), round100(target * 1.18)],
+          locks: Math.max(2, locks - 2), ices: Math.max(2, ices - 2)
+        };
+      }
     } else if (mod === 2 || mod === 6) {
+      const moves = 22 + Math.floor(world / 2);
       let l1, l2, t1, t2;
       if (world >= 9) {
         l1 = 8; l2 = 9; t1 = 1; t2 = 1;
@@ -1767,21 +1798,46 @@ function buildLevels() {
         t1 = 2 + (world >= 4 ? 1 : 0);
         t2 = 2;
       }
-      const baseStar = Math.round((9000 * scale) / 100) * 100;
-      lv = {
-        id, moves: 22 + Math.floor(world / 2), maxSpawn,
-        goal: { type: 'collect2', l1, t1, l2, t2 },
-        stars: [Math.round(baseStar * 0.7), baseStar, Math.round(baseStar * 1.25)],
-        locks, ices: Math.max(3, ices - 1)
-      };
+      if (id <= 50) {
+        const baseStar = Math.round((9000 * scale) / 100) * 100;
+        lv = {
+          id, moves, maxSpawn,
+          goal: { type: 'collect2', l1, t1, l2, t2 },
+          stars: [Math.round(baseStar * 0.7), baseStar, Math.round(baseStar * 1.25)],
+          locks, ices: Math.max(3, ices - 1)
+        };
+      } else {
+        const s1 = 860 + t51 * 220;
+        const s2 = 1100 + t51 * 240;
+        const s3 = 1320 + t51 * 250;
+        lv = {
+          id, moves, maxSpawn,
+          goal: { type: 'collect2', l1, t1, l2, t2 },
+          stars: [round100(moves * s1), round100(moves * s2), round100(moves * s3)],
+          locks, ices: Math.max(3, ices - 1)
+        };
+      }
     } else if (mod === 3 || mod === 7) {
-      const baseStar = Math.round((8000 * scale) / 100) * 100;
-      lv = {
-        id, moves: 24, maxSpawn,
-        goal: { type: 'ice', target: ices },
-        stars: [Math.round(baseStar * 0.7), baseStar, Math.round(baseStar * 1.25)],
-        locks, ices
-      };
+      const moves = 24;
+      if (id <= 50) {
+        const baseStar = Math.round((8000 * scale) / 100) * 100;
+        lv = {
+          id, moves, maxSpawn,
+          goal: { type: 'ice', target: ices },
+          stars: [Math.round(baseStar * 0.7), baseStar, Math.round(baseStar * 1.25)],
+          locks, ices
+        };
+      } else {
+        const s1 = 720 + t51 * 180;
+        const s2 = 940 + t51 * 210;
+        const s3 = 1160 + t51 * 240;
+        lv = {
+          id, moves, maxSpawn,
+          goal: { type: 'ice', target: ices },
+          stars: [round100(moves * s1), round100(moves * s2), round100(moves * s3)],
+          locks, ices
+        };
+      }
     } else if (mod === 5 || mod === 9) {
       let colLv, target;
       if (world >= 9) {
@@ -1792,21 +1848,51 @@ function buildLevels() {
         colLv = id >= 45 ? 7 : Math.min(6, 4 + Math.floor(world / 2));
         target = colLv === 7 ? 1 : (colLv === 6 ? 2 : 3);
       }
-      const baseStar = Math.round((10200 * scale) / 100) * 100;
-      lv = {
-        id, moves: world >= 6 ? 26 : 24, maxSpawn,
-        goal: { type: 'collect', level: colLv, target },
-        stars: [Math.round(baseStar * 0.7), baseStar, Math.round(baseStar * 1.25)],
-        locks, ices
-      };
+      const moves = world >= 6 ? 26 : 24;
+      if (id <= 50) {
+        const baseStar = Math.round((10200 * scale) / 100) * 100;
+        lv = {
+          id, moves, maxSpawn,
+          goal: { type: 'collect', level: colLv, target },
+          stars: [Math.round(baseStar * 0.7), baseStar, Math.round(baseStar * 1.25)],
+          locks, ices
+        };
+      } else {
+        const s1 = 880 + t51 * 220;
+        const s2 = 1120 + t51 * 240;
+        const s3 = 1350 + t51 * 240;
+        lv = {
+          id, moves, maxSpawn,
+          goal: { type: 'collect', level: colLv, target },
+          stars: [round100(moves * s1), round100(moves * s2), round100(moves * s3)],
+          locks, ices
+        };
+      }
     } else {
-      const target = Math.round((13500 * scale) / 100) * 100;
-      lv = {
-        id, moves: 21, maxSpawn,
-        goal: { type: 'score', target },
-        stars: [Math.round(target * 0.72), Math.round(target * 0.94), Math.round(target * 1.12)],
-        locks, ices
-      };
+      const moves = 21;
+      if (id <= 50) {
+        const target = Math.round((13500 * scale) / 100) * 100;
+        lv = {
+          id, moves, maxSpawn,
+          goal: { type: 'score', target },
+          stars: [Math.round(target * 0.72), Math.round(target * 0.94), Math.round(target * 1.12)],
+          locks, ices
+        };
+      } else {
+        // Màn điểm thường: ~1.120/lượt (màn 51) -> ~1.430/lượt (màn 91)
+        const ppm = 1120 + t51 * 380;
+        const target = round100(moves * ppm);
+        lv = {
+          id, moves, maxSpawn,
+          goal: { type: 'score', target },
+          stars: [
+            round100(moves * Math.min(1100, ppm * 0.82)),
+            round100(moves * Math.min(1420, ppm * 1.03)),
+            round100(moves * Math.min(1600, ppm * 1.18))
+          ],
+          locks, ices
+        };
+      }
     }
     base20.push(lv);
   }
@@ -1942,8 +2028,26 @@ function saveProgress(silent = false) {
   } catch (e) {}
 }
 
+function syncEndlessBestIfNeeded() {
+  if (!isEndlessMode || isGameOver) return;
+  let changed = false;
+  if (score > (progressData.endlessBest || 0)) {
+    progressData.endlessBest = score;
+    changed = true;
+  }
+  if (score > progressData.highScore) {
+    progressData.highScore = score;
+    changed = true;
+  }
+  if (changed) saveProgress(true);
+}
+
 function saveActiveSession() {
-  if (!document.getElementById('gameScreen').classList.contains('active') || isGameOver || isEndlessMode) return;
+  if (isEndlessMode) {
+    syncEndlessBestIfNeeded();
+    return;
+  }
+  if (!document.getElementById('gameScreen').classList.contains('active') || isGameOver) return;
   progressData.activeSession = {
     lv: currentLevel,
     score,
@@ -2551,7 +2655,12 @@ function openPreLevel(lvNum) {
     const cfg = LEVELS[lvNum - 1];
     const world = WORLDS[Math.ceil(lvNum / 10) - 1];
     document.getElementById('preLvTitle').textContent = `${world.icon} Màn ${cfg.id}${cfg.boss ? ' (BOSS 👑)' : ''}`;
-    document.getElementById('preLvGoal').textContent = formatGoalText(cfg);
+    const goalEl = document.getElementById('preLvGoal');
+    if (cfg.goal.type === 'ice') {
+      goalEl.innerHTML = `${formatGoalText(cfg)}<div style="font-size:11.5px;color:#0277bd;margin-top:4px;font-weight:800;">💡 Chỉ nối qua băng cùng loại (2 lớp: ❄️ → 💧 → vỡ)</div>`;
+    } else {
+      goalEl.textContent = formatGoalText(cfg);
+    }
   }
   renderBoosterPicker();
   openModal('preLevelModal');
@@ -4438,7 +4547,7 @@ document.getElementById('btnHelpGame').onclick = () => { SFX.click(); openTutori
 document.getElementById('btnHome').onclick = () => { SFX.click(); goHome(); };
 document.getElementById('btnMap').onclick = () => { SFX.click(); openMap(); };
 document.getElementById('btnPause').onclick = () => { SFX.click(); togglePause(); };
-document.getElementById('btnRestart').onclick = () => { SFX.click(); clearActiveSession(); openPreLevel(isEndlessMode ? 0 : currentLevel); };
+document.getElementById('btnRestart').onclick = () => { SFX.click(); syncEndlessBestIfNeeded(); clearActiveSession(); openPreLevel(isEndlessMode ? 0 : currentLevel); };
 
 function resizeCanvases() {
   const rect = boardFrame.getBoundingClientRect();
